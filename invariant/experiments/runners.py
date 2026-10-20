@@ -106,6 +106,9 @@ def reclaim_private(context):
     def unreadable(error):
         raise error
     for root in roots:
+        # A controller can die before creating either phase's workspace.
+        if not root.exists() and not root.is_symlink():
+            continue
         try:
             for base, dirs, files in os.walk(root, followlinks=False, onerror=unreadable):
                 if any(p.lstat().st_uid != uid for p in [Path(base), *(Path(base)/n for n in dirs+files)]):

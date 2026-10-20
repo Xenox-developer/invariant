@@ -259,6 +259,9 @@ class LinuxOwnershipTests(unittest.TestCase):
             context=SimpleNamespace(workspace=Path(temporary),output_directory=None)
             with patch('invariant.experiments.runners.sys.platform','linux'),patch.object(workspace,'docker') as docker:
                 reclaim_private(context)
+                context.workspace=Path(temporary)/'not-created/workspace'
+                context.output_directory=Path(temporary)/'not-created/output'
+                reclaim_private(context)
                 docker.assert_not_called()
 
 
