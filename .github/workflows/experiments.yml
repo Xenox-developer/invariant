@@ -1,4 +1,4 @@
-name: Experiment fixtures on Linux
+name: Linux MVP verification
 on:
   workflow_dispatch:
   pull_request:
@@ -38,10 +38,13 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
+          from invariant.experiments.acceptance import verify_bundle, sources
           result=json.loads(Path('release-result.json').read_text())['data']
-          report=json.loads(Path(result['report']).read_text())
+          report=verify_bundle(Path(result['report']), expected_source=sources(Path.cwd()))
           assert report['local_fixture_passed'], report['blockers']
           assert report['host']['system']=='Linux'
+          assert report['host']['containerized'] is False
+          assert report['source_unchanged']
           PY
       - uses: actions/upload-artifact@v4
         if: always()

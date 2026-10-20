@@ -29,6 +29,8 @@ def main():
     output=ROOT/'.invariant/general-environment-checks'/(time.strftime('%Y%m%dT%H%M%SZ',time.gmtime())+'-'+uuid.uuid4().hex[:8])
     project=output/'project';project.mkdir(parents=True,mode=0o700)
     report={'passed':False,'checks':[],'source_sha256':sources(),'project':str(project),'live_model':args.live,'cleanup_errors':[]}
+    report['authentication'] = 'real' if bool(args.live) else 'fixture-only; provider turns forbidden'
+    launcher = [str(ROOT/'scripts/invariant')] if bool(args.live) else [sys.executable, '-B', str(ROOT/'scripts/fixture_cli.py')]
     child=None;sequence=0;chat=None;containers=[]
     nonce='environment-'+uuid.uuid4().hex
 
@@ -39,7 +41,7 @@ def main():
         report['checks'].append(name);print('PASS '+name,flush=True)
 
     def cli(*commands,cwd=None):
-        r=subprocess.run([str(ROOT/'scripts/invariant'),*commands],cwd=cwd or project,capture_output=True,text=True,timeout=45)
+        r=subprocess.run([*launcher,*commands],cwd=cwd or project,capture_output=True,text=True,timeout=45)
         require(r.returncode==0,r.stderr+r.stdout);return r.stdout
 
     def wait(condition,log,seconds=240):
@@ -58,7 +60,7 @@ def main():
         if args.live: command+=['--effort',args.effort]
         command+=['--duration','900']
         with log.open('w') as stream:
-            child=subprocess.Popen([str(ROOT/'scripts/invariant'),*command],cwd=project,stdin=subprocess.PIPE,
+            child=subprocess.Popen([*launcher,*command],cwd=project,stdin=subprocess.PIPE,
                                    stdout=stream,stderr=subprocess.STDOUT,text=True)
         wait(lambda:'\nYou> ' in log.read_text(),log,120)
         return log

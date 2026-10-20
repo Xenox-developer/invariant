@@ -224,6 +224,13 @@ def container_command(name, project, image, *, policy=None, context=None):
     if os.getuid() == 0:
         raise RuntimeError("Run agent workspaces as a non-root operator")
     general = machine.enabled(policy)
+    if context.checkpoint_owner is not None:
+        # Docker otherwise creates a root-owned nested bind-mount destination
+        # inside the host's private workspace on native Linux.
+        placeholder = writable / '.invariant'
+        if placeholder.is_symlink():
+            raise RuntimeError('Private workspace policy mount cannot be a symlink')
+        placeholder.mkdir(mode=0o700, exist_ok=True)
     command = ["create", "--name", name, "--pull=never", "--interactive", "--init",
             "--label=io.invariant.role=codex-workspace", "--label=io.invariant.session=" + name,
             "--network=" + docker_network(policy), "--user=0:0" if general else f"--user={os.getuid()}:{os.getgid()}", "--cap-drop=ALL",

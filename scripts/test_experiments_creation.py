@@ -2,6 +2,7 @@
 """Real Docker/CLI M0–M1 checks; no study execution or model turns."""
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -15,6 +16,7 @@ sys.path.insert(0, str(ROOT))
 from invariant import environment, resources, workspace
 from invariant.execution import ExecutionContext
 from invariant.experiments.snapshots import unseal_tree
+from invariant.experiments.runners import reclaim_private
 
 
 def require(value, message):
@@ -104,6 +106,8 @@ def main():
         workspace.docker('start', name)
         workspace.docker('exec', name, '/bin/sh', '-c',
                          'printf context-only > /workspace/private.txt; printf "#!/bin/sh\\nprintf persisted" > /usr/local/bin/invariant-m0-tool; chmod +x /usr/local/bin/invariant-m0-tool')
+        workspace.docker('exec', name, '/bin/sh', '-c',
+                         'mkdir -m 700 /workspace/private-dir; printf root-created > /workspace/private-dir/result; chmod 600 /workspace/private-dir/result; ln -s /root/outside /workspace/private-link')
         require(not (project/'private.txt').exists(), 'Execution context wrote original source')
         require((writable/'private.txt').read_text() == 'context-only', 'Private workspace write failed')
         passed('Docker verifies private workspace mounts using explicit execution identity')
@@ -120,6 +124,11 @@ def main():
         passed('mount drift cannot be verified as the private context')
         (trial_state/'control').mkdir()
         first.preserve(name)
+        reclaim_private(first)
+        require((writable/'private-dir/result').read_text()=='root-created', 'Root-created private files were not returned to the operator')
+        require((writable/'private-dir/result').stat().st_uid==os.getuid(), 'Private result retains foreign ownership')
+        require((writable/'private-link').is_symlink() and os.readlink(writable/'private-link')=='/root/outside', 'Ownership transfer followed or replaced a symlink')
+        passed('stopped_private_files_return_to_operator_without_following_symlinks')
         saved = json.loads(first.checkpoint_path.read_text())['image']; images.append(saved)
         require(not (state/'environment.json').exists(), 'Trial overwrote ordinary saved environment')
         require(environment.selected_image(trial_state/'control', project, image, owner=owner) == saved, 'Owned checkpoint cannot be selected')

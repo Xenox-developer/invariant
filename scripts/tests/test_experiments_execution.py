@@ -14,7 +14,9 @@ from invariant import workspace
 from invariant.experiments.controller import Controller
 from invariant.experiments.errors import ExperimentError
 from invariant.experiments.evaluation import parse_result
-from invariant.experiments.runners import BoundedLog, Redactor, CommandRunner
+from invariant.experiments.runners import BoundedLog, Redactor, CommandRunner, reclaim_private
+from types import SimpleNamespace
+import tempfile
 import test_experiments as base
 IMAGE = base.IMAGE
 
@@ -179,6 +181,7 @@ class ExecutionTests(unittest.TestCase):
             return True
         timer = threading.Timer(.35, finish);timer.start()
         context = Mock();context.owner_token='owned';context.project=self.project;context.image=IMAGE
+        context.workspace=self.project;context.output_directory=None
         cancel=threading.Event()
         info={'Image':IMAGE,'Mounts':[],'HostConfig':{'Memory':1,'NanoCpus':1,'PidsLimit':32,'NetworkMode':'none'},
               'State':{'Running':False,'ExitCode':0}}
@@ -218,6 +221,45 @@ class EvaluationTests(unittest.TestCase):
                        '{"schema_version":1,"artifacts":["../escape"]}',
                        '{"schema_version":1,"metrics":{"a":1,"a":2}}'):
             with self.subTest(output=output), self.assertRaises(ExperimentError):parse_result(output)
+
+
+class LinuxOwnershipTests(unittest.TestCase):
+    def test_foreign_private_files_use_only_a_stopped_scoped_static_helper(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);private=root/'state';private.mkdir()
+            writable=private/'workspace';writable.mkdir();(writable/'answer').write_text('42')
+            control=private/'control';control.mkdir()
+            context=SimpleNamespace(project=root/'project',workspace=writable,output_directory=None,
+                checkpoint_owner='attempt-owned-runner',owner_token='owned',control_directory=control,image=IMAGE)
+            def docker(*args,**kwargs):
+                if args[0]=='inspect':raise RuntimeError('No such container')
+                return '{"reclaimed":true}'
+            with (patch('invariant.experiments.runners.sys.platform','linux'),
+                  patch('invariant.experiments.runners.os.getuid',return_value=4242),
+                  patch.object(workspace,'state_for',return_value=private),
+                  patch('invariant.experiments.runners.owned_info',return_value={'State':{'Running':False}}) as info,
+                  patch('invariant.environment.verify_control'),
+                  patch.object(workspace,'docker',side_effect=docker) as commands):
+                reclaim_private(context)
+                args=commands.call_args_list[0].args
+                self.assertIn('--network=none',args);self.assertIn('--read-only',args)
+                self.assertIn('--entrypoint=/__invariant/inspect',args)
+                self.assertEqual({a for a in args if a.startswith('--cap-add=')},{'--cap-add=CHOWN','--cap-add=DAC_OVERRIDE'})
+                self.assertIn('type=bind,src='+str(writable)+',dst=/workspace',args)
+                self.assertNotIn('type=bind,src='+str(context.project)+',dst=/workspace',args)
+                info.return_value={'State':{'Running':True}}
+                before=commands.call_count
+                with self.assertRaisesRegex(RuntimeError,'Stop the private executor'):reclaim_private(context)
+                self.assertEqual(commands.call_count,before)
+                context.workspace=context.project;context.project.mkdir()
+                with self.assertRaisesRegex(RuntimeError,'outside private'):reclaim_private(context)
+
+    def test_owned_files_need_no_privileged_helper(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            context=SimpleNamespace(workspace=Path(temporary),output_directory=None)
+            with patch('invariant.experiments.runners.sys.platform','linux'),patch.object(workspace,'docker') as docker:
+                reclaim_private(context)
+                docker.assert_not_called()
 
 
 if __name__=='__main__':unittest.main()

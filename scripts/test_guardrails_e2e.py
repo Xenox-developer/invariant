@@ -25,6 +25,8 @@ def main():
     project.mkdir(parents=True, mode=0o700)
     init(project, automatic=False)
     report = {'passed': False, 'checks': [], 'source_sha256': sources(), 'project': str(project), 'cleanup_errors': []}
+    report['authentication'] = 'fixture-only; provider turns forbidden'
+    launcher = [sys.executable, '-B', str(ROOT/'scripts/fixture_cli.py')]
     process = None
     container = None
     baseline = (project / '.invariant/config.json').read_bytes()
@@ -38,7 +40,7 @@ def main():
         print('PASS ' + name, flush=True)
 
     def cli(*args, text=None):
-        return subprocess.run([str(ROOT / 'scripts/invariant'), *args], cwd=project, input=text,
+        return subprocess.run([*launcher, *args], cwd=project, input=text,
                               capture_output=True, text=True, timeout=60)
 
     try:
@@ -49,7 +51,7 @@ def main():
         passed('inactive_policy_explicitly_unverified')
         log = output / 'launcher.log'
         with log.open('w') as stream:
-            process = subprocess.Popen([str(ROOT / 'scripts/invariant'), 'run', '--agent', 'codex', 'gpt-6.1-sol', '--duration', '180'],
+            process = subprocess.Popen([*launcher, 'run', '--agent', 'codex', 'gpt-6.1-sol', '--duration', '180'],
                                        cwd=project, stdin=subprocess.PIPE, stdout=stream, stderr=subprocess.STDOUT, text=True)
         end = time.monotonic() + 75
         while time.monotonic() < end:

@@ -25,6 +25,8 @@ def main():
     init(project, automatic=False)
     (project / 'canary.txt').write_text('preserve me')
     report = {'passed': False, 'checks': [], 'source_sha256': sources(), 'project': str(project), 'cleanup_errors': []}
+    report['authentication'] = 'fixture-only; provider turns forbidden'
+    launcher = [sys.executable, '-B', str(ROOT/'scripts/fixture_cli.py')]
     process = None
     containers = []
 
@@ -35,7 +37,7 @@ def main():
         report['checks'].append(name);print('PASS ' + name, flush=True)
 
     def cli(*args):
-        value = subprocess.run([str(ROOT / 'scripts/invariant'), *args], cwd=project,
+        value = subprocess.run([*launcher, *args], cwd=project,
                                capture_output=True, text=True, timeout=30)
         require(value.returncode == 0, value.stderr + value.stdout)
         return value.stdout
@@ -43,7 +45,7 @@ def main():
     def start(label, *args):
         log = output / (label + '.log')
         with log.open('w') as stream:
-            child = subprocess.Popen([str(ROOT / 'scripts/invariant'), 'run', '--agent', 'codex', 'gpt-6.1-sol', *args],
+            child = subprocess.Popen([*launcher, 'run', '--agent', 'codex', 'gpt-6.1-sol', *args],
                                      cwd=project, stdin=subprocess.PIPE, stdout=stream, stderr=subprocess.STDOUT, text=True)
         # Keep ownership for cleanup even if startup raises.
         nonlocal process
@@ -114,7 +116,7 @@ print(json.dumps({'project_writes':'EROFS','policy_writes':'EROFS','network':'de
         passed('running_policy_immutable_pending_configuration_reported')
         before = (project / '.invariant/config.json').read_bytes()
         for key, text in [('command_network','host'), ('limits.memory_mib','0'), ('limits.unknown','99')]:
-            invalid = subprocess.run([str(ROOT / 'scripts/invariant'), 'config', 'set', key, text], cwd=project, capture_output=True, text=True, timeout=10)
+            invalid = subprocess.run([*launcher, 'config', 'set', key, text], cwd=project, capture_output=True, text=True, timeout=10)
             require(invalid.returncode == 1 and (project / '.invariant/config.json').read_bytes() == before, 'Invalid config accepted or previous file changed')
         passed('unsafe_and_invalid_changes_rejected_without_replacing_policy')
         close()

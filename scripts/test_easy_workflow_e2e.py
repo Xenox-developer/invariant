@@ -30,6 +30,8 @@ def main():
     project = output / 'project';project.mkdir(parents=True, mode=0o700)
     report = {'passed': False, 'checks': [], 'source_sha256': sources(), 'project': str(project),
               'live': args.live, 'cleanup_errors': []}
+    report['authentication'] = 'real' if bool(args.live) else 'fixture-only; provider turns forbidden'
+    launcher = [str(ROOT/'scripts/invariant')] if bool(args.live) else [sys.executable, '-B', str(ROOT/'scripts/fixture_cli.py')]
     child = None
     containers = []
     sequence = 0
@@ -41,7 +43,7 @@ def main():
         report['checks'].append(name);print('PASS ' + name, flush=True)
 
     def cli(*commands, cwd=None, check=True):
-        result = subprocess.run([str(ROOT / 'scripts/invariant'), *commands], cwd=cwd or project,
+        result = subprocess.run([*launcher, *commands], cwd=cwd or project,
                                 capture_output=True, text=True, timeout=30)
         if check: require(result.returncode == 0, result.stderr + result.stdout)
         return result.stdout if check else result
@@ -59,7 +61,7 @@ def main():
         sequence += 1
         log = output / (str(sequence) + '.log')
         with log.open('w') as stream:
-            child = subprocess.Popen([str(ROOT / 'scripts/invariant'), *command], cwd=project,
+            child = subprocess.Popen([*launcher, *command], cwd=project,
                                      stdin=subprocess.PIPE, stdout=stream, stderr=subprocess.STDOUT, text=True)
         wait(lambda: '\nYou> ' in log.read_text(), log, seconds=85)
         return log

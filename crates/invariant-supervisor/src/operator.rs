@@ -36,7 +36,10 @@ pub(crate) fn publish(directory: &Path, capability: &str) -> io::Result<()> {
     let temporary = directory.join(random_name()?);
     write_new(&temporary, capability.as_bytes(), 0o400)?;
     let result = (|| {
-        #[cfg(target_os = "linux")]
+        // The production Linux controller delivers to workload UID 65532.
+        // Host unit fixtures use their own UID and must not require root;
+        // Docker acceptance separately exercises the production delivery path.
+        #[cfg(all(target_os = "linux", not(test)))]
         std::os::unix::fs::chown(&temporary, Some(65532), Some(65532))?;
         File::open(&temporary)?.sync_all()?;
         fs::rename(&temporary, directory.join("capability"))?;

@@ -2,10 +2,13 @@
 import base64
 import json
 import os
+from pathlib import Path
 import re
 import selectors
 import subprocess
+import sys
 import time
+import uuid
 
 from .. import environment, workspace
 from ..dependencies import docker_env, find_docker
@@ -89,6 +92,63 @@ def stop_owned(context, *, inspect_timeout=3):
         workspace.docker('stop', '--time=3', info.get('Id', context.owner_token), timeout=6)
         info = owned_info(context, timeout=inspect_timeout)
     return info is None or not info.get('State', {}).get('Running')
+
+
+def reclaim_private(context):
+    """Return stopped Linux trial files to the operator, without running agent software."""
+    if sys.platform != 'linux':
+        return  # Docker Desktop maps bind-mount ownership to the host user.
+    roots = [context.workspace]
+    if context.output_directory is not None:
+        roots.append(context.output_directory)
+    uid, gid = os.getuid(), os.getgid()
+    foreign = False
+    def unreadable(error):
+        raise error
+    for root in roots:
+        try:
+            for base, dirs, files in os.walk(root, followlinks=False, onerror=unreadable):
+                if any(p.lstat().st_uid != uid for p in [Path(base), *(Path(base)/n for n in dirs+files)]):
+                    foreign = True; break
+        except PermissionError:
+            foreign = True
+    if not foreign:
+        return
+    private = workspace.state_for(context.project).resolve()
+    if (not context.checkpoint_owner or uid == 0 or any(p.is_symlink() or not p.resolve().is_relative_to(private)
+            or p.resolve() == private for p in roots) or context.workspace == context.project):
+        raise RuntimeError('Refusing ownership transfer outside private execution state')
+    info = owned_info(context)
+    if info is not None and info.get('State', {}).get('Running'):
+        raise RuntimeError('Stop the private executor before transferring its files')
+    environment.verify_control(context.project, path=context.control_directory)
+    name = 'invariant-reclaim-' + uuid.uuid4().hex
+    args = ['run', '--name', name, '--rm', '--pull=never', '--network=none', '--read-only',
+            '--user=0:0', '--cap-drop=ALL', '--cap-add=CHOWN', '--cap-add=DAC_OVERRIDE',
+            '--security-opt=no-new-privileges', '--pids-limit=32', '--memory=256m', '--cpus=0.5',
+            '--label=io.invariant.role=ownership-helper', '--label=io.invariant.owner='+context.checkpoint_owner,
+            '--mount', f'type=bind,src={context.workspace},dst=/workspace',
+            '--mount', f'type=bind,src={context.control_directory},dst=/__invariant,readonly']
+    if context.output_directory is not None:
+        args += ['--mount', f'type=bind,src={context.output_directory},dst=/__invariant_output']
+    args += ['--entrypoint='+environment.INSPECTOR, context.image, 'reclaim', str(uid), str(gid)]
+    if context.output_directory is not None:
+        args += ['output']
+    try:
+        result = json.loads(workspace.docker(*args, timeout=60))
+        if result != {'reclaimed': True}:
+            raise RuntimeError('Private file ownership was not confirmed')
+    finally:
+        # Remove only this helper, even after a timed-out Docker client.
+        try:
+            helper = json.loads(workspace.docker('inspect', name))[0]
+        except RuntimeError as error:
+            if 'No such' not in str(error): raise
+        else:
+            labels = helper.get('Config', {}).get('Labels') or {}
+            if labels.get('io.invariant.role') != 'ownership-helper' or labels.get('io.invariant.owner') != context.checkpoint_owner:
+                raise RuntimeError('Foreign ownership helper')
+            workspace.docker('rm', '--force', helper['Id'])
 
 
 class CommandRunner:
@@ -176,3 +236,4 @@ class CommandRunner:
                     finally:
                         process.kill(); process.wait(timeout=10)
                 process.stdout.close()
+            reclaim_private(context)

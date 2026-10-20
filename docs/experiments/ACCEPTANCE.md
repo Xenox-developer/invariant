@@ -63,8 +63,20 @@ complete artifact bundles. The aggregate copies the other platform's evidence in
 own bundle. Reports record whether the launcher itself is containerized; such runs do
 not satisfy actual host-platform evidence. A Linux container on a macOS engine is not
 counted as a separate Linux host.
-Until actual Linux evidence exists, the release stays blocked on P21 and Linux support
-is unverified. macOS verification can pass locally without implying a full release pass.
+The GitHub workflow verifies its Linux bundle's integrity, unchanged source and actual
+host identity before accepting the fixture gate. JSON output stays on stdout; stage
+progress goes to stderr so CI shows which check is running.
+
+Fixture-only workspace checks use a source-tree test entrypoint with an empty credential
+home. It skips sign-in, retains the real Codex app-server/catalog, Docker executor and
+thread creation, and rejects provider turns and login requests. Production entrypoints
+do not load this fixture. The separate live stages still require real authentication.
+Linux trial cleanup transfers root-created files back to the operator only after stop,
+using the protected static inspector in a bounded, offline container mounted to the
+private trial files. It does not run candidate software or mount the original project.
+
+Until both matching host bundles verify, the release stays blocked on P21. A passing
+macOS-only run or a green fixture workflow alone does not imply full release acceptance.
 
 ## Release limitations
 

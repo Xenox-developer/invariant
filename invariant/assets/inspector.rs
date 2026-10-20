@@ -24,10 +24,30 @@ fn socket_status(family:c_int)->&'static str {
         match std::io::Error::last_os_error().raw_os_error() {Some(1)|Some(13)=>"denied",_=>"unverified"}
     }
 }
+fn reclaim(path:&std::path::Path, uid:u32, gid:u32, remaining:&mut usize, depth:usize) {
+    assert!(*remaining>0 && depth<=256,"ownership traversal limit"); *remaining-=1;
+    let info=fs::symlink_metadata(path).expect("ownership metadata");
+    if info.is_dir() {
+        for child in fs::read_dir(path).expect("ownership directory") {
+            reclaim(&child.expect("ownership entry").path(),uid,gid,remaining,depth+1);
+        }
+    }
+    // Never follow a workload symlink, including one pointing outside its mount.
+    std::os::unix::fs::lchown(path,Some(uid),Some(gid)).expect("ownership transfer");
+}
 fn main() {
     // Other unprivileged container processes cannot ptrace this inspection.
     assert_eq!(unsafe{prctl(4,0,0,0,0)},0);
     let args:Vec<String>=std::env::args().collect();
+    if args.get(1).map(String::as_str)==Some("reclaim") {
+        assert!(args.len()==4 || (args.len()==5 && args[4]=="output"));
+        let uid=args[2].parse::<u32>().unwrap(); let gid=args[3].parse::<u32>().unwrap();
+        assert!(uid!=0,"non-root operator required");
+        let mut remaining=1_000_000;
+        reclaim(std::path::Path::new("/workspace"),uid,gid,&mut remaining,0);
+        if args.len()==5 {reclaim(std::path::Path::new("/__invariant_output"),uid,gid,&mut remaining,0);}
+        println!("{{\"reclaimed\":true}}");return
+    }
     if args.get(1).map(String::as_str)==Some("pressure") {
         let events=read("/sys/fs/cgroup/memory.events");
         let n=events.lines().find_map(|s|s.strip_prefix("oom_kill ")).unwrap().parse::<u64>().unwrap();

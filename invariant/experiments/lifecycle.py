@@ -201,6 +201,12 @@ def recover(engine, identifier, *, request_id=None):
                             clean = False
                             continue
                         info = owned_info(identity)
+                        from .runners import reclaim_private
+                        identity.workspace = folder / ('workspace' if phase == 'runner' else 'evaluation/workspace')
+                        identity.output_directory = folder / 'evaluation/output' if phase == 'evaluation' else None
+                        identity.control_directory = engine.root / 'runtimes' / study['baseline_id'] / 'control'
+                        identity.image = study['frozen']['image']['id']
+                        reclaim_private(identity)
                         if info is not None and phase == 'runner':
                             # Saving then removing the exact container also fences an
                             # orphaned Docker start request. Copy bind-mounted files

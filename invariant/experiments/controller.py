@@ -17,7 +17,7 @@ from .errors import ExperimentError, recovery_for
 from .evaluation import parse_result
 from .files import (apply_variant, capture_workspace, collect_artifacts, diff_entries,
                     materialize, prepare_inputs, write_file)
-from .runners import CommandRunner, owned_info, stop_owned
+from .runners import CommandRunner, owned_info, stop_owned, reclaim_private
 from .runtime import secret_files
 from .snapshots import regular_bytes, seal_tree
 from .store import TERMINAL
@@ -214,6 +214,7 @@ class Controller:
                 record['runner'] = self.runner.run(runner_context, **options)
             if not record['runner']['cleanup_confirmed']:
                 raise ExperimentError('UNRESOLVED_EXECUTION', 'Runner process termination could not be confirmed.')
+            reclaim_private(runner_context)
             for path in secret_paths:
                 path.parent.chmod(0o700); path.unlink(missing_ok=True)
             secret_paths.clear()
@@ -272,6 +273,8 @@ class Controller:
                 try:
                     stopped = stop_owned(context)
                     clean &= stopped
+                    if stopped:
+                        reclaim_private(context)
                     # Failed saves keep the stopped candidate for future recovery.
                     if context.owner_token.endswith('-evaluation') and stopped:
                         workspace.remove_owned(context.owner_token)

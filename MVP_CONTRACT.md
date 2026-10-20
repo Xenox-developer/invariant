@@ -2,7 +2,7 @@
 
 **Version:** 0.7 — parallel agent experiments  
 **Date:** October 21, 2026  
-**Status:** M0–M5 implement frozen studies, detached parallel command/native Codex trials, capture, evaluation, comparison, stop, recovery/retry, resumable logs, selection, deletion, child continuation and recoverable apply. M6 implements the versioned P01–P21 acceptance/release gate and community documentation. Release acceptance requires a fresh complete report, including real provider and actual macOS/Linux host evidence. Linux host evidence remains unavailable; implementing the gate is not itself a passing release result.  
+**Status:** M0–M5 implement frozen studies, detached parallel command/native Codex trials, capture, evaluation, comparison, stop, recovery/retry, resumable logs, selection, deletion, child continuation and recoverable apply. M6 implements the versioned P01–P21 acceptance/release gate and community documentation. Release acceptance requires a fresh complete report, including real provider and actual macOS/Linux host evidence. Linux verification runs through GitHub Actions; the verified same-source aggregate report determines release acceptance.  
 **Delivery plan:** [Implementation plan](docs/IMPLEMENTATION_PLAN.md)
 
 ## 1. Product promise

@@ -1,7 +1,7 @@
 # INVARIANT implementation plan: parallel agent experiments
 
 **Date:** October 20, 2026  
-**Status:** M0–M5 implement frozen studies, detached parallel command/native Codex trials, capture/evaluation/comparison, stop, recovery, retries, resumable logs, revision-checked selection, terminal deletion, immutable child continuation and recoverable apply. M6 implements the complete release gate and community documentation. Actual release acceptance is determined by its fresh report; Linux host evidence remains unavailable.  
+**Status:** M0–M5 implement frozen studies, detached parallel command/native Codex trials, capture/evaluation/comparison, stop, recovery, retries, resumable logs, revision-checked selection, terminal deletion, immutable child continuation and recoverable apply. M6 implements the complete release gate and community documentation. Actual release acceptance is determined by a fresh report combining same-source macOS evidence and Linux evidence from GitHub Actions.  
 **Normative target:** [MVP contract v0.6](../MVP_CONTRACT.md)
 
 ## 1. Delivery objective and first vertical slice
@@ -411,8 +411,8 @@ OOM, clean-wheel quickstart and both manual/JSON apply handoffs augment the prio
 The live option includes native variants, parent/child continuation and legacy chat resume.
 Apache-2.0 was selected by the owner. Dependency/notice inventory, schema/migration policy,
 quickstart, contributor documentation and an actual-Linux CI workflow are included.
-No Linux host is available in the current session; P21 and full release acceptance must
-remain blocked until same-source Linux evidence is supplied. See [verification](experiments/ACCEPTANCE.md).
+The Linux host gate runs on GitHub Actions. P21 and full release acceptance require
+its verified artifact bundle combined with same-source macOS evidence. See [verification](experiments/ACCEPTANCE.md).
 
 - Add `scripts/test_experiments_acceptance.py` and a named experiment acceptance command,
   separate from legacy `invariant acceptance`. Save versioned P01–P21 reports, logs, runtime

@@ -254,7 +254,7 @@ def main(arguments=None, *, root=None):
             'Injected provider/Docker failures are identified separately from real Docker fault tests.']}
 
     def announce(message):
-        if not args.json:print(message,flush=True)
+        print(message,file=sys.stderr if args.json else sys.stdout,flush=True)
 
     def run(tag, script, *, extra=(), group=None, timeout=1800, direct=None, native=False):
         if native and not args.live:
