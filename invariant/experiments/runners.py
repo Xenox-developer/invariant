@@ -125,7 +125,9 @@ def reclaim_private(context):
     name = 'invariant-reclaim-' + uuid.uuid4().hex
     args = ['run', '--name', name, '--rm', '--pull=never', '--network=none', '--read-only',
             '--user=0:0', '--cap-drop=ALL', '--cap-add=CHOWN', '--cap-add=DAC_OVERRIDE',
-            '--security-opt=no-new-privileges', '--pids-limit=32', '--memory=256m', '--cpus=0.5',
+            # Fit within even the smallest supported trial reservation.
+            '--security-opt=no-new-privileges', '--pids-limit=32', '--memory=64m', '--memory-swap=64m',
+            '--cpus=0.1', '--ulimit=nofile=64:64',
             '--label=io.invariant.role=ownership-helper', '--label=io.invariant.owner='+context.checkpoint_owner,
             '--mount', f'type=bind,src={context.workspace},dst=/workspace',
             '--mount', f'type=bind,src={context.control_directory},dst=/__invariant,readonly']
