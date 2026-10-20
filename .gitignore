@@ -1,0 +1,8 @@
+/target
+/.invariant/
+__pycache__/
+*.egg-info/
+/build/
+/dist/
+/.venv/
+/.invariant-deps/

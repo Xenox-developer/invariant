@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "name": "multiply",
+  "runner": {"type": "command", "argv": ["python3", "agent.py"]},
+  "variants": [
+    {"id": "double", "parameters": {"multiplier": 2}},
+    {"id": "triple", "parameters": {"multiplier": 3}}
+  ],
+  "cases": [{"id": "example", "input_file": "case.json"}],
+  "execution": {"max_parallel": 2, "trial_cpus": 0.5, "trial_memory_mib": 256, "trial_timeout_seconds": 60},
+  "evaluator": {"argv": ["python3", "judge.py"], "source_paths": ["judge.py"], "timeout_seconds": 30},
+  "artifacts": ["result.txt"]
+}

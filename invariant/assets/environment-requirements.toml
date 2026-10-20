@@ -1,0 +1,7 @@
+allowed_approval_policies = ["never"]
+allowed_sandbox_modes = ["danger-full-access"]
+[mcp_servers]
+[plugins]
+[marketplaces]
+restrict_to_allowed_sources = true
+[marketplaces.allowed_sources]

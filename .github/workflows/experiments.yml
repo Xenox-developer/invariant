@@ -1,0 +1,54 @@
+name: Experiment fixtures on Linux
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: experiments-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  fixtures:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install local tools
+        run: |
+          rustup toolchain install 1.90.0 --profile minimal --component rustfmt,clippy
+          rustup default 1.90.0
+          python -m pip install 'setuptools>=68' wheel
+          npm install -g @openai/codex@0.163.0
+          python -m pip install -e .
+      - name: Verify fixtures; unavailable live calls remain blocked
+        run: |
+          set +e
+          invariant experiment acceptance --json > release-result.json
+          code=$?
+          cat release-result.json
+          if [ "$code" != 0 ] && [ "$code" != 2 ]; then exit "$code"; fi
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          result=json.loads(Path('release-result.json').read_text())['data']
+          report=json.loads(Path(result['report']).read_text())
+          assert report['local_fixture_passed'], report['blockers']
+          assert report['host']['system']=='Linux'
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: linux-experiment-evidence
+          path: |
+            .invariant/experiment-acceptance/
+            release-result.json
+          include-hidden-files: true
+          retention-days: 14

@@ -1,0 +1,11 @@
+INVARIANT
+Copyright 2026 INVARIANT contributors
+
+INVARIANT's original source code is licensed under Apache-2.0.
+Third-party code, container distributions and executables keep their own licenses.
+The container OS preserves package copyright files under /usr/share/doc.
+The bundled seccomp profile's license and provenance are included in
+invariant/assets/seccomp-runtime-LICENSE and seccomp-runtime-NOTICE.md.
+The build downloads official OpenAI Codex packages with pinned integrity;
+their distribution notices must accompany any redistributed binary/image.
+See docs/LICENSING.md and the generated release dependency/notice inventory.
