@@ -9,8 +9,8 @@ and [implementation plan](docs/IMPLEMENTATION_PLAN.md). **M0–M5 support frozen
 evaluation, comparison, stop controls, recovery, explicit retries, resumable logs and
 revision-checked selection, continuation with saved tools, and recoverable apply plans.
 M6 adds the P01–P21 release verification command. Full release acceptance requires fresh
-live Codex and actual macOS/Linux host evidence; Linux host verification is currently
-unavailable.** See [the implemented experiment interface](docs/experiments/README.md),
+live Codex and actual macOS/Linux host evidence. The GitHub Actions workflow supplies
+Linux fixture evidence for the same-source release gate.** See [the implemented experiment interface](docs/experiments/README.md),
 [the clean-install quickstart](docs/experiments/QUICKSTART.md), and
 [release verification](docs/experiments/ACCEPTANCE.md). Original source is Apache-2.0.
 
