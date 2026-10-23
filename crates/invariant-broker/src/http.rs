@@ -5,13 +5,19 @@ use std::time::{Duration, Instant};
 
 use serde::Serialize;
 
+/// Maximum decoded HTTP response body size.
 pub const MAX_RESPONSE_BYTES: usize = 1_048_576;
+/// Maximum HTTP response header size, including its terminator.
 pub const MAX_HEADER_BYTES: usize = 32 * 1024;
+/// Total HTTP connection, write and read deadline for one admitted attempt.
 pub const TARGET_TIMEOUT: Duration = Duration::from_secs(5);
 
+/// A bounded HTTP response; Debug exposes the body length, not its contents.
 #[derive(Clone, PartialEq, Eq)]
 pub struct HttpResponse {
+    /// Observed status, including error and redirect responses.
     pub status: u16,
+    /// Decoded response bytes, bounded by [`MAX_RESPONSE_BYTES`].
     pub body: Vec<u8>,
 }
 
@@ -24,15 +30,23 @@ impl fmt::Debug for HttpResponse {
     }
 }
 
+/// Failure of an already charged HTTP attempt; no automatic retry is made.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum UpstreamError {
+    /// Connection or I/O failed, including unexpected end of a response body.
     Transport,
+    /// The total target deadline expired.
     Timeout,
+    /// HTTP status, headers or framing were malformed or incomplete.
     InvalidResponse,
+    /// Response headers exceeded [`MAX_HEADER_BYTES`].
     HeadersTooLarge,
+    /// The body exceeded [`MAX_RESPONSE_BYTES`].
     BodyTooLarge,
+    /// A nonidentity content encoding was returned.
     UnsupportedEncoding,
+    /// Unsupported transfer framing, such as chunked encoding, was returned.
     UnsupportedTransferEncoding,
 }
 

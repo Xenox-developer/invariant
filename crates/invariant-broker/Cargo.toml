@@ -3,9 +3,16 @@ name = "invariant-broker"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+description = "Execution-bound capability broker with durable admission, audit and bounded HTTP dispatch"
+readme = "README.md"
+keywords = ["authorization", "capability", "audit", "broker"]
+categories = ["authentication"]
+exclude = ["examples/python.rs", "tests/unix.rs"]
 
 [dependencies]
-invariant-core = { path = "../invariant-core" }
+invariant-core = { version = "0.1.0", path = "../invariant-core" }
 serde.workspace = true
 serde_json.workspace = true
 getrandom.workspace = true

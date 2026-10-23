@@ -1,7 +1,8 @@
-//! A host-side, single-execution broker with serialized admission and audit.
-//! This library performs real HTTP calls and provides an execution-bound Unix
-//! socket server. The invariant-supervisor crate owns Docker workload isolation
-//! and process lifecycle; direct host-side examples are transport demos only.
+#![doc = include_str!("../README.md")]
+#![deny(missing_docs)]
+
+/// The exact policy types used by this broker, also available as `invariant-core`.
+pub use invariant_core as core;
 
 mod audit;
 mod http;
@@ -29,28 +30,38 @@ use invariant_core::{
 use serde::Serialize;
 use sha2::{Digest, Sha256};
 
+/// Maximum concurrent admitted HTTP calls for one execution.
 pub const MAX_IN_FLIGHT: usize = 4;
 /// Keep deduplication metadata bounded, even across operator-issued grants.
 pub const MAX_RECORDED_REQUESTS: usize = 1024;
 
+/// Trusted configuration for a fresh broker execution; no workload-supplied URLs.
 pub struct BrokerConfig {
+    /// Host principal that owns this execution.
     pub principal_id: PrincipalId,
+    /// Full immutable resource configuration for this session.
     pub resource: ResourceIdentity,
+    /// SHA-256 of the initial workload artifact, computed by trusted host code.
     pub initial_artifact_digest: [u8; 32],
 }
 
+/// Fresh wall and monotonic readings supplied by a trusted clock.
 #[derive(Clone, Copy)]
 pub struct ClockReading {
+    /// Wall time used for grant expiry and audit timestamps.
     pub wall: SystemTime,
+    /// Monotonic time used to prevent wall-clock rollback from extending a grant.
     pub monotonic: Instant,
 }
 
 /// Trusted clock injection supports deterministic expiry tests. Never source
 /// either value from a workload message.
 pub trait Clock: Send + Sync {
+    /// Obtain a fresh pair of trusted readings.
     fn now(&self) -> ClockReading;
 }
 
+/// Production clock backed by [`SystemTime::now`] and [`Instant::now`].
 pub struct SystemClock;
 
 impl Clock for SystemClock {
@@ -62,9 +73,14 @@ impl Clock for SystemClock {
     }
 }
 
+/// Newly issued access for delivery over a trusted channel to this workload only.
+/// Debug output redacts the capability; reading the field exposes the raw secret.
 pub struct GrantAccess {
+    /// Fresh grant identity.
     pub grant_id: GrantId,
+    /// Unpredictable handle; never include it in logs or public reports.
     pub capability: String,
+    /// Wall-clock deadline; the broker also enforces a monotonic deadline.
     pub expires_at: SystemTime,
 }
 
@@ -78,39 +94,57 @@ impl fmt::Debug for GrantAccess {
     }
 }
 
+/// Completion metadata retained for an already admitted request ID.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RecordedOutcome {
+    /// An earlier admission is still running or has not established an outcome.
     InProgress,
+    /// A response status was durably recorded; response bodies are not retained.
     Completed {
+        /// Observed HTTP status, including error statuses.
         status: u16,
     },
     /// The broker could not establish a durably recorded successful result.
     /// This does not establish whether the remote target performed an effect.
     Unknown {
+        /// Upstream failure when known; absent if recording the outcome failed.
         reason: Option<UpstreamError>,
     },
 }
 
+/// Outcome of processing one workload frame, without automatic retry.
 #[derive(Debug, PartialEq, Eq)]
 pub enum BrokerReply {
+    /// The target returned a bounded response that was durably recorded.
     Response(HttpResponse),
+    /// The request was denied without a new outbound attempt.
     Denied(DenialReason),
     /// A duplicate returns completion metadata, not another target attempt.
     /// Response bodies are deliberately not retained in the broker's ledger.
     Replay(RecordedOutcome),
+    /// An admission was charged but successful completion could not be established.
     UnknownOutcome {
+        /// Upstream failure when known; absent if recording the outcome failed.
         reason: Option<UpstreamError>,
     },
 }
 
+/// Failure of a trusted broker control; workload replies use [`BrokerReply`].
 #[derive(Debug)]
 pub enum BrokerError {
+    /// State is unhealthy or the admission lock cannot be acquired safely.
     Unavailable,
+    /// The execution has already stopped.
     ExecutionTerminated,
+    /// A nonexpired, nonexhausted active grant already exists.
     ActiveGrant,
+    /// The trusted resource or principal configuration is invalid.
     InvalidConfiguration,
+    /// Secure randomness could not generate fresh identities or a handle.
     EntropyUnavailable,
+    /// The grant's deadline is not representable by the trusted clock.
     DeadlineOverflow,
+    /// Durable audit failed; this broker permanently refuses further admissions.
     Journal(io::Error),
 }
 
@@ -137,40 +171,64 @@ impl std::error::Error for BrokerError {
     }
 }
 
+/// Host-only accounting snapshot; it does not expose capability handles.
 #[derive(Debug, Clone, Copy)]
 pub struct BrokerStats {
+    /// Whether durable accounting remains available.
     pub healthy: bool,
+    /// Current execution lifecycle.
     pub execution_state: ExecutionState,
+    /// Charged admissions in the current grant, including uncertain outcomes.
     pub current_grant_admissions: u32,
+    /// Currently admitted calls whose dispatch has not finished.
     pub in_flight: usize,
+    /// Request IDs retained in the execution's deduplication ledger.
     pub recorded_requests: usize,
 }
 
 /// Operator-only snapshot. It never contains the capability handle.
 #[derive(Debug, Serialize)]
 pub struct OperatorStatus {
+    /// Execution ID generated when this broker started.
     pub execution_id: String,
+    /// Owning principal from trusted configuration.
     pub principal_id: String,
+    /// Fresh broker-session ID.
     pub broker_session_id: String,
+    /// Full resource configuration frozen for this session.
     pub resource: ResourceIdentity,
+    /// Whether durable accounting remains available.
     pub healthy: bool,
+    /// Whether the execution can consider new admissions.
     pub running: bool,
+    /// Number of admitted calls still in flight.
     pub in_flight: usize,
     /// Includes conservative reservations whose journal commit was uncertain.
     pub total_admissions: usize,
+    /// Current grant metadata, without its capability.
     pub grant: Option<OperatorGrant>,
 }
 
+/// Serializable operator view of the current fixed-scope grant.
 #[derive(Debug, Serialize)]
 pub struct OperatorGrant {
+    /// Current grant identity.
     pub grant_id: String,
+    /// Explicit active/revoked state; expiry must also be considered.
     pub state: &'static str,
+    /// Fixed allowed HTTP method.
     pub method: &'static str,
+    /// Fixed allowed HTTP path.
     pub path: &'static str,
+    /// Maximum charged admissions for this grant.
     pub max_requests: u32,
+    /// Admissions charged to this grant.
     pub admissions: u32,
+    /// Unconsumed allowance; this does not establish that the grant is unexpired.
     pub remaining_requests: u32,
+    /// Wall-clock deadline in milliseconds since the Unix epoch.
     pub expires_at_ms: u128,
+    /// Whether delegation is allowed; always false in this version.
     pub delegation: bool,
 }
 
@@ -240,6 +298,8 @@ fn milliseconds(time: SystemTime) -> u128 {
 }
 
 impl Broker {
+    /// Create a fresh execution with secure IDs and durably record its start.
+    /// The journal must be private, fresh and outside workload-writable paths.
     pub fn start(
         config: BrokerConfig,
         journal: impl AuditJournal + 'static,
@@ -247,6 +307,7 @@ impl Broker {
         Self::start_with_clock(config, journal, Arc::new(SystemClock))
     }
 
+    /// Start with a trusted injectable clock, retaining normal admission behavior.
     pub fn start_with_clock(
         config: BrokerConfig,
         journal: impl AuditJournal + 'static,
@@ -298,6 +359,7 @@ impl Broker {
         Ok(broker)
     }
 
+    /// Host-generated identity permanently bound to this broker instance.
     pub fn execution_context(&self) -> &ExecutionContext {
         &self.context
     }
@@ -443,6 +505,7 @@ impl Broker {
         Ok(())
     }
 
+    /// Obtain current accounting under the admission lock, without mutation.
     pub fn stats(&self) -> Result<BrokerStats, BrokerError> {
         let state = self.lock()?;
         Ok(BrokerStats {
@@ -454,6 +517,7 @@ impl Broker {
         })
     }
 
+    /// Obtain a serializable operator snapshot without capability secrets.
     pub fn operator_status(&self) -> Result<OperatorStatus, BrokerError> {
         let state = self.lock()?;
         let now = self.clock.now();

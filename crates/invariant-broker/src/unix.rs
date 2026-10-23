@@ -17,8 +17,11 @@ use crate::{
     Broker, BrokerReply, MAX_IN_FLIGHT, MAX_RESPONSE_BYTES, RecordedOutcome, UpstreamError,
 };
 
+/// Maximum active connection workers per execution-bound listener.
 pub const MAX_SOCKET_CONNECTIONS: usize = MAX_IN_FLIGHT;
+/// Total deadline for reading or writing one framed message.
 pub const SOCKET_IO_TIMEOUT: Duration = Duration::from_secs(2);
+/// Maximum framed JSON response payload, including Base64 body expansion.
 pub const MAX_SOCKET_RESPONSE_BYTES: usize = MAX_RESPONSE_BYTES.div_ceil(3) * 4 + 1024;
 
 #[derive(Serialize)]
@@ -293,6 +296,7 @@ pub struct UnixBrokerServer {
 }
 
 impl UnixBrokerServer {
+    /// Create a private execution-bound endpoint below the host temporary directory.
     pub fn start(broker: Arc<Broker>) -> io::Result<Self> {
         Self::start_in(broker, std::env::temp_dir())
     }
@@ -361,6 +365,7 @@ impl UnixBrokerServer {
         })
     }
 
+    /// Workload effect socket; it exposes no operator grant or stop controls.
     pub fn socket_path(&self) -> &Path {
         &self.endpoint.socket
     }
