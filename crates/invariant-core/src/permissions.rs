@@ -16,6 +16,8 @@ pub struct CapabilityBinding {
 }
 
 impl CapabilityBinding {
+    /// Register a host-generated handle against the exact grant and execution.
+    /// This constructor does not generate entropy or authorize issuance.
     pub fn new(handle: impl Into<String>, grant: &Grant) -> Self {
         Self {
             handle: handle.into(),
@@ -35,9 +37,12 @@ impl fmt::Debug for CapabilityBinding {
     }
 }
 
+/// Host-owned execution lifecycle, supplied by the broker.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ExecutionState {
+    /// The execution can be considered for admission.
     Running,
+    /// The execution cannot admit new operations.
     Terminated,
 }
 
@@ -46,16 +51,22 @@ pub enum ExecutionState {
 /// configuration; `admitted_requests` counts admissions for this grant across
 /// all processes and connections, not the number of permission checks.
 ///
-/// The future broker must hold its admission lock while obtaining this state,
+/// The broker must hold its admission lock while obtaining this state,
 /// checking permission, and committing budget consumption. An `Allow` result
 /// must never be reused after this snapshot changes.
 #[derive(Debug, Clone, Copy)]
 pub struct AuthorizationState<'a> {
+    /// Identity bound to the workload's host-side channel.
     pub execution: &'a ExecutionContext,
+    /// Current lifecycle state of that execution.
     pub execution_state: ExecutionState,
+    /// Current full resource configuration.
     pub resource: &'a ResourceIdentity,
+    /// Current grant, if one exists.
     pub grant: Option<&'a Grant>,
+    /// Host registration of a capability for this grant, if available.
     pub capability: Option<&'a CapabilityBinding>,
+    /// Admissions charged across all processes and connections of this grant.
     pub admitted_requests: u32,
 }
 

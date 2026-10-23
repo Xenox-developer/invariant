@@ -3,6 +3,12 @@ name = "invariant-core"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+description = "Host-owned capability grants and fail-closed permission checks for INVARIANT"
+readme = "README.md"
+keywords = ["authorization", "capability", "policy"]
+categories = ["authentication"]
 
 [dependencies]
 serde.workspace = true

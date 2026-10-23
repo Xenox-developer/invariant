@@ -6,6 +6,8 @@ resolver = "3"
 version = "0.1.0"
 edition = "2024"
 license = "Apache-2.0"
+rust-version = "1.90"
+repository = "https://github.com/Xenox-developer/invariant"
 
 [workspace.dependencies]
 anyhow = "1.0.104"
