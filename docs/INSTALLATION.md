@@ -10,7 +10,7 @@ Rust libraries have their own [requirements](RUST_LIBRARY.md).
 ```sh
 python3 -m venv ~/.venvs/invariant
 . ~/.venvs/invariant/bin/activate
-python3 -m pip install "git+https://github.com/Xenox-developer/invariant.git@v0.3.0"
+python3 -m pip install "git+https://github.com/Xenox-developer/invariant.git@v0.3.1"
 invariant --version
 invariant setup
 invariant login

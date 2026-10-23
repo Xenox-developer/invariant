@@ -1,0 +1,96 @@
+name: Publish verified Python release
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing GitHub release tag, for example v0.3.1'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: publish-pypi
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.verify.outputs.version }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download and verify release distributions
+        id: verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        shell: python
+        run: |
+          import email.parser
+          import hashlib
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+          import tarfile
+          import zipfile
+
+          tag = os.environ['RELEASE_TAG']
+          if not re.fullmatch(r'v\d+\.\d+\.\d+', tag):
+              raise SystemExit('Expected a vMAJOR.MINOR.PATCH tag')
+          version = tag[1:]
+          names = [f'invariant_workspace-{version}-py3-none-any.whl',
+                   f'invariant_workspace-{version}.tar.gz']
+          subprocess.run(['gh', 'release', 'download', tag, '--dir', 'release',
+                          '--pattern', 'SHA256SUMS', '--pattern', names[0],
+                          '--pattern', names[1]], check=True)
+          sums = {}
+          for line in Path('release/SHA256SUMS').read_text().splitlines():
+              digest, name = line.split(maxsplit=1)
+              name = name.lstrip('*')
+              if name in sums or not re.fullmatch(r'[0-9a-f]{64}', digest):
+                  raise SystemExit('Invalid or duplicate release checksum')
+              sums[name] = digest
+          Path('dist').mkdir()
+          for name in names:
+              artifact = Path('release') / name
+              if hashlib.sha256(artifact.read_bytes()).hexdigest() != sums.get(name):
+                  raise SystemExit(f'Checksum mismatch: {name}')
+              if name.endswith('.whl'):
+                  with zipfile.ZipFile(artifact) as archive:
+                      metadata = archive.read(f'invariant_workspace-{version}.dist-info/METADATA')
+              else:
+                  with tarfile.open(artifact, 'r:gz') as archive:
+                      metadata = archive.extractfile(f'invariant_workspace-{version}/PKG-INFO').read()
+              parsed = email.parser.BytesParser().parsebytes(metadata)
+              if parsed['Name'] != 'invariant-workspace' or parsed['Version'] != version:
+                  raise SystemExit(f'Unexpected distribution metadata: {name}')
+              artifact.replace(Path('dist') / name)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f'version={version}\n')
+      - run: python -m pip install twine
+      - run: python -m twine check --strict dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verified-pypi-distributions
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
+  publish:
+    needs: verify
+    runs-on: ubuntu-24.04
+    environment:
+      name: pypi
+      url: https://pypi.org/project/invariant-workspace/${{ needs.verify.outputs.version }}/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: verified-pypi-distributions
+          path: dist/
+      - name: Publish to PyPI using its registered trusted publisher
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # release/v1

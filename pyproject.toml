@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "invariant-workspace"
-version = "0.3.0"
+version = "0.3.1"
 description = "Local parallel coding-agent experiments with isolated workspaces and reviewed changes"
 readme = "README.md"
 license = {text = "Apache-2.0"}

@@ -66,3 +66,6 @@ are preferable to changing existing meanings. Keep frozen evidence immutable and
 document migration/recovery for state changes. The [compatibility policy](docs/COMPATIBILITY.md)
 and [security policy](SECURITY.md) apply. Use issues for small reproducible feature
 proposals and private reporting for vulnerabilities. No response-time SLA is promised.
+
+Maintainers: see [registry publishing](docs/PUBLISHING.md) for the first-upload
+account setup, package names, release-asset verification and PyPI trusted publishing.

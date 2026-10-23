@@ -50,11 +50,11 @@ Use a virtual environment on the host:
 ```sh
 python3 -m venv ~/.venvs/invariant
 . ~/.venvs/invariant/bin/activate
-python3 -m pip install "git+https://github.com/Xenox-developer/invariant.git@v0.3.0"
+python3 -m pip install "git+https://github.com/Xenox-developer/invariant.git@v0.3.1"
 invariant --version
 ```
 
-Expected version: `invariant 0.3.0`. Git is needed for this installation method.
+Expected version: `invariant 0.3.1`. Git is needed for this installation method.
 Release wheels can also be installed with `python3 -m pip install /path/to/FILE.whl`;
 check their published SHA-256 values. No PyPI package or public container image
 publication is implied. See [installation, updates and removal](docs/INSTALLATION.md).

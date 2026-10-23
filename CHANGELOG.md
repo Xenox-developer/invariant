@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.1 — 2026-10-24
+
+Registry publication preparation. Runtime logic and state formats are unchanged.
+
+- Publish the policy library as `invariant-workspace-core` because the crates.io
+  name `invariant-core` belongs to an unrelated project. The Rust library/import
+  name remains `invariant_core`; dependency aliases preserve broker/supervisor imports.
+- Mark the internal supervisor as non-publishable.
+- Add a manual PyPI trusted-publishing workflow for verified GitHub release assets.
+- Preserve the original `v0.3.0` tag and its verification evidence.
+
 ## 0.3.0 — 2026-10-24
 
 Initial packaged open-source release preparation, building on the verified
