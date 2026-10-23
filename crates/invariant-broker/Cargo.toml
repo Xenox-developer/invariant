@@ -12,7 +12,7 @@ categories = ["authentication"]
 exclude = ["examples/python.rs", "tests/unix.rs"]
 
 [dependencies]
-invariant-core = { version = "0.1.0", path = "../invariant-core" }
+invariant-core = { package = "invariant-workspace-core", version = "0.1.0", path = "../invariant-core" }
 serde.workspace = true
 serde_json.workspace = true
 getrandom.workspace = true

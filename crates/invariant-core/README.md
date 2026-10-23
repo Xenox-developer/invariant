@@ -1,4 +1,4 @@
-# invariant-core
+# invariant-workspace-core
 
 Host-owned capability grants, bounded request parsing and permission checks for
 [INVARIANT](https://github.com/Xenox-developer/invariant).
@@ -10,13 +10,15 @@ network runtime requirement. Its scope remains the fixed mock invoice operation:
 
 ## Add to a Rust project
 
-The library is available from Git. A crates.io release has not been published.
+The Rust import name remains `invariant_core`. The registry package name is
+`invariant-workspace-core`: the shorter `invariant-core` name belongs to another project.
+Until registry publication completes, use this Git dependency:
 Commit the consuming project's `Cargo.lock` to retain the resolved Git revision,
 or add `rev` to pin the dependency to a reviewed commit.
 
 ```toml
 [dependencies]
-invariant-core = { git = "https://github.com/Xenox-developer/invariant.git" }
+invariant-core = { package = "invariant-workspace-core", git = "https://github.com/Xenox-developer/invariant.git" }
 ```
 
 ## Check a request
@@ -99,10 +101,10 @@ language or arbitrary HTTP scope is promised.
 From the repository root:
 
 ```sh
-cargo test --locked -p invariant-core
-cargo run --locked -p invariant-core --example model
-cargo doc --locked -p invariant-core --no-deps
-cargo package --locked -p invariant-core
+cargo test --locked -p invariant-workspace-core
+cargo run --locked -p invariant-workspace-core --example model
+cargo doc --locked -p invariant-workspace-core --no-deps
+cargo package --locked -p invariant-workspace-core
 ```
 
 The README example is also a Rust documentation test. See the repository's

@@ -13,7 +13,8 @@ import tempfile
 import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
-PACKAGES = ('invariant-core', 'invariant-broker')
+PACKAGES = ('invariant-workspace-core', 'invariant-broker')
+SOURCE_DIRECTORIES = {'invariant-workspace-core': 'invariant-core', 'invariant-broker': 'invariant-broker'}
 
 
 def source_hashes():
@@ -110,7 +111,7 @@ def main():
                     if (folder/notice).read_bytes() != (ROOT/notice).read_bytes():
                         raise ValueError(name+' has missing or outdated '+notice)
                 manifest = tomllib.loads((folder/'Cargo.toml').read_text())
-                if 'workspace' in manifest or (folder/'README.md').read_bytes() != (ROOT/'crates'/name/'README.md').read_bytes():
+                if 'workspace' in manifest or (folder/'README.md').read_bytes() != (ROOT/'crates'/SOURCE_DIRECTORIES[name]/'README.md').read_bytes():
                     raise ValueError('Package still depends on workspace metadata or has a stale README')
             report['checks'].append('archives contain standalone manifests, current READMEs and original notices')
 
@@ -118,9 +119,9 @@ def main():
             if (broker/'tests/unix.rs').exists() or (broker/'examples/python.rs').exists():
                 raise ValueError('Checkout-only Python integrations leaked into the Rust package')
 
-            # Both libraries are unpublished. Patch the normalized registry dependency
-            # to this exact extracted core, without editing either packaged manifest.
-            patch = ['--config', 'patch.crates-io.invariant-core.path='+json.dumps(str(extracted['invariant-core']))]
+            # Patch the normalized registry dependency independently of registry availability.
+            # Use this exact extracted core without editing either packaged manifest.
+            patch = ['--config', 'patch.crates-io.invariant-workspace-core.path='+json.dumps(str(extracted['invariant-workspace-core']))]
             for name in PACKAGES:
                 command(['generate-lockfile', *patch], cwd=extracted[name])
                 command(['test', '--locked', '--all-targets', *patch], cwd=extracted[name])
@@ -135,8 +136,8 @@ def main():
             for key in ('name', 'version', 'edition', 'rust-version'):
                 text.append(key+' = '+json.dumps(manifest['package'][key]))
             text += ['publish = false', '[workspace]', '[dependencies]']
-            text += [name+' = { path = '+json.dumps(str(extracted[name]))+' }' for name in PACKAGES]
-            text += ['[patch.crates-io]', 'invariant-core = { path = '+json.dumps(str(extracted['invariant-core']))+' }']
+            text += [('invariant-core' if name == 'invariant-workspace-core' else name)+' = { package = '+json.dumps(name)+', path = '+json.dumps(str(extracted[name]))+' }' for name in PACKAGES]
+            text += ['[patch.crates-io]', 'invariant-workspace-core = { path = '+json.dumps(str(extracted['invariant-workspace-core']))+' }']
             (consumer/'Cargo.toml').write_text('\n'.join(text)+'\n')
             command(['generate-lockfile'], cwd=consumer)
             command(['clippy', '--locked', '--all-targets', '--', '-D', 'warnings'], cwd=consumer)

@@ -1,5 +1,5 @@
 [package]
-name = "invariant-core"
+name = "invariant-workspace-core"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,6 +9,9 @@ description = "Host-owned capability grants and fail-closed permission checks fo
 readme = "README.md"
 keywords = ["authorization", "capability", "policy"]
 categories = ["authentication"]
+
+[lib]
+name = "invariant_core"
 
 [dependencies]
 serde.workspace = true

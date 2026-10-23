@@ -4,7 +4,7 @@ INVARIANT offers two independently consumable Rust libraries:
 
 | Crate | Use it for | Runtime requirements |
 |---|---|---|
-| [`invariant-core`](../crates/invariant-core/README.md) | Typed host identities, fixed-scope grants, bounded request parsing and read-only permission checks | Rust standard library and Serde; no external runtime |
+| [`invariant-workspace-core`](../crates/invariant-core/README.md) | Typed host identities, fixed-scope grants, bounded request parsing and read-only permission checks | Rust standard library and Serde; no external runtime |
 | [`invariant-broker`](../crates/invariant-broker/README.md) | Serialized admissions, durable audit, request deduplication, bounded HTTP dispatch and Unix effect sockets | Host filesystem and loopback/network access for admitted HTTP calls; Unix for sockets |
 
 Both require Rust 1.90 or newer. They are available as Git dependencies; no
@@ -16,7 +16,8 @@ invariant-broker = { git = "https://github.com/Xenox-developer/invariant.git" }
 ```
 
 Use `invariant_broker::core` to access the exact policy types used by the broker.
-Applications that only need policy checks can depend on `invariant-core` alone.
+Applications that only need policy checks can depend on `invariant-workspace-core`
+alone, using the dependency alias `invariant-core` to retain `invariant_core` imports.
 Commit the consuming application's lockfile or pin an explicit reviewed Git revision.
 
 ## Run an independent application

@@ -46,7 +46,7 @@ jobs:
           cargo clippy --locked --workspace --all-targets -- -D warnings
           cargo test --locked --workspace --all-targets
           cargo test --locked --workspace --doc
-          RUSTDOCFLAGS='-D warnings' cargo doc --locked -p invariant-core -p invariant-broker --no-deps
+          RUSTDOCFLAGS='-D warnings' cargo doc --locked -p invariant-workspace-core -p invariant-broker --no-deps
       - name: Verify packaged libraries from an independent consumer
         run: python3 -B scripts/test_rust_library.py --report .invariant/rust-library-checks/report.json
       - uses: actions/upload-artifact@v4

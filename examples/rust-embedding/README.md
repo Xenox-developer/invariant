@@ -1,7 +1,7 @@
 # Embed INVARIANT from another Rust project
 
 This is an independent Cargo project, outside INVARIANT's workspace. It connects
-the public `invariant-core` and `invariant-broker` Git dependencies, runs a local
+the public `invariant-workspace-core` and `invariant-broker` Git dependencies, runs a local
 mock HTTP server, and verifies one admission, duplicate handling, scope denial,
 revocation, capability redaction in the audit, and the Unix transport on Unix.
 

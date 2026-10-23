@@ -1,12 +1,13 @@
 [package]
 name = "invariant-supervisor"
+publish = false
 default-run = "invariant-supervisor"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 
 [dependencies]
-invariant-core = { path = "../invariant-core" }
+invariant-core = { package = "invariant-workspace-core", path = "../invariant-core" }
 invariant-broker = { path = "../invariant-broker" }
 serde.workspace = true
 serde_json.workspace = true

@@ -86,18 +86,10 @@ dependencies = [
  "base64",
  "getrandom",
  "httparse",
- "invariant-core",
+ "invariant-workspace-core",
  "serde",
  "serde_json",
  "sha2",
-]
-
-[[package]]
-name = "invariant-core"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -106,11 +98,19 @@ version = "0.1.0"
 dependencies = [
  "getrandom",
  "invariant-broker",
- "invariant-core",
+ "invariant-workspace-core",
  "libc",
  "serde",
  "serde_json",
  "sha2",
+]
+
+[[package]]
+name = "invariant-workspace-core"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
