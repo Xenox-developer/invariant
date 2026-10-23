@@ -33,13 +33,16 @@ def sync_tree(root):
 
 
 class ExperimentEngine:
-    def __init__(self, project=None, *, runtime=None, state=None, clock=time.time):
+    def __init__(self, project=None, *, runtime=None, state=None, clock=time.time, allow_restore=False):
         self.project = Path(project or Path.cwd()).resolve()
         try:
             workspace.load_project(self.project)
         except RuntimeError as error:
             raise ExperimentError('PROJECT_NOT_READY', str(error), 'Run invariant init in the project first.') from error
         self.state = Path(state) if state is not None else workspace.state_for(self.project)
+        if not allow_restore and (self.state/'restore-active.json').exists():
+            raise ExperimentError('RESTORE_RECOVERY_REQUIRED','An interrupted state restore needs reconciliation.',
+                                  'Run invariant experiment restore --recover. No model turn will be replayed.')
         if self.state.resolve().is_relative_to(self.project):
             raise ExperimentError('UNSAFE_STATE', 'Experiment state must live outside the original project.')
         self.root = self.state / 'experiments'

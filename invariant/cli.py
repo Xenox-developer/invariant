@@ -25,15 +25,18 @@ def docker(*args, capture=False):
 
 
 def main():
+    if len(sys.argv)>1 and sys.argv[1]=='doctor':
+        from .diagnostics import main as doctor_main
+        return doctor_main(sys.argv[2:])
     if len(sys.argv)>1 and sys.argv[1]=='environment':
         from .environment_cli import main as environment_main
         return environment_main(sys.argv[2:])
     if len(sys.argv) > 1 and sys.argv[1] == 'experiment':
         from .experiments.cli import main as experiment_main
         return experiment_main(sys.argv[2:])
-    parser = argparse.ArgumentParser(description="Create isolated agent workspaces or run bounded Python programs. Use invariant experiment --help for frozen studies.")
+    parser = argparse.ArgumentParser(description="Compare coding-agent configurations in isolated workspaces. Use invariant experiment --help, invariant environment --help or invariant doctor --json.")
     parser.add_argument('--version', action='version', version='invariant '+__version__)
-    parser.add_argument("command", choices=("setup", "init", "prepare", "run", "resume", "chats", "guardrails", "config", "demo", "test", "acceptance", "evidence", "status", "grant", "revoke", "stop"))
+    parser.add_argument("command", choices=("setup", "login", "init", "prepare", "run", "resume", "chats", "guardrails", "config", "demo", "test", "acceptance", "evidence", "status", "grant", "revoke", "stop"))
     parser.add_argument("target", nargs="?", help="model for agent run; chat ID for resume (omit for latest); Python file or execution ID")
     parser.add_argument("config_key", nargs="?", help="setting name for config set")
     parser.add_argument("config_value", nargs="?", help="setting value for config set")
@@ -63,8 +66,21 @@ def main():
         return config_main(args.target, args.config_key, args.config_value, machine=args.json)
     if args.config_key is not None or args.config_value is not None:
         parser.error("unexpected arguments; additional positional arguments apply only to config set")
-    if args.check and args.command != "setup":
-        parser.error("--check applies only to setup")
+    if args.check and args.command not in ("setup","login"):
+        parser.error("--check applies only to setup or login")
+    if args.command=='login':
+        if args.target or args.agent or args.effort or args.no_grant or args.step or args.auto or args.duration is not None:
+            parser.error('login takes only --check and --json')
+        from .dependencies import find_codex, probe_codex
+        status=probe_codex()
+        if status['status']!='ready':raise RuntimeError('Run invariant setup before signing in.')
+        if args.check or args.json:
+            result=subprocess.run([find_codex(),'login','status'],capture_output=True,text=True,timeout=15)
+            data={'host_cli_signed_in':result.returncode==0,'native_account_requirement':'ChatGPT; verified during native preflight'}
+            print(json.dumps({'schema_version':1,'ok':True,'data':data,'error':None}) if args.json else
+                  'Host Codex is signed in.' if data['host_cli_signed_in'] else 'Run invariant login to sign in with ChatGPT.')
+            return result.returncode
+        return subprocess.run([find_codex(),'login'],timeout=600).returncode
     if args.command == "guardrails":
         if args.target or args.agent or args.effort is not None or args.no_grant or args.step or args.auto or args.duration is not None:
             parser.error("guardrails takes only --json; run it inside your initialized project")
@@ -211,7 +227,10 @@ def entrypoint():
     try:
         sys.exit(main())
     except (subprocess.SubprocessError, OSError, RuntimeError) as error:
-        print(f"INVARIANT launcher: {error}", file=sys.stderr)
+        if '--json' in sys.argv:
+            record=error.record() if hasattr(error,'record') else {'code':'LAUNCHER_ERROR','message':str(error),'recovery':'Run invariant doctor for readiness checks.'}
+            print(json.dumps({'schema_version':1,'ok':False,'data':None,'error':record}))
+        else:print(f"INVARIANT launcher: {error}", file=sys.stderr)
         sys.exit(1)
 
 

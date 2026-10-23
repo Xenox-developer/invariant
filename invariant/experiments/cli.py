@@ -5,6 +5,7 @@ import json
 import sqlite3
 import subprocess
 import sys
+import tarfile
 
 from ..codex_rpc import inert
 from .engine import ExperimentEngine
@@ -40,6 +41,16 @@ def main(arguments=None):
     exporting.add_argument('--format',choices=('markdown','json','csv'),default='markdown')
     exporting.add_argument('--output',help='new output file; existing files are never overwritten')
     for field in ('task','diff','logs'):exporting.add_argument('--include-'+field,action='store_true')
+    commands.add_parser('storage',help='show study, shared baseline and Docker image sizes')
+    cleaning=commands.add_parser('cleanup',help='preview retention cleanup; selection, references and running work are protected')
+    cleaning.add_argument('--older-than-days',type=float,default=30)
+    cleaning.add_argument('--confirm',action='store_true')
+    backing=commands.add_parser('backup',help='private backup of stopped experiments and exact Docker images; host authentication omitted')
+    backing.add_argument('--output',required=True,help='new private archive outside the project and live state')
+    restoring=commands.add_parser('restore',help='restore your private backup at the same project/state path')
+    restoring.add_argument('archive',nargs='?')
+    restoring.add_argument('--replace',action='store_true',help='retain old state in a private sibling before replacement')
+    restoring.add_argument('--recover',action='store_true',help='reconcile an interrupted state swap without executing work')
     for name in ('init', 'validate', 'run', 'preflight'):
         command = commands.add_parser(name)
         command.add_argument('file', nargs='?' if name=='init' else None, help='project-relative experiment JSON file; omit for guided setup')
@@ -104,12 +115,25 @@ def main(arguments=None):
     selection.add_argument('--request-id', help='idempotency key for this selection update')
     try:
         args = parser.parse_args(arguments)
-        engine = None if args.command == 'demo' else ExperimentEngine()
+        engine = None if args.command == 'demo' else ExperimentEngine(allow_restore=True) if args.command=='restore' else ExperimentEngine()
         if args.command == 'demo':
             from . import demo
             result = demo.create(args.directory, model=args.model, efforts=args.efforts)
             if args.run:
                 result = demo.execute(result)
+        elif args.command == 'backup':
+            from .backup import backup
+            result=backup(engine,args.output)
+        elif args.command == 'restore':
+            from .backup import restore
+            if args.recover and (args.archive or args.replace):raise ExperimentError('INVALID_ARGUMENTS','--recover takes no archive or replacement flag.')
+            result=restore(engine,args.archive,replace=args.replace,recover=args.recover)
+        elif args.command == 'storage':
+            from .storage import overview
+            result=overview(engine)
+        elif args.command == 'cleanup':
+            from .storage import cleanup
+            result=cleanup(engine,older_than_days=args.older_than_days,confirm=args.confirm)
         elif args.command == 'export':
             from .exporting import export
             result=export(engine,args.identifier,format=args.format,output=args.output,
@@ -211,14 +235,16 @@ def main(arguments=None):
             elif sys.stdin.isatty() and (args.command=='review' or args.command=='init' and result.get('study_id')):
                 from .review import interact
                 interact(engine,result.get('study_id') or args.identifier)
-        return 1 if result.get('ready') is False or result.get('termination_confirmed') is False or result.get('unresolved_attempt_ids') else 0
+        return 1 if result.get('errors') or result.get('ready') is False or result.get('termination_confirmed') is False or result.get('unresolved_attempt_ids') else 0
     except EOFError:
         return 0  # Closing the guided demo prompt never discards saved work.
     except (KeyboardInterrupt, BrokenPipeError):
         if not machine and 'frame' in locals() and not isinstance(sys.exc_info()[1], BrokenPipeError):
             print('\nResume logs: invariant experiment logs ' + args.identifier + ' --follow --after ' + frame['cursor'])
         return 130
-    except (ExperimentError, OSError, RuntimeError, sqlite3.Error, subprocess.SubprocessError, ValueError, KeyError, TypeError) as error:
+    except (ExperimentError, OSError, RuntimeError, sqlite3.Error, subprocess.SubprocessError, ValueError, KeyError, TypeError, tarfile.TarError) as error:
+        if isinstance(error,tarfile.TarError):
+            error=ExperimentError('INVALID_BACKUP','The backup archive is incomplete or invalid.','Restore an intact private archive; current state was kept.')
         if not isinstance(error, ExperimentError):
             code = 'CORRUPT_STATE' if isinstance(error,(ValueError,KeyError,TypeError)) else 'STATE_UNAVAILABLE' if isinstance(error, (OSError, sqlite3.Error)) else 'PREPARATION_FAILED'
             deleting = 'args' in locals() and args.command == 'delete'
