@@ -1,0 +1,13 @@
+[package]
+name = "invariant-embedding-example"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.90"
+publish = false
+
+# Keep this example independent of INVARIANT's workspace and lockfile.
+[workspace]
+
+[dependencies]
+invariant-core = { git = "https://github.com/Xenox-developer/invariant.git" }
+invariant-broker = { git = "https://github.com/Xenox-developer/invariant.git" }

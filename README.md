@@ -35,6 +35,12 @@ without modifying project files. Continue with `experiment continue STUDY_ID --p
 review `experiment diff STUDY_ID` and `experiment apply STUDY_ID --dry-run` before
 `experiment apply --plan PLAN_ID`. See the [assistant workflow](docs/experiments/ASSISTANT_GUIDE.md).
 
+To embed the permission model and broker in a Rust application, see the
+[Rust libraries guide](docs/RUST_LIBRARY.md) and the
+[standalone embedding example](examples/rust-embedding/README.md).
+`invariant-core` and `invariant-broker` require Rust 1.90+ and can be used
+independently of Docker, Python and Codex.
+
 This checkout also provides controlled Codex workspaces and isolated Python
 executions. The instructions below describe those existing features. Their earlier
 requirements are preserved in the [legacy contract](docs/LEGACY_MVP_CONTRACT.md);

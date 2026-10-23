@@ -15,7 +15,20 @@ PYTHONPATH=sdk/python python3 -B -m unittest discover -s sdk/python/tests -q
 cargo fmt --all -- --check
 cargo clippy --locked --workspace --all-targets -- -D warnings
 cargo test --locked --workspace --all-targets
+cargo test --locked --workspace --doc
 ```
+
+For Rust library changes, also run the independent package/consumer check:
+
+```sh
+python3 -B scripts/test_rust_library.py
+```
+
+It packages both crates from a source export, verifies their LICENSE/NOTICE and
+README files, and runs Rust tests and an external embedding application against
+the extracted archives. No Docker, Codex or model calls are needed. Add
+`--toolchain 1.90.0 --offline` to use the installed minimum toolchain and cached
+dependencies. See [the Rust libraries guide](docs/RUST_LIBRARY.md).
 
 Run Docker integration gates serially on a disposable test host, with no ordinary legacy
 broker session active. Fixtures scope cleanup to their own state. Never use a global
