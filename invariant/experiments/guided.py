@@ -149,6 +149,13 @@ def create(engine, path=None, *, task, test_command, test_paths, name='compariso
 def execute(engine, info, *, request_id=None):
     from .cli import wait_study
     key = 'guided-run-'+digest({'definition':info['definition'], 'request_id':request_id})
+    if not engine.store.lookup_request(key):
+        from .preflight import check
+        baseline=check(engine,info['definition'],request_id=key)
+        print('Baseline preflight: '+baseline['study_id']+' — no model turns. '+baseline['next'],file=sys.stderr,flush=True)
+        if not baseline['ready']:
+            raise ExperimentError('PREFLIGHT_FAILED','Shared tests could not run reliably before model trials.',
+                                  baseline['next'],details={'study_id':baseline['study_id']})
     study = engine.submit(info['definition'], request_id=key)
     print('Study: '+study['id']+' — results persist after closing this viewer.', file=sys.stderr,flush=True)
     engine.launch(study['id']); wait_study(engine,study['id'])
@@ -192,8 +199,11 @@ paths; quote each --test-path containing spaces. Include test configuration/mani
 those paths if they must stay fixed too. The selected list of test files is generated at
 setup; create a new setup to include new test files. Existing tools/dependencies come from
 the project's prepared image and captured files. INVARIANT does not guess a language,
-install packages or enable networking. Prepare dependencies in invariant run first if
-needed. Use invariant config/guardrails to inspect actual project limits and networking.
+install packages or enable networking. Prepare dependencies with invariant environment
+prepare --command "YOUR_LINUX_SETUP_COMMAND", or in invariant run first if needed.
+Guided runs check the baseline evaluator before model calls; ordinary red tests are
+allowed, while unavailable commands or broken evaluation block the run.
+Use invariant config/guardrails to inspect actual project limits and networking.
 Run invariant setup and invariant prepare --agent codex if prerequisites are missing.
 Reusing a setup request key returns its existing files; it never starts an additional turn
 or replaces edited files. Change settings using a new definition path and request key.

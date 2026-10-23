@@ -25,6 +25,9 @@ def docker(*args, capture=False):
 
 
 def main():
+    if len(sys.argv)>1 and sys.argv[1]=='environment':
+        from .environment_cli import main as environment_main
+        return environment_main(sys.argv[2:])
     if len(sys.argv) > 1 and sys.argv[1] == 'experiment':
         from .experiments.cli import main as experiment_main
         return experiment_main(sys.argv[2:])

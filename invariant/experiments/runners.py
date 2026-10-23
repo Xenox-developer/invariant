@@ -96,7 +96,7 @@ def stop_owned(context, *, inspect_timeout=3):
 
 def reclaim_private(context):
     """Return stopped Linux trial files to the operator, without running agent software."""
-    if sys.platform != 'linux':
+    if getattr(context, 'checkpoint_owner', None) is None or sys.platform != 'linux':
         return  # Docker Desktop maps bind-mount ownership to the host user.
     roots = [context.workspace]
     if context.output_directory is not None:

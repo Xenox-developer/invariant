@@ -35,7 +35,7 @@ def main(arguments=None):
     demo.add_argument('--model', help='one supported model for all three configurations; omit for account default')
     demo.add_argument('--efforts', nargs=3, metavar='LEVEL', help='three distinct supported efforts; default: low medium high')
     demo.add_argument('--run', action='store_true', help='run/reopen the saved demo; up to three real model turns on its first run')
-    for name in ('init', 'validate', 'run'):
+    for name in ('init', 'validate', 'run', 'preflight'):
         command = commands.add_parser(name)
         command.add_argument('file', nargs='?' if name=='init' else None, help='project-relative experiment JSON file; omit for guided setup')
         if name == 'init':
@@ -56,6 +56,7 @@ def main(arguments=None):
             command.add_argument('--request-id', help='idempotency key for durable study creation')
             command.add_argument('--create-only', action='store_true', help='freeze/queue without executing')
             command.add_argument('--wait', action='store_true', help='wait for the detached study; Ctrl+C only closes the viewer')
+        if name == 'preflight':command.add_argument('--request-id')
     for name in ('execute', 'results', 'logs', 'stop', 'recover', 'retry', 'delete', 'diff', 'continue'):
         command = commands.add_parser(name)
         command.add_argument('identifier')
@@ -104,6 +105,9 @@ def main(arguments=None):
             result = demo.create(args.directory, model=args.model, efforts=args.efforts)
             if args.run:
                 result = demo.execute(result)
+        elif args.command == 'preflight':
+            from .preflight import check
+            result=check(engine,args.file,request_id=args.request_id)
         elif args.command == 'init':
             guided = args.file is None or args.guided or any(getattr(args,k) is not None for k in
                 ('task','test_command','test_path','model','efforts','variant','name','max_parallel')) or args.run or args.test_timeout!=120
@@ -198,7 +202,7 @@ def main(arguments=None):
             elif sys.stdin.isatty() and (args.command=='review' or args.command=='init' and result.get('study_id')):
                 from .review import interact
                 interact(engine,result.get('study_id') or args.identifier)
-        return 1 if result.get('termination_confirmed') is False or result.get('unresolved_attempt_ids') else 0
+        return 1 if result.get('ready') is False or result.get('termination_confirmed') is False or result.get('unresolved_attempt_ids') else 0
     except EOFError:
         return 0  # Closing the guided demo prompt never discards saved work.
     except (KeyboardInterrupt, BrokenPipeError):

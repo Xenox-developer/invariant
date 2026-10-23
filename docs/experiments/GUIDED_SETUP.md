@@ -99,7 +99,11 @@ inspect/share them, but do not need to write or edit their JSON.
 The architecture accepts any stack with Linux-compatible commands. Tools/dependencies
 must exist in the project's prepared image or captured files. INVARIANT does not guess
 a language or install packages during setup. If needed, prepare dependencies in an
-ordinary `invariant run` session first, then exit it before capturing an experiment.
+ordinary `invariant run` session first, or run an explicit command with
+`invariant environment prepare --command "YOUR_LINUX_SETUP_COMMAND"`.
+Guided runs now evaluate an untouched baseline before model calls; red tests are
+allowed, unavailable commands and broken evaluation block the run. See
+[environment preparation and preflight](../ENVIRONMENT_PREPARATION.md).
 Project networking and resource limits continue to apply; see `invariant config` and
 `invariant guardrails`. Prerequisites: running Docker, host Codex ChatGPT sign-in and
 `invariant prepare --agent codex`. Unsupported model/effort settings fail without fallback.
