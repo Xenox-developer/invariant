@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "INVARIANT comparison report v1",
+  "type": "object",
+  "required": ["schema_version", "kind", "invariant_version", "study_id", "state", "attempt_policy", "attempts", "summary", "selection", "limitations"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "invariant-comparison"},
+    "invariant_version": {"type": "string"},
+    "study_id": {"type": "string"},
+    "state": {"type": "string"},
+    "attempt_policy": {"const": "first_attempt"},
+    "attempts": {"type": "array", "items": {"type": "object", "required": ["trial_id", "attempt_id", "attempt_number", "comparison_attempt", "passed", "total_tokens"], "properties": {"attempt_number": {"type": "integer", "minimum": 1}, "comparison_attempt": {"type": "boolean"}, "passed": {"type": ["boolean", "null"]}, "total_tokens": {"type": ["number", "null"]}}}},
+    "summary": {"type": "object"},
+    "selection": {"type": "object"},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}

@@ -35,6 +35,11 @@ def main(arguments=None):
     demo.add_argument('--model', help='one supported model for all three configurations; omit for account default')
     demo.add_argument('--efforts', nargs=3, metavar='LEVEL', help='three distinct supported efforts; default: low medium high')
     demo.add_argument('--run', action='store_true', help='run/reopen the saved demo; up to three real model turns on its first run')
+    exporting=commands.add_parser('export',help='export a summary report; private task/diff/log content requires explicit flags')
+    exporting.add_argument('identifier')
+    exporting.add_argument('--format',choices=('markdown','json','csv'),default='markdown')
+    exporting.add_argument('--output',help='new output file; existing files are never overwritten')
+    for field in ('task','diff','logs'):exporting.add_argument('--include-'+field,action='store_true')
     for name in ('init', 'validate', 'run', 'preflight'):
         command = commands.add_parser(name)
         command.add_argument('file', nargs='?' if name=='init' else None, help='project-relative experiment JSON file; omit for guided setup')
@@ -105,6 +110,10 @@ def main(arguments=None):
             result = demo.create(args.directory, model=args.model, efforts=args.efforts)
             if args.run:
                 result = demo.execute(result)
+        elif args.command == 'export':
+            from .exporting import export
+            result=export(engine,args.identifier,format=args.format,output=args.output,
+                include_task=args.include_task,include_diff=args.include_diff,include_logs=args.include_logs)
         elif args.command == 'preflight':
             from .preflight import check
             result=check(engine,args.file,request_id=args.request_id)
@@ -228,7 +237,9 @@ def main(arguments=None):
 
 
 def render(command, result):
-    if command == 'demo':
+    if command=='export':
+        print(result.get('content') or ('Saved '+result['format']+' report: '+result['output']),end='' if result.get('content') else '\n')
+    elif command == 'demo':
         from .demo import present
         present(result)
     elif command == 'init':
