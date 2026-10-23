@@ -38,8 +38,7 @@ at least two trial slots. Release verification can take tens of minutes.
 ```sh
 # Local fixtures, without provider calls. Exit 2 means release evidence is incomplete.
 invariant experiment acceptance
-# Full local verification: authorizes seven small real turns (two variants,
-# two parent/child turns and three ordinary-chat resume turns).
+# Full local verification: authorizes fifteen small real turns, including guided/demo.
 invariant experiment acceptance --live MODEL_NAME --effort medium
 ```
 
@@ -50,3 +49,20 @@ See [release verification](docs/experiments/ACCEPTANCE.md),
 Report a reproducible problem with sanitized study/attempt IDs, structured error codes,
 platform identity and the relevant report. Review evidence for project content before
 sharing it. Private workspace state and actual provider transcripts do not belong in Git.
+
+The [Python workflow](.github/workflows/python.yml) checks Python 3.11–3.15 on
+Linux/macOS, builds sdist → wheel and exercises an installation outside the
+checkout. Run `python3 -B scripts/test_distribution.py` locally; `--docker`
+additionally verifies the installed legacy demo against real containers.
+
+Open-source release checks also cover dependency preparation, baseline preflight,
+reports, backup/restore and retention. The full release profile's explicit live
+option additionally runs the guided setup and demo checks; see acceptance docs
+for the exact model-turn count. No provider calls run in ordinary CI fixtures.
+
+For a contribution, explain the concrete problem and resulting workflow, include
+appropriate regression evidence, and use the PR template. Additive JSON fields
+are preferable to changing existing meanings. Keep frozen evidence immutable and
+document migration/recovery for state changes. The [compatibility policy](docs/COMPATIBILITY.md)
+and [security policy](SECURITY.md) apply. Use issues for small reproducible feature
+proposals and private reporting for vulnerabilities. No response-time SLA is promised.

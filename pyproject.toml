@@ -24,7 +24,7 @@ invariant = "invariant.cli:entrypoint"
 include = ["invariant*"]
 
 [tool.setuptools.package-data]
-invariant = ["assets/*", "_legacy/**/*"]
+invariant = ["assets/*", "assets/**/*", "_legacy/**/*"]
 
 [tool.setuptools.cmdclass]
 build_py = "_build.BuildPy"

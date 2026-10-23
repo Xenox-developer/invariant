@@ -65,9 +65,17 @@ def main():
             command([str(cli),'config','--json'],cwd=project,env=env)
             command([str(cli),'chats','--json'],cwd=project,env=env)
             command([str(cli),'experiment','demo',str(work/'demo'),'--json'],cwd=project,env=env)
+            for language in ('python','javascript'):
+                destination=work/(language+'-example')
+                command([str(cli),'experiment','example',language,str(destination),'--json'],cwd=project,env=env)
+                assert (destination/'task.md').is_file() and (destination/'tests').is_dir()
+                if language=='javascript':assert (destination/'package-lock.json').is_file()
+            doctor=subprocess.run([str(cli),'doctor','--json'],cwd=work,env=env,capture_output=True,text=True,timeout=30)
+            assert doctor.returncode in (0,1) and json.loads(doctor.stdout)['ok'],doctor.stderr
             report['checks']=['sdist builds a complete wheel','fresh installed version/help and project commands',
                 'legacy source resources and examples are installed','maintainer command fails clearly without checkout',
-                'installed native demo scaffolds without provider calls']
+                'installed native demo scaffolds without provider calls',
+                'packaged Python/JavaScript examples generate outside a checkout','installed diagnostics produce a safe JSON report']
             if args.docker:
                 command([str(cli),'prepare'],cwd=project,env=env,timeout=1200)
                 command([str(cli),'demo','--auto'],cwd=project,env=env,timeout=600)

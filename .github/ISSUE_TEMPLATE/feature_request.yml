@@ -1,0 +1,22 @@
+name: Feature request
+description: Describe a concrete workflow improvement.
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Workflow and problem
+      description: What are you trying to do and where does the current tool stop helping?
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Proposed behavior
+      description: A small command/input/output example and what would count as success.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Existing workarounds and compatibility
+      description: Current workaround, affected interfaces and data/migration considerations.

@@ -1,0 +1,25 @@
+name: Bug report
+description: Report a reproducible problem with sanitized diagnostics.
+body:
+  - type: markdown
+    attributes:
+      value: "For security vulnerabilities use private reporting in SECURITY.md. Do not upload credentials, raw private backups or unreviewed logs."
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Command, minimal project/setup, expected result and actual result.
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Version and diagnostics
+      description: INVARIANT version, host platform and sanitized invariant doctor --json output.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Relevant evidence
+      description: Error code, sanitized study/attempt IDs and reviewed report excerpts.

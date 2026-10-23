@@ -1,356 +1,227 @@
 # INVARIANT
 
-INVARIANT is moving toward parallel agent experiments: define several configurations
-in one project, run them independently, compare their results, and bring back the
-changes you choose. Humans and AI assistants use the same commands and state.
+**Compare coding-agent configurations locally, then keep the changes you choose.**
 
-The target behavior is specified in the updated [MVP contract](MVP_CONTRACT.md)
-and [implementation plan](docs/IMPLEMENTATION_PLAN.md). **M0–M5 support frozen studies, detached parallel command/native Codex trials,
-evaluation, comparison, stop controls, recovery, explicit retries, resumable logs and
-revision-checked selection, continuation with saved tools, and recoverable apply plans.
-M6 adds the P01–P21 release verification command. Full release acceptance requires fresh
-live Codex and actual macOS/Linux host evidence. The GitHub Actions workflow supplies
-Linux fixture evidence for the same-source release gate.** See [the implemented experiment interface](docs/experiments/README.md),
-[the clean-install quickstart](docs/experiments/QUICKSTART.md), and
-[release verification](docs/experiments/ACCEPTANCE.md). Original source is Apache-2.0.
+Run the same task in independent Linux workspaces, evaluate each result with the
+same frozen checks, compare quality/time/token usage, and continue or apply a
+selected result. People and AI assistants use the same commands and saved state.
 
-Try a real three-configuration coding study in a separate folder:
+[![Python checks](https://github.com/Xenox-developer/invariant/actions/workflows/python.yml/badge.svg)](https://github.com/Xenox-developer/invariant/actions/workflows/python.yml)
+[![Rust libraries](https://github.com/Xenox-developer/invariant/actions/workflows/rust-libraries.yml/badge.svg)](https://github.com/Xenox-developer/invariant/actions/workflows/rust-libraries.yml)
 
-```sh
-invariant experiment demo ~/invariant-codex-demo --run
-```
+[Documentation](docs/experiments/README.md) · [Examples](examples/projects/README.md) ·
+[Issues](https://github.com/Xenox-developer/invariant/issues) ·
+[Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Apache-2.0](LICENSE)
 
-Compare shared test results, runtime and token usage, then choose a result to continue
-or review/apply. Requires prepared Docker and host Codex ChatGPT sign-in; the first run
-uses three real model turns. Omit `--run` to inspect the files first. See the
-[guided Codex experiment demo](docs/experiments/DEMO.md).
+## What you get
 
-For your own initialized project, run `invariant experiment init` and answer the setup
-prompts. Supply `--task`, `--test-command`, `--test-path` and configuration flags with
-`--json` for the same workflow through an assistant. No authored configuration files
-are required. Reopen saved runs with `invariant experiment review STUDY_ID` to select,
-continue with a new task, or review/apply. See [guided project setup](docs/experiments/GUIDED_SETUP.md).
+- One frozen project snapshot and shared prepared image; separate files,
+  conversations and writable environment layers for each trial.
+- Native Codex model/effort comparisons or any Linux command-based agent harness.
+- Captured evaluators, explicit missing results and separate retry history.
+- Detached execution, resumable logs, bounded stop and explicit recovery.
+- Saved selection and continuation with the chosen files and installed tools.
+- Diff review and a destination-checked apply plan before project writes.
+- Markdown/JSON/CSV reports, storage retention, private backups and diagnostics.
 
-```sh
-invariant experiment init experiments/compare.json
-invariant experiment validate experiments/compare.json
-invariant experiment run experiments/compare.json --request-id comparison-001
-invariant experiment status --request-id comparison-001 --json
-invariant experiment results STUDY_ID
-invariant experiment logs STUDY_ID --follow
-invariant experiment stop STUDY_ID
-```
+**Status: beta, 0.3.x.** Interfaces and known limitations are documented; release
+checks apply to the exact recorded source. See [release evidence](docs/RELEASE_VERIFICATION.md)
+and [compatibility](docs/COMPATIBILITY.md).
 
-Run these inside an initialized project with a prepared general Linux image. Submission
-returns after queuing trials for a detached controller. Closing the terminal or log viewer leaves work running. Add `--wait` to wait for completion. Use `run FILE --create-only` to
-freeze without dispatching, then `invariant experiment execute STUDY_ID` to run that
-frozen study. Use `recover STUDY_ID` after a controller crash, and `retry TRIAL_ID`
-for an explicit new attempt. The starter has two no-op variants to replace with your harness and settings.
-Use `experiment init experiments/codex.json --runner codex` for captured Codex prompts
-and model/effort variants. `experiment select TRIAL_ID --if-revision REV` saves a choice
-without modifying project files. Continue with `experiment continue STUDY_ID --prompt-file next.txt`;
-review `experiment diff STUDY_ID` and `experiment apply STUDY_ID --dry-run` before
-`experiment apply --plan PLAN_ID`. See the [assistant workflow](docs/experiments/ASSISTANT_GUIDE.md).
+## Requirements
 
-To embed the permission model and broker in a Rust application, see the
-[Rust libraries guide](docs/RUST_LIBRARY.md) and the
-[standalone embedding example](examples/rust-embedding/README.md).
-`invariant-core` and `invariant-broker` require Rust 1.90+ and can be used
-independently of Docker, Python and Codex.
+| Requirement | Details |
+|---|---|
+| Host | macOS or Linux; full host evidence targets macOS arm64 and Linux x86_64 |
+| Python | 3.11 or newer; see the Python CI matrix for individually checked versions |
+| Docker | Running Linux-container engine; Docker Desktop on macOS |
+| Native agent | Supported Codex CLI 0.163.0, including supported prereleases, and host ChatGPT sign-in |
+| Resources | Room for container images and full workspace copies; effective parallelism depends on Docker CPU/RAM |
 
-This checkout also provides controlled Codex workspaces and isolated Python
-executions. The instructions below describe those existing features. Their earlier
-requirements are preserved in the [legacy contract](docs/LEGACY_MVP_CONTRACT.md);
-the existing acceptance suite does not establish acceptance of the new experiment MVP.
+`invariant setup` checks Docker/Codex and offers missing installations. Rust,
+Node/npm and a globally installed Codex are not required for the Python CLI.
+Codex can be installed privately for INVARIANT. Your project's tools run inside
+Linux; prepare the dependencies your task needs. Windows workspaces are unsupported.
 
-New agent projects get a **persistent, general-purpose Linux environment**.
-The agent can install any Linux-compatible toolchains, package managers and
-applications normally. The whole filesystem and home survive run/resume;
-there are no language-specific runtime profiles. See [the architecture](docs/ENVIRONMENT_ARCHITECTURE.md).
+## Install
 
-## Start a Codex workspace
-
-Install this checkout once with Python 3.11 or newer:
+Use a virtual environment on the host:
 
 ```sh
-python3 -m pip install -e /path/to/invariant
+python3 -m venv ~/.venvs/invariant
+. ~/.venvs/invariant/bin/activate
+python3 -m pip install "git+https://github.com/Xenox-developer/invariant.git@v0.3.0"
+invariant --version
 ```
 
-Check and install the host tools once:
+Expected version: `invariant 0.3.0`. Git is needed for this installation method.
+Release wheels can also be installed with `python3 -m pip install /path/to/FILE.whl`;
+check their published SHA-256 values. No PyPI package or public container image
+publication is implied. See [installation, updates and removal](docs/INSTALLATION.md).
+
+## Quickstart: three real Codex configurations
 
 ```sh
 invariant setup
+invariant login
+invariant prepare --agent codex
+invariant experiment demo ~/invariant-codex-demo --run
 ```
 
-Setup detects existing Codex and Docker installations, offers missing downloads,
-and checks that Docker is running. On macOS it can install Docker Desktop in
-`~/Applications`; finish Docker's first-launch setup in its own window. Codex
-can be installed privately for INVARIANT without Node/npm or changing your
-existing CLI. Agent `run` and `resume` also offer setup when needed.
-Use `invariant setup --check` for a read-only check, or add `--json` for scripts.
-See [guided setup](docs/SETUP.md) for platform support and installation details.
+This creates a separate project, asks three Codex configurations to implement one
+calendar utility, and evaluates every result with the same 23 checks. Compare the
+observed test verdict, runtime and reported tokens. Choose a result to inspect,
+continue or review/apply; nothing is automatically declared the winner.
 
-Then create a project:
+**The first run uses three real model turns from your signed-in account.** A
+continuation uses another turn. Configurations share provider limits. Omit `--run`
+to create and inspect the demo without Docker, sign-in or model calls. Repeating
+the same demo command reopens its saved study without replaying completed turns.
+Closing the viewer leaves detached work running.
+
+[Detailed demo](docs/experiments/DEMO.md) ·
+[Command-only quickstart with no model calls](docs/experiments/QUICKSTART.md)
+
+## Use your own project
+
+Inside your project:
 
 ```sh
-mkdir my-project
-cd my-project
 invariant init
-invariant run
+invariant experiment init
 ```
 
-The first run chooses the default model advertised by your Codex account and
-remembers its confirmed model and effort for this project. It prepares an image;
-file-based Codex sign-in is reused when available, otherwise the terminal shows
-a ChatGPT sign-in link. Chat with Codex at `You>`. Files persist in the project.
-Use `/exit` to finish, Ctrl+C to interrupt a turn, or `invariant status` and
-`invariant stop SESSION_ID` from another terminal in this project. Sessions
-in new projects default to one hour; `--duration SECONDS` overrides one session.
-Existing projects keep their previous settings.
-To switch an existing project, run `invariant config set profile codex-environment-v2`,
-then run or resume again.
+Answer prompts for the task, Linux test command, fixed test paths and configurations.
+The guided run checks the baseline evaluator before model calls. Ordinary red tests
+are allowed; missing commands, timeouts and broken evaluation block the run.
 
-Choose reasoning effort with `--effort`:
+For scripts or assistants, provide the same inputs as flags:
 
 ```sh
-invariant run --model gpt-6.1-sol --effort high
+invariant experiment init --name caching \
+  --task "Implement caching while preserving the existing behavior" \
+  --test-command "npm test" --test-path tests --test-path package.json \
+  --request-id caching-v1 --run --json
 ```
 
-Available levels depend on the selected model and account. INVARIANT validates
-the level against Codex's model catalog and shows the confirmed effort at
-startup. Later, plain `invariant run` reuses these confirmed settings. A newly
-selected model starts with its own default effort unless you pass `--effort`.
-The original `run --agent codex MODEL` form remains supported.
+Replace the command and paths with your actual project. Use repeated `--variant
+MODEL EFFORT` pairs to compare models, or `--model` and `--efforts` for one model.
+Unavailable settings fail before dispatch; INVARIANT does not substitute a model.
+`--json` never opens setup or selection prompts.
 
-To continue after closing the terminal, open another terminal in the same project:
-
-```sh
-invariant resume
-```
-
-Chats save automatically after the first accepted message. `resume` restores
-the latest saved chat, including its model and reasoning effort. To choose an
-older chat, use `invariant chats`, then `invariant resume CHAT_ID`. Use
-`invariant resume --effort high` to change the effort. Each `run` starts a new
-chat. Chats created before persistence was added cannot be recovered.
-
-New projects manage command resources automatically. INVARIANT measures Docker's
-CPU/memory capacity and chooses finite limits. After a confirmed memory-limit
-kill, the next session can use more memory within a measured hard ceiling; it
-never replays an interrupted command. A running session keeps its launch budget.
-No CPU, memory or process settings are needed for ordinary use.
-
-Existing projects retain manual limits. To opt an existing project into automatic
-sizing, run `invariant config set resource_mode auto`. Editing a `limits.*` setting
-selects manual mode. [Automatic resources and recovery](docs/CODEX_WORKSPACE.md#automatic-resources-and-recovery)
-explains limits, private preferences and recovery messages.
-
-View guardrails from your project folder:
-
-```sh
-invariant guardrails
-invariant guardrails --json
-```
-
-With a running workspace, this inspects Docker and the executor's kernel and
-shows actual limits. Run it in another terminal while chatting. Without a
-running session, it clearly labels the configured policy as not live-verified.
-A mismatch or unavailable inspection is reported with a nonzero exit status.
-
-Change this project's settings:
-
-```sh
-invariant config
-invariant config set limits.cpus 2
-invariant config set limits.memory_mib 1024
-invariant config set duration_seconds 3600
-invariant config set workspace_access read-only
-```
-
-Settings are stored in `.invariant/config.json` and apply to the next run or
-resume. `--duration` overrides one session. `workspace_access read-write` enables
-edits again. Process, file-descriptor, scratch and additional-swap limits are also
-configurable; see [all supported settings](docs/CODEX_WORKSPACE.md#change-project-settings).
-Networking is disabled by default. To let Codex download packages during chat:
+Install required tools/dependencies explicitly, without a model turn:
 
 ```sh
 invariant config set command_network internet
-invariant resume  # or start a new run
+invariant environment prepare --command "YOUR_LINUX_SETUP_COMMAND"
+invariant config set command_network none
 ```
 
-Ask Codex to install whichever tools and dependencies it needs normally. It has
-administrator access inside its isolated Linux environment, including system
-package installation. Installed software, home settings and toolchains are saved
-together and restored automatically on run/resume, even offline. Read-only
-sessions can use saved tools but cannot modify the project or OS.
-Disable internet with `invariant config set command_network none`.
-Internet mode permits outbound connections to reachable internet and local services;
-it has no domain allowlist. The policy and control executables stay read-only;
-host home, credentials and Docker control remain outside the environment.
-See [the architecture and limits](docs/ENVIRONMENT_ARCHITECTURE.md).
-A running session keeps its launch settings; `guardrails` shows pending changes separately.
+Preparation can write the project and persists installed tools inside Docker.
+No package manager or language is inferred. See
+[environment preparation and preflight](docs/ENVIRONMENT_PREPARATION.md).
 
-The selected model may receive project content and command results. Commands
-run in a container with no host home, credentials or Docker socket. Internet
-access requires the explicit project opt-in above.
-By default this project is writable and can be changed or deleted by the agent;
-read-only mode denies project writes.
-Project symlinks and internal hard links are supported in the general environment;
-hard links outside the project and special files remain rejected at startup. Linux kernel/device capabilities and
-privileged workloads require separate backend support; technology freedom does
-not grant host access.
-See [Codex workspace sessions](docs/CODEX_WORKSPACE.md) for the exact boundary,
-supported runtime, evidence and verification commands.
-
-## Run an isolated Python program
-
-For a narrated walkthrough, run:
+Generate complete starter projects from the installed package:
 
 ```sh
-./scripts/invariant demo
+invariant experiment example python ~/invariant-python-example
+invariant experiment example javascript ~/invariant-javascript-example
 ```
 
-It prepares missing images, starts one isolated program without permission,
-issues the fixed grant, demonstrates the 20-read limit, then revokes and stops
-the program. The report includes an invoice summary, audit trail and independent
-mock API count. Use `demo --step` to pause between stages. See the
-[guided demo](docs/GUIDED_DEMO.md) for details and saved evidence.
+Their README files include dependency preparation, intentionally red tests and
+commands for a real comparison. Generation itself makes no model calls.
 
-With Docker running:
+## Review, continue and apply
 
 ```sh
-./scripts/invariant prepare
-./scripts/invariant run examples/invoice_summary.py
+invariant experiment list
+invariant experiment review STUDY_ID
+invariant experiment export STUDY_ID --output comparison.md
 ```
 
-The supervisor creates a fresh execution and mock-invoice grant, verifies the Docker isolation profile, captures bounded output, and removes the container afterward. The program has no direct network sockets, runs as non-root with a read-only filesystem, and receives one CPU, 256 MiB memory, 32 tasks and 64 MiB private scratch. Only its own broker socket is exposed. On Mac, a trusted Linux control container hosts the Rust supervisor and broker inside Docker's VM.
+The review flow lets you select a completed result, inspect its diff, continue
+with a new task, or apply a reviewed plan. Selection changes no source files.
+Continuation uses the saved files/tools in a fresh conversation. For child results,
+apply ancestors before children; the guided flow handles the order and conflicts.
 
-Run `./scripts/invariant test` for real Docker checks and `./scripts/invariant evidence` to copy their evidence into `.invariant/docker-evidence/`. See [Docker execution](docs/DOCKER_EXECUTION.md) for controls, placement, recovery and supported platforms.
-
-## Issue and revoke access while a program runs
-
-Start `./scripts/invariant run examples/live_grants.py --no-grant` in one terminal.
-In another terminal, use `./scripts/invariant status` to find the execution ID,
-then `./scripts/invariant grant EXECUTION_ID` and
-`./scripts/invariant revoke EXECUTION_ID`. Use `stop EXECUTION_ID` to end a run.
-Changes require the exact execution ID. Grants retain the fixed 20-read,
-15-minute scope. See [operator controls](docs/OPERATOR_CONTROLS.md) for the demo,
-status output, replacement rules and isolation details.
-
-## Run Python through the broker
-
-From the project directory, with Python 3 available:
+The same actions are available individually:
 
 ```sh
-cargo run -p invariant-broker --example python
+invariant experiment select ATTEMPT_ID --if-revision REVISION
+invariant experiment diff STUDY_ID
+invariant experiment apply STUDY_ID --dry-run
+invariant experiment apply --plan PLAN_ID
+invariant experiment continue STUDY_ID --task "Add useful documentation" --wait
 ```
 
-The demo launches a local mock API and runs two Python programs through the same execution's socket and grant:
+[Assistant interface](docs/experiments/ASSISTANT_GUIDE.md) ·
+[Report formats and privacy](docs/experiments/REPORTS.md)
 
-```text
-Invoices read: 1
-Total amount: 42
-Duplicate read: completed status returned; no new API call
-DELETE /invoices/123 -> denied (out_of_scope)
-GET /invoices?tenant=other -> denied (out_of_scope)
-After revocation: denied (revoked)
-Admissions charged: 1
-Target requests received: 1
-```
-
-The current path is **Python program → dedicated Unix socket → broker → mock API**, with decisions and admissions saved in the audit journal. The launcher supplies `INVARIANT_SOCKET`, `INVARIANT_CAPABILITY`, and `PYTHONPATH`; no pip installation is needed. The examples run on the host and are not sandboxed.
-
-See [invoice_summary.py](examples/invoice_summary.py), [denied_effects.py](examples/denied_effects.py), and the [Python client](sdk/python/invariant_client.py). The [Unix protocol specification](docs/UNIX_PROTOCOL.md) describes framing, response types, bounds, lifecycle, and failure behavior.
-
-The server supports four active connections, checks the 16 KiB request-frame limit before allocating payloads, and enforces total frame read/write deadlines. Each accepted connection uses the listener's fixed broker context. Workload messages cannot issue grants or supply execution identity. Reconnecting does not reset authority, budgets, or duplicate detection. HTTP bodies are carried as bounded Base64 and decoded to bytes by the client. The client never retries automatically.
-
-## Run the broker demo
-
-From the project directory:
+## Come back later, stop and recover
 
 ```sh
-cargo run -p invariant-broker --example broker
+invariant experiment logs STUDY_ID --follow
+invariant experiment stop STUDY_ID
+invariant experiment recover STUDY_ID
+invariant experiment retry TRIAL_ID
 ```
 
-This starts a local mock invoice API, issues one grant, performs a real approved read, denies deletion, detects a duplicate, and revokes the grant. It prints:
-
-```text
-Read invoices: HTTP 200, [{"id":"invoice-1","amount":42}]
-Delete invoice: Denied(OutOfScope)
-Duplicate read: Replay(Completed { status: 200 })
-After revocation: Denied(Revoked)
-Admissions charged: 1
-Target requests received: 1
-```
-
-The demo also prints the path to a new audit journal under `.invariant/`. Journals are newline-delimited JSON, created with owner-only file permissions on Unix. Existing journals are never overwritten or resumed. They contain decisions and correlation metadata, excluding capability handles and response bodies.
-
-## What the broker enforces
-
-- One fresh execution and broker session per instance, with an immutable resource snapshot.
-- Explicit host-side grant issuance and revocation, with fresh random grant IDs and capability handles.
-- Serialized checking, budget consumption, and durable admission recording before target I/O. An uncertain commit retains its reservation and stops further admissions.
-- At most 20 admissions per grant and four concurrent outbound attempts per execution.
-- Execution-scoped duplicate detection: repeats return in-progress, completed status, or unknown-outcome metadata without another target attempt. Response bodies are not retained for replay. Reusing an admitted ID under a different grant fails.
-- No automatic retries or budget refunds after an admission. A timeout, upstream error, or journal failure cannot authorize another attempt.
-- Durable revocation ordered against admissions. Earlier admitted attempts may finish; later admissions are denied.
-- A fixed `GET /invoices` over direct TCP to the configured mock IP and port, with a five-second total I/O deadline, a 32 KiB header limit, and a 1 MiB body limit. There is no DNS, proxy routing, redirect following, or arbitrary caller URL/header/body forwarding.
-
-The HTTP adapter accepts Content-Length or connection-close response framing. Chunked transfer encoding, compression, protocol upgrades, and more than 128 response headers are unsupported and fail closed. HTTP error responses still consume an allowance.
-
-The deduplication ledger keeps at most 1,024 request records across grants in one execution; reaching that limit returns `CapacityExceeded` without forgetting earlier IDs. Temporary saturation of the four worker slots returns the same reason without consuming budget. A fresh, explicitly approved request ID is required to request data again after a completed attempt; retrying the same ID returns only its recorded status.
-
-`Broker` is a host library: all connections for one execution share the instance attached to their Unix listener. Only trusted operator code may invoke its grant and lifecycle controls. `FileJournal` is the durable file adapter for this local prototype; custom `AuditJournal` and `Clock` implementations are trusted code and must uphold their documented contracts.
-
-## MVP acceptance
-
-Docker execution now has a prepared image, supervisor, startup checks, resource limits, cancellation, output capture and restart cleanup. Trusted operator commands provide live status, grant issuance, revocation and stop. The earlier host-side examples remain transport demonstrations; they do not isolate Python.
-
-Restarting creates fresh execution/session identities; previous grants and handles are never restored, and pending operations are not replayed. The supervisor removes leftover workloads belonging to its state directory before accepting new work.
-
-Run `./scripts/invariant acceptance` for the complete A01–A20 contract matrix and supporting regression checks. It rebuilds the images, exercises real Docker workloads and deterministic broker fault/concurrency fixtures, and saves independent API receipts, audit journals, isolation configuration and command results under `.invariant/acceptance/`. Every required case must pass. See [MVP acceptance](docs/MVP_ACCEPTANCE.md) for coverage, prerequisites and evidence format.
-
-## Run the example
-
-From the project directory:
+Recovery does not replay an interrupted provider call. Retry is an explicit new
+attempt, while comparisons keep first-attempt denominators. Logs can resume from
+saved cursors. Failed or unknown outcomes remain visible.
 
 ```sh
-cargo run -p invariant-core --example model
+invariant doctor --json
+invariant experiment storage
+invariant experiment cleanup --older-than-days 30
+invariant experiment backup --output ~/invariant-backup.tar.gz
 ```
 
-The example prints these decisions:
+Cleanup previews first; add `--confirm` only after reviewing it. Active, selected
+and referenced results are protected. Private backups include exact images and
+saved experiments; restore requires matching project/state paths. See
+[storage, backup and recovery](docs/STORAGE_AND_RECOVERY.md).
 
-```text
-Read invoices: Allow
-Delete invoice: Deny(OutOfScope)
-Expired permission: Deny(Expired)
-Twenty requests already admitted: Deny(BudgetExhausted)
-Revoked permission: Deny(Revoked)
-Permission checks only; no requests were sent or budget consumed.
-```
+## Data, isolation and limitations
 
-## How checking works
+Project files, prompts, evaluators and configuration are frozen locally. Native
+Codex sends task content and tool results to the provider. Host authentication
+stays outside workload containers. Private native histories can contain full
+prompts and tool outputs. Summary reports omit those by default; private backups
+omit host authentication and native conversation homes.
 
-`EffectRequest::from_json` parses the program's request with bounded fields. The host supplies an `AuthorizationState` from its own execution, resource, grant, capability registration, and admission count. `check_permission` compares the request against that state and returns `Decision::Allow` or a denial reason.
+Commands run in Docker without host home, credentials or Docker control. Command
+networking is off by default. Explicit internet mode permits reachable internet
+and local-network services, without a domain allowlist. Trials run as administrator
+inside their Linux environment. This is not a production multi-tenant security claim.
 
-Only an exact `GET /invoices` is in scope. An active, unexpired grant, a running execution, the correct capability binding, a matching resource configuration, and remaining request budget are all required. Missing authoritative state fails closed. Workload messages cannot supply or override identity, grants, or authorization decisions.
+Experiments use full workspace copies and saved Docker layers. Disk headroom is
+checked, but there are no hard disk quotas. Frozen inputs do not make model
+responses, clocks, random sources or remote services deterministic. Captured tests
+cannot be replaced by candidate edits, but evaluators are not an attestation
+against deliberately adversarial code or a modified runtime.
 
-The checker reads a snapshot. It does not consume budget or make `Allow` a reusable permission token. The broker owns grant state and performs the admission operation under one lock, then releases that lock while the approved HTTP attempt is in flight.
+Apply preserves contents, modes and safe links, not ACLs/xattrs. It detects conflicts
+and journals recovery; external writers can race its final check. It performs no
+automatic merge. Backups are private, unencrypted, same-path archives; they are
+not portable redacted reports or whole-host backups.
 
-## Verify
+## Documentation and contributions
 
-```sh
-./scripts/invariant acceptance
-```
+- [Complete experiment interface](docs/experiments/README.md)
+- [Installation and host setup](docs/INSTALLATION.md)
+- [Compatibility, schemas and upgrades](docs/COMPATIBILITY.md)
+- [Standalone Rust libraries and embedding](docs/RUST_LIBRARY.md)
+- [Ordinary Codex workspace and legacy broker workflows](docs/LEGACY_WORKFLOWS.md)
+- [Contributing and tests](CONTRIBUTING.md)
+- [Changelog](CHANGELOG.md) and [security reports](SECURITY.md)
 
-Individual checks:
+For a bug report, include the command, INVARIANT version, sanitized diagnostic
+report and a small reproduction. Review logs and detailed exports before sharing.
+Use the issue templates; report vulnerabilities privately.
 
-```sh
-cargo test --workspace --all-targets
-cargo clippy --workspace --all-targets -- -D warnings
-cargo fmt --all --check
-PYTHONPATH=sdk/python python3 -B -m unittest discover -s sdk/python/tests -v
-./scripts/invariant test
-python3 -B scripts/test_supervisor_lifecycle.py
-python3 -B scripts/test_operator_controls.py
-```
+## License
+
+Original INVARIANT source is [Apache-2.0](LICENSE). See [NOTICE](NOTICE) and the
+[licensing inventory guidance](docs/LICENSING.md) for third-party components.
+Docker Desktop, Codex and provider accounts retain their own terms.

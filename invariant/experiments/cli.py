@@ -31,6 +31,9 @@ def main(arguments=None):
     parser.add_argument('--json', action='store_true', help='versioned structured output; no prompts/installers')
     commands = parser.add_subparsers(dest='command', required=True, parser_class=Parser)
     commands.add_parser('acceptance',help='verify P01–P21 and release evidence; use acceptance --help')
+    example=commands.add_parser('example',help='create a packaged Python or JavaScript project, without model calls')
+    example.add_argument('language',choices=('python','javascript'))
+    example.add_argument('directory')
     demo = commands.add_parser('demo', help='create a three-configuration Codex coding demo in its own project')
     demo.add_argument('directory', nargs='?', default='invariant-demo')
     demo.add_argument('--model', help='one supported model for all three configurations; omit for account default')
@@ -115,8 +118,11 @@ def main(arguments=None):
     selection.add_argument('--request-id', help='idempotency key for this selection update')
     try:
         args = parser.parse_args(arguments)
-        engine = None if args.command == 'demo' else ExperimentEngine(allow_restore=True) if args.command=='restore' else ExperimentEngine()
-        if args.command == 'demo':
+        engine = None if args.command in ('demo','example') else ExperimentEngine(allow_restore=True) if args.command=='restore' else ExperimentEngine()
+        if args.command=='example':
+            from .examples import create
+            result=create(args.language,args.directory)
+        elif args.command == 'demo':
             from . import demo
             result = demo.create(args.directory, model=args.model, efforts=args.efforts)
             if args.run:
