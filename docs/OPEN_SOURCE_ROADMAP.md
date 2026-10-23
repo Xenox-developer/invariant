@@ -13,7 +13,10 @@ committed and pushed independently; existing local work must be preserved.
 - [x] Preserve existing policy, admission, serialization and lifecycle behavior.
 - [x] Verify the workspace on Rust 1.90, including the existing supervisor.
 - [x] Verify both distributable archives from an independent Rust consumer.
-- [ ] Run the new Linux/macOS Rust CI matrix and record its outcome.
+- [x] Run the new Linux/macOS Rust CI matrix and record its outcome.
+
+Completed October 24, 2026 (Europe/Moscow). See the
+[verification record](RUST_LIBRARY_VERIFICATION.md) for the tested source and CI evidence.
 
 Libraries are consumed through Git for now. Registry publication and full
 experiment release acceptance are separate from extracting these libraries.
