@@ -7,6 +7,16 @@ A person can resume inspection at any time using the same IDs without `--json`.
 
 ## Validate → submit → inspect → compare → select
 
+For file-free guided setup, use `init --name NAME --task TASK --test-command COMMAND
+--test-path PATH --request-id KEY --run --json`. Repeat `--test-path` for fixed tests
+and test configuration; choose `--model MODEL --efforts low medium high` or repeated
+`--variant MODEL EFFORT` pairs. Omit `--run` for offline setup. Read `data.study_id`
+after running; repeating the same setup command/key reopens it without duplicate turns.
+`review STUDY_ID --json` returns the ordinary comparison. `continue ID --task TEXT`
+avoids creating a prompt file yourself. Generated files are ordinary shareable inputs,
+with the same core capture, selection and reviewed apply rules below.
+See [guided setup](GUIDED_SETUP.md) for shared-test semantics and prerequisites.
+
 1. Read or create a definition. To create a native starter noninteractively:
    `invariant experiment init experiments/codex.json --runner codex --request-id starter-001 --json`.
    Edit its ordinary files to express the user's configurations and cases. Set the requested
@@ -120,3 +130,11 @@ with a new request ID. Do not remove the journal/active marker or force-copy ove
 changes. A rolled-back plan returns `PLAN_RECOVERED`; create a new reviewed plan and key.
 External editors do not participate in the lock. The documented small race between the
 last check and replacement remains; never claim a multi-file OS transaction.
+
+## Guided native example
+
+`invariant experiment demo DIRECTORY --run --json` creates or reopens a separate demo
+project and returns the same durable results used by the human workflow. The first run
+uses three real Codex turns; subsequent calls with the same demo reopen its saved study.
+It never prompts or selects/applies automatically. Use ordinary `select`, `continue`,
+`diff` and `apply` with the returned IDs. See [DEMO.md](DEMO.md) for the full handoff.

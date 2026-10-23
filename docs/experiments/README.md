@@ -12,7 +12,17 @@ of legacy broker acceptance. See [the quickstart](QUICKSTART.md),
 [release gates and platform limitations](ACCEPTANCE.md), and [schema migrations](MIGRATIONS.md).
 Gate availability does not imply release acceptance; Linux host evidence is still required.
 
+For an end-to-end native example, use `invariant experiment demo ~/invariant-codex-demo --run`.
+It compares three Codex reasoning efforts on one coding task with 23 shared checks and
+offers selection, continuation and reviewed apply. See [the guided demo](DEMO.md).
+
 ## Start a study
+
+For guided setup in your own project, use `invariant experiment init` with no filename.
+Terminal answers and noninteractive flags generate the same definition and shared test
+adapter. `init --task ... --test-command ... --test-path ... --run --json` requires no
+authored files. `review STUDY_ID` reopens selection/continuation/reviewed apply; JSON
+returns the same results without prompts. See [guided setup](GUIDED_SETUP.md).
 
 Inside an initialized project, prepare the general Linux image once if necessary:
 

@@ -14,6 +14,23 @@ Linux fixture evidence for the same-source release gate.** See [the implemented 
 [the clean-install quickstart](docs/experiments/QUICKSTART.md), and
 [release verification](docs/experiments/ACCEPTANCE.md). Original source is Apache-2.0.
 
+Try a real three-configuration coding study in a separate folder:
+
+```sh
+invariant experiment demo ~/invariant-codex-demo --run
+```
+
+Compare shared test results, runtime and token usage, then choose a result to continue
+or review/apply. Requires prepared Docker and host Codex ChatGPT sign-in; the first run
+uses three real model turns. Omit `--run` to inspect the files first. See the
+[guided Codex experiment demo](docs/experiments/DEMO.md).
+
+For your own initialized project, run `invariant experiment init` and answer the setup
+prompts. Supply `--task`, `--test-command`, `--test-path` and configuration flags with
+`--json` for the same workflow through an assistant. No authored configuration files
+are required. Reopen saved runs with `invariant experiment review STUDY_ID` to select,
+continue with a new task, or review/apply. See [guided project setup](docs/experiments/GUIDED_SETUP.md).
+
 ```sh
 invariant experiment init experiments/compare.json
 invariant experiment validate experiments/compare.json

@@ -58,11 +58,30 @@ def main():
         # Parser-derived machine errors must remain structured and noninteractive.
         error = subprocess.run(['invariant','experiment','apply','--json'],cwd=project,env=env,capture_output=True,text=True,timeout=10)
         assert error.returncode==2 and json.loads(error.stdout)['error']['code']=='INVALID_ARGUMENTS'
+        native_demo = output/'native-demo'
+        scaffold = subprocess.run(['invariant','experiment','demo',str(native_demo),'--json'],cwd=project,
+                                  env=env,capture_output=True,text=True,timeout=20)
+        assert scaffold.returncode==0, scaffold.stderr
+        assert json.loads(scaffold.stdout)['ok']
+        assert len(json.loads((native_demo/'compare.json').read_text())['variants'])==3
+        assert len(json.loads((native_demo/'suite.json').read_text()))==23
+        assert all((native_demo/name).is_file() for name in ('solution.py','task.md','followup.md','verify.py','README.md'))
+        guided = subprocess.run(['invariant','experiment','init','--name','installed-guided',
+            '--task','Improve agent.py','--test-command','python3 agent.py','--test-path','case.json',
+            '--request-id','installed-guided','--json'],cwd=project,env=env,capture_output=True,text=True,timeout=20)
+        assert guided.returncode==0, guided.stdout+guided.stderr
+        guided_info=json.loads(guided.stdout)['data']
+        generated=json.loads(Path(guided_info['definition']).read_text())
+        assert len(generated['variants'])==3
+        assert (project/generated['evaluator']['argv'][3]).is_file()
+        assert (project/generated['evaluator']['argv'][4]).is_file()
         engine = ExperimentEngine(project)
         report['checks'] = ['clean source wheel imports from an isolated installation',
             'published shell quickstart completes both human/JSON apply handoffs without Git',
             'command/Codex starters and ordinary config/chats/guardrails commands parse',
-            'machine misuse yields structured errors without prompts']
+            'machine misuse yields structured errors without prompts',
+            'installed wheel scaffolds the native demo with all packaged assets and no provider calls',
+            'installed wheel generates guided project setup and the packaged shared-command evaluator offline']
         report['wheel']={'name':wheel.name,'sha256':hashlib.sha256(wheel.read_bytes()).hexdigest()}
         report['passed']=True
     except BaseException as error:

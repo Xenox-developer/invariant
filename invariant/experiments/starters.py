@@ -10,7 +10,6 @@ from .snapshots import regular_bytes
 
 
 def create(engine, path, *, request_id=None, runner='command'):
-    from .engine import sync_directory
     request_id = request_key(request_id)
     if runner not in ('command', 'codex'):
         raise ExperimentError('INVALID_ARGUMENTS', 'Starter runner must be command or codex.')
@@ -54,7 +53,16 @@ See docs/experiments/README.md and ASSISTANT_GUIDE.md in the INVARIANT checkout.
         raise ExperimentError('INVALID_PATH', 'Definition path collides with a starter support file.')
     result = {'definition': str(target), 'guide': str(guide), 'dispatch_available': True}
     if runner == 'codex': result['prompt'] = str(prompt)
-    fingerprint = digest({'operation': 'init', 'files': {str(p): s for p, s in files.items()}})
+    return publish(engine, files, result, request_id=request_id)
+
+
+def publish(engine, files, result, *, request_id=None, operation='init'):
+    """Publish owned support files with the same collision and replay rules."""
+    from .engine import sync_directory
+    request_id = request_key(request_id)
+    for file in files:
+        engine._path(file)
+    fingerprint = digest({'operation': operation, 'files': {str(p): s for p, s in files.items()}})
     replay = engine.store.lookup_operation(request_id, fingerprint)
     if replay is not None and not replay.get('operation_pending'):
         return replay
@@ -75,7 +83,8 @@ See docs/experiments/README.md and ASSISTANT_GUIDE.md in the INVARIANT checkout.
                     raise ExperimentError('STARTER_CONFLICT', 'A partially created starter was edited.',
                                           'Keep your edits; use a new path and request ID for a new starter.')
         engine.store.control_operation(request_id, fingerprint)
-        target.parent.mkdir(parents=True, exist_ok=True)
+        for file in files:
+            file.parent.mkdir(parents=True, exist_ok=True)
         written = []
         try:
             for file, content in files.items():
@@ -84,7 +93,8 @@ See docs/experiments/README.md and ASSISTANT_GUIDE.md in the INVARIANT checkout.
                 with os.fdopen(fd, 'w') as output:
                     written.append(file)
                     output.write(content); output.flush(); os.fsync(output.fileno())
-            sync_directory(target.parent)
+            for parent in {file.parent for file in files}:
+                sync_directory(parent)
         except BaseException:
             if request_id is None:
                 for file in written: file.unlink(missing_ok=True)

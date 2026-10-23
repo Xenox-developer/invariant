@@ -30,12 +30,28 @@ def main(arguments=None):
     parser.add_argument('--json', action='store_true', help='versioned structured output; no prompts/installers')
     commands = parser.add_subparsers(dest='command', required=True, parser_class=Parser)
     commands.add_parser('acceptance',help='verify P01–P21 and release evidence; use acceptance --help')
+    demo = commands.add_parser('demo', help='create a three-configuration Codex coding demo in its own project')
+    demo.add_argument('directory', nargs='?', default='invariant-demo')
+    demo.add_argument('--model', help='one supported model for all three configurations; omit for account default')
+    demo.add_argument('--efforts', nargs=3, metavar='LEVEL', help='three distinct supported efforts; default: low medium high')
+    demo.add_argument('--run', action='store_true', help='run/reopen the saved demo; up to three real model turns on its first run')
     for name in ('init', 'validate', 'run'):
         command = commands.add_parser(name)
-        command.add_argument('file', help='project-relative experiment JSON file')
+        command.add_argument('file', nargs='?' if name=='init' else None, help='project-relative experiment JSON file; omit for guided setup')
         if name == 'init':
             command.add_argument('--request-id', help='idempotency key for starter creation')
-            command.add_argument('--runner', choices=('command', 'codex'), default='command')
+            command.add_argument('--runner', choices=('command', 'codex'))
+            command.add_argument('--guided',action='store_true',help='answer setup prompts; --json always requires flags instead')
+            command.add_argument('--task',help='coding task shared by all configurations')
+            command.add_argument('--test-command',help='shared shell command executed inside Docker only')
+            command.add_argument('--test-path',action='append',help='project-relative test file/folder to freeze; repeat for more paths')
+            command.add_argument('--model',help='one model for all configurations; omit for account default')
+            command.add_argument('--efforts',nargs='+',help='reasoning efforts to compare; default: low medium high')
+            command.add_argument('--variant',nargs=2,action='append',metavar=('MODEL','EFFORT'),help='explicit model/effort pair; repeat to compare different models')
+            command.add_argument('--name',help='experiment name; default: comparison')
+            command.add_argument('--max-parallel',type=int,help='requested parallelism; default: number of configurations')
+            command.add_argument('--test-timeout',type=int,default=120,help='shared test deadline in seconds; default: 120')
+            command.add_argument('--run',action='store_true',help='run/reopen the generated study and wait for its comparison')
         if name == 'run':
             command.add_argument('--request-id', help='idempotency key for durable study creation')
             command.add_argument('--create-only', action='store_true', help='freeze/queue without executing')
@@ -54,7 +70,9 @@ def main(arguments=None):
         if name == 'delete':
             command.add_argument('--confirm', action='store_true', help='delete the displayed terminal study state')
         if name == 'continue':
-            command.add_argument('--prompt-file', required=True, help='project-relative new task; starts a fresh conversation')
+            task = command.add_mutually_exclusive_group(required=True)
+            task.add_argument('--prompt-file', help='project-relative new task; starts a fresh conversation')
+            task.add_argument('--task',help='new task text; no prompt file required')
             command.add_argument('--create-only', action='store_true')
             command.add_argument('--wait', action='store_true')
 
@@ -68,6 +86,8 @@ def main(arguments=None):
 
     listing = commands.add_parser('list')
     listing.add_argument('--limit', type=int, default=100)
+    reviewing = commands.add_parser('review',help='compare saved runs, choose one, continue or review/apply; JSON never prompts')
+    reviewing.add_argument('identifier')
     status = commands.add_parser('status')
     status.add_argument('identifier', nargs='?', help='study, trial or attempt ID')
     status.add_argument('--request-id', help='find a study after a lost submission acknowledgement')
@@ -78,9 +98,29 @@ def main(arguments=None):
     selection.add_argument('--request-id', help='idempotency key for this selection update')
     try:
         args = parser.parse_args(arguments)
-        engine = ExperimentEngine()
-        if args.command == 'init':
-            result = engine.init_definition(args.file, request_id=args.request_id, runner=args.runner)
+        engine = None if args.command == 'demo' else ExperimentEngine()
+        if args.command == 'demo':
+            from . import demo
+            result = demo.create(args.directory, model=args.model, efforts=args.efforts)
+            if args.run:
+                result = demo.execute(result)
+        elif args.command == 'init':
+            guided = args.file is None or args.guided or any(getattr(args,k) is not None for k in
+                ('task','test_command','test_path','model','efforts','variant','name','max_parallel')) or args.run or args.test_timeout!=120
+            if guided:
+                from .guided import collect, create, execute
+                if args.runner not in (None,'codex'):
+                    raise ExperimentError('INVALID_ARGUMENTS','Guided setup currently uses Codex; use init FILE --runner command for a command starter.')
+                wizard = not machine and sys.stdin.isatty() and (args.guided or not all((args.task,args.test_command,args.test_path)))
+                options = collect(args,interactive=wizard)
+                result = create(engine,args.file,request_id=args.request_id,**options)
+                if wizard and not args.run:
+                    render('init',result)
+                    args.run = input('Start '+str(len(result['configurations']))+' real Codex runs now? [y/N]: ').strip().lower()=='y'
+                if args.run:
+                    result = execute(engine,result,request_id=args.request_id)
+            else:
+                result = engine.init_definition(args.file, request_id=args.request_id, runner=args.runner or 'command')
         elif args.command == 'validate':
             result = engine.validate(args.file)
         elif args.command == 'run':
@@ -97,6 +137,8 @@ def main(arguments=None):
                 result = wait_study(engine, args.identifier)
         elif args.command == 'results':
             result = engine.results(args.identifier)
+        elif args.command == 'review':
+            result = engine.results(args.identifier)
         elif args.command == 'stop':
             result = engine.stop(args.identifier, request_id=args.request_id)
         elif args.command == 'recover':
@@ -111,7 +153,11 @@ def main(arguments=None):
             result = engine.select(args.identifier or args.clear, revision=args.if_revision,
                                    request_id=args.request_id, clear=bool(args.clear))
         elif args.command == 'continue':
-            result = engine.continue_result(args.identifier, args.prompt_file, request_id=args.request_id)
+            prompt = args.prompt_file
+            if args.task is not None:
+                from .guided import inline_prompt
+                prompt = inline_prompt(engine,args.task)
+            result = engine.continue_result(args.identifier, prompt, request_id=args.request_id)
             if not args.create_only:
                 result = engine.launch(result['id'])
                 if args.wait: result = wait_study(engine, result['id'])
@@ -144,8 +190,17 @@ def main(arguments=None):
         if machine:
             print(json.dumps({'schema_version': 1, 'ok': True, 'data': result, 'error': None}, allow_nan=False))
         else:
-            render(args.command, result)
+            if not (args.command=='init' and locals().get('wizard') and not args.run):
+                render(args.command, result)
+            if args.command == 'demo' and args.run and sys.stdin.isatty():
+                from .demo import interact
+                interact(result)
+            elif sys.stdin.isatty() and (args.command=='review' or args.command=='init' and result.get('study_id')):
+                from .review import interact
+                interact(engine,result.get('study_id') or args.identifier)
         return 1 if result.get('termination_confirmed') is False or result.get('unresolved_attempt_ids') else 0
+    except EOFError:
+        return 0  # Closing the guided demo prompt never discards saved work.
     except (KeyboardInterrupt, BrokenPipeError):
         if not machine and 'frame' in locals() and not isinstance(sys.exc_info()[1], BrokenPipeError):
             print('\nResume logs: invariant experiment logs ' + args.identifier + ' --follow --after ' + frame['cursor'])
@@ -169,9 +224,28 @@ def main(arguments=None):
 
 
 def render(command, result):
-    if command == 'init':
+    if command == 'demo':
+        from .demo import present
+        present(result)
+    elif command == 'init':
         print('Created definition:', inert(result['definition']))
         print('Edit guide:', inert(result['guide']))
+        if result.get('guided'):
+            print('Configurations:',len(result['configurations']),'requested parallelism:',result['requested_parallel'])
+            for config in result['configurations']:
+                print(' ',inert(config['id']),inert(config.get('model') or 'account default'),'effort:',inert(config.get('effort') or 'default'))
+            print('Shared test command (Docker):',inert(result['test_command']))
+            print('Fixed test files:',result['test_file_count'],'from',inert(', '.join(result['test_paths'])))
+            print('Requires prepared Docker and host Codex ChatGPT sign-in. Setup itself uses no model turns.')
+            if result.get('results'):
+                from .review import present
+                present(result['results'])
+            else:
+                import shlex
+                print('Run: invariant experiment run '+shlex.quote(result['definition'])+' --wait --request-id YOUR_KEY')
+    elif command == 'review':
+        from .review import present
+        present(result)
     elif command == 'validate':
         print('Valid experiment:', result['trial_count'], 'trials')
         execution = result['frozen_preview']['execution']
