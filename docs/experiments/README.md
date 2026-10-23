@@ -1,16 +1,16 @@
 # Parallel agent experiments
 
-This checkout can freeze studies, run **parallel command or native Codex trials in Docker**, save their
+INVARIANT can freeze studies, run **parallel command or native Codex trials in Docker**, save their
 changed files and environments, evaluate copies of their results, and compare measured
 outcomes. Execution uses a detached local controller with stop, recovery, explicit retry
-and resumable log following. Selection saves a reversible pointer. M5 adds child
-continuation and destination-bound, recoverable apply plans. Ordinary Codex chats still use
+and resumable log following. Selection saves a reversible pointer. Child
+continuation and destination-bound, recoverable apply plans are available for selected results. Ordinary Codex chats still use
 `invariant run` and `invariant resume`.
 
-M6 adds `invariant experiment acceptance` for P01–P21 release verification, independently
+Use `invariant experiment acceptance` for P01–P21 release verification, independently
 of legacy broker acceptance. See [the quickstart](QUICKSTART.md),
 [release gates and platform limitations](ACCEPTANCE.md), and [schema migrations](MIGRATIONS.md).
-Gate availability does not imply release acceptance; Linux host evidence is still required.
+Gate availability does not imply release acceptance; see the [recorded release evidence](../RELEASE_VERIFICATION.md).
 
 For an end-to-end native example, use `invariant experiment demo ~/invariant-codex-demo --run`.
 It compares three Codex reasoning efforts on one coding task with 23 shared checks and
@@ -451,3 +451,13 @@ Private journals carry an integrity digest. Malformed/corrupted recovery metadat
 `CORRUPT_PLAN` and keeps project writes blocked; restore the private metadata from backup
 rather than removing the marker. File apply/rollback preserves contents, executable modes
 and link targets. It does not clone host ACLs, extended attributes or original timestamps.
+
+## Installation, project tools and saved data
+
+See [installation](../INSTALLATION.md) for standalone packages and upgrades,
+[environment preparation](../ENVIRONMENT_PREPARATION.md) for explicit Linux dependencies
+and baseline preflight, [reports](REPORTS.md) for Markdown/JSON/CSV export and privacy,
+and [storage and recovery](../STORAGE_AND_RECOVERY.md) for retention, private exact-image
+backups, restore journals and sanitized support diagnostics. Generate installed starter
+projects with `invariant experiment example python DIRECTORY` or
+`invariant experiment example javascript DIRECTORY`.

@@ -100,6 +100,8 @@ def main():
             extracted = {}
             for name in PACKAGES:
                 archive = work/'target/package'/f'{name}-{version}.crate'
+                saved = report_path.parent/'packages'; saved.mkdir(exist_ok=True)
+                shutil.copyfile(archive, saved/archive.name)
                 folder = unpack(archive, packages, f'{name}-{version}')
                 extracted[name] = folder
                 report['archives'].append({'name': archive.name,

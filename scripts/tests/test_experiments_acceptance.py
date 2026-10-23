@@ -103,6 +103,16 @@ class ExperimentAcceptanceTests(unittest.TestCase):
         with patch.object(Path,'exists',return_value=False),patch.object(Path,'read_text',return_value='0::/'):
             self.assertFalse(gate.containerized())
 
+    def test_release_profile_requires_its_additional_stages(self):
+        report=self.bundle();report['release_profile']=gate.RELEASE_PROFILE;self.write(report)
+        with self.assertRaisesRegex(ValueError,'Missing or unknown'):
+            gate.verify_bundle(self.root/'report.json')
+        for tag in gate.OPEN_SOURCE_STAGES:report['stages'][tag]={'status':'blocked','error':'Not run'}
+        self.write(report)
+        self.assertFalse(gate.verify_bundle(self.root/'report.json')['accepted'])
+        for tag in gate.OPEN_SOURCE_STAGES:
+            with self.subTest(tag=tag),self.assertRaises(ValueError):gate.validate_stage(tag,{'passed':True})
+
     def test_contract_and_parser_expose_the_new_gate(self):
         root=Path(__file__).resolve().parents[2]
         self.assertEqual(set(gate.requirements(root)),gate.REQUIRED)

@@ -35,7 +35,7 @@ def source_hashes():
     sources = {}
     for directory in ("crates", "sdk", "scripts", "docker", "examples", "invariant"):
         for path in sorted((ROOT / directory).rglob("*")):
-            if path.is_file() and "__pycache__" not in path.parts:
+            if path.is_file() and not {"__pycache__", "target"} & set(path.parts) and path.suffix != ".pyc":
                 sources[str(path.relative_to(ROOT))] = hashlib.sha256(path.read_bytes()).hexdigest()
     for name in ("Cargo.toml", "Cargo.lock", "docs/LEGACY_MVP_CONTRACT.md", "pyproject.toml"):
         sources[name] = hashlib.sha256((ROOT / name).read_bytes()).hexdigest()

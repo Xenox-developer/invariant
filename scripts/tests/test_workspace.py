@@ -75,11 +75,13 @@ class WorkspacePolicyTests(unittest.TestCase):
     def test_only_remote_executor_and_no_ambient_credentials(self):
         home = Path(self.temp.name) / "codex"
         home.mkdir()
-        with patch.dict(os.environ, {"OPENAI_API_KEY": "must-not-inherit", "AWS_SECRET_ACCESS_KEY": "must-not-inherit"}):
+        with patch.dict(os.environ, {"OPENAI_API_KEY": "must-not-inherit", "AWS_SECRET_ACCESS_KEY": "must-not-inherit"}), \
+                patch.object(workspace, "find_docker", return_value="/usr/bin/docker"):
             command, env = workspace.codex_configuration(home, "invariant-test", "/usr/bin/codex")
         value = tomllib.loads((home / "environments.toml").read_text())
         self.assertFalse(value["include_local"])
         self.assertEqual(value["default"], "invariant")
+        self.assertEqual(value["environments"][0]["program"], "/usr/bin/docker")
         self.assertEqual(value["environments"][0]["args"], ["start", "--attach", "--interactive", "invariant-test"])
         self.assertNotIn("OPENAI_API_KEY", env)
         self.assertNotIn("AWS_SECRET_ACCESS_KEY", env)

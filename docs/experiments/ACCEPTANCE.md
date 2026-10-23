@@ -11,8 +11,9 @@ invariant experiment acceptance --verify /absolute/path/to/report.json --json
 Run from the source checkout, or pass `--checkout /absolute/path/to/invariant` when the
 command comes from a wheel. No initialized application project is needed. Docker gates
 run serially. Both the current and compatibility Codex images are rebuilt, and the
-inventory covers these plus the Python and supervisor images. The live option authorizes seven small model turns: two native variants,
-a native parent/child continuation, and three ordinary chat resume turns. The command
+inventory covers these plus the Python and supervisor images. The live option authorizes fifteen small model turns: two native variants,
+a native parent/child continuation, three ordinary chat resume turns, and four turns
+each for the guided workflow and interactive demo. The command
 matrix makes no provider calls. Missing credentials/model/provider access is blocked;
 it cannot substitute fixture coverage for a live pass. Network-dependent package checks
 also need their public package sources reachable.
@@ -87,3 +88,13 @@ not zero-copy filesystem clones. Reproduction freezes available local inputs, no
 services, clocks, random sources or model responses. Disk headroom is checked but hard
 per-trial disk quotas are not provided. Apply retains content/modes/links, not ACLs/xattrs;
 external editors can race the final check, and detected concurrent edits block recovery.
+
+## Open-source release profile
+
+New reports use `open-source-v0.3`. In addition to the original contract, acceptance
+requires clean sdist/wheel installation and installed Docker commands, Python/JavaScript
+dependency preparation and red-baseline preflight, all three export formats, exact-image
+backup/restore and continued execution, selection-aware retention, diagnostics, and both
+real native user workflows. Historical reports without this profile remain verifiable
+for their original source and requirements. Build output such as Cargo `target/` is
+excluded from source manifests; build scripts and public installation documentation are included.

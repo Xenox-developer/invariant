@@ -28,7 +28,9 @@ CASE_STAGES = {
     'P19': ('units','sdk','legacy','workspace','configuration','guardrails','easy','internet','general','resume','codex'),
     'P20': ('codex',), 'P21': ('quickstart',),
 }
-LIVE = {'codex','resume'}
+LIVE = {'codex','resume','guided_native','demo_native'}
+RELEASE_PROFILE = 'open-source-v0.3'
+OPEN_SOURCE_STAGES = {'distribution','release_workflows','guided_native','demo_native'}
 ALL_STAGES = set(t for tags in CASE_STAGES.values() for t in tags)|{'prepare','inventory'}
 REQUIRED_UNIT_SUFFIXES = (
     'test_strict_invalid_definitions','test_source_changed_during_capture_is_not_committed',
@@ -61,6 +63,12 @@ def validate_stage(tag, data):
         raise ValueError('Two evaluated real native turns required')
     if tag=='resume' and (data.get('model_turns')!=3 or data.get('resumed_runtime',{}).get('network')!='none'):
         raise ValueError('Three real resumed-chat turns and inspected boundary evidence required')
+    if tag in ('guided_native','demo_native') and data.get('model_turns')!=4:
+        raise ValueError('Four real native user-workflow turns required')
+    if tag=='distribution' and (len(data.get('checks',[]))<8 or len(data.get('artifacts',[]))!=2):
+        raise ValueError('Installed sdist/wheel and Docker command evidence missing')
+    if tag=='release_workflows' and (data.get('model_turns')!=0 or not data.get('preflight_ready_on_red_baseline') or not data.get('backup_restore_identical') or set(data.get('export_formats',[]))!={'markdown','json','csv'}):
+        raise ValueError('Onboarding, export or restore observations missing')
     if tag=='creation':
         ids=data.get('concurrent_submission',{}).get('study_ids',[])
         if len(ids)!=2 or ids[0]!=ids[1]:raise ValueError('Concurrent CLI creation evidence missing')
@@ -105,8 +113,10 @@ def save(path, value):
 def sources(root):
     paths = []
     for directory in ('invariant','scripts','sdk','crates','docker','examples','docs/experiments','.github'):
-        paths.extend(p for p in (root/directory).rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc')
+        paths.extend(p for p in (root/directory).rglob('*') if p.is_file() and not {'__pycache__','target'} & set(p.parts) and p.suffix != '.pyc')
     paths.extend(root/name for name in ('.dockerignore','.gitignore','Cargo.toml','Cargo.lock','pyproject.toml','MVP_CONTRACT.md','README.md',
+        '_build.py','MANIFEST.in','SECURITY.md','CHANGELOG.md','docs/INSTALLATION.md','docs/COMPATIBILITY.md',
+        'docs/ENVIRONMENT_PREPARATION.md','docs/STORAGE_AND_RECOVERY.md','docs/LEGACY_WORKFLOWS.md',
         'LICENSE','NOTICE','CONTRIBUTING.md','docs/LICENSING.md','docs/IMPLEMENTATION_PLAN.md','docs/LEGACY_MVP_CONTRACT.md') if (root/name).is_file())
     return {str(p.relative_to(root)): sha(p) for p in sorted(set(paths))}
 
@@ -165,7 +175,10 @@ def verify_bundle(path, *, expected_source=None, _depth=0):
         file = artifact_path(path.parent,relative)
         if not file.is_file() or sha(file) != digest: raise ValueError('Evidence changed or missing: '+relative)
     stages = d.get('stages',{})
-    if not isinstance(stages,dict) or set(stages)!=ALL_STAGES: raise ValueError('Missing or unknown stages')
+    profile=d.get('release_profile')
+    if profile not in (None,RELEASE_PROFILE):raise ValueError('Unknown release profile')
+    required_stages=ALL_STAGES | (OPEN_SOURCE_STAGES if profile else set())
+    if not isinstance(stages,dict) or set(stages)!=required_stages: raise ValueError('Missing or unknown stages')
     for name, stage in stages.items():
         if not isinstance(stage,dict) or stage.get('status') not in ('passed','failed','blocked'):raise ValueError('Malformed stage')
         if stage.get('status') == 'passed':
@@ -192,11 +205,12 @@ def verify_bundle(path, *, expected_source=None, _depth=0):
         peer_path=artifact_path(path.parent,peer['report'])
         if peer['report'] not in artifacts or sha(peer_path)!=peer['report_sha256']:raise ValueError('Missing platform bundle')
         other=verify_bundle(peer_path,expected_source=source,_depth=_depth+1)
+        if other.get('release_profile')!=profile:raise ValueError('Platform release profiles differ')
         if not other.get('local_fixture_passed') or not other.get('source_unchanged') or other['host'].get('containerized') is not False or other['host']['system']!=peer['system']:
             raise ValueError('Invalid platform evidence')
         observed.add(peer['system'])
     if set(d.get('platforms_verified',[]))!=observed:raise ValueError('Unbacked platform claim')
-    if d.get('accepted') is True and (not matrix_passed(d) or d.get('blockers') or not d.get('source_unchanged')):
+    if d.get('accepted') is True and (not matrix_passed(d) or d.get('blockers') or not d.get('source_unchanged') or any(v['status']!='passed' for v in stages.values())):
         raise ValueError('False release acceptance claim')
     if any(c['id']=='P21' and c['status']=='passed' for c in cases) and not {'Darwin','Linux'} <= set(d.get('platforms_verified',[])):
         raise ValueError('Missing actual host platform evidence')
@@ -245,7 +259,7 @@ def main(arguments=None, *, root=None):
     out=root/'.invariant/experiment-acceptance'/(datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ-')+uuid.uuid4().hex[:8])
     out.mkdir(parents=True)
     snapshot=sources(root);stages={};platforms=set();blockers=[]
-    report={'schema_version':SCHEMA,'kind':'invariant-experiment-acceptance','accepted':False,
+    report={'schema_version':SCHEMA,'kind':'invariant-experiment-acceptance','accepted':False,'release_profile':RELEASE_PROFILE,
         'created_at':datetime.now(timezone.utc).isoformat(),'host':{'system':platform.system(),'release':platform.release(),
             'machine':platform.machine(),'python':platform.python_version(),'containerized':containerized()},'source_sha256':snapshot,
         'source_digest':hashlib.sha256(canonical(snapshot)).hexdigest(),'source_unchanged':False,
@@ -323,10 +337,14 @@ def main(arguments=None, *, root=None):
             run(tag,script,group=group,extra=['--oom'] if tag=='easy' else [])
         run('resume','test_codex_resume.py',extra=['--live',args.live or '', '--effort',args.effort],group='resume-checks',native=True)
         run('quickstart','test_experiments_quickstart.py',group='experiment-quickstart-checks')
+        run('distribution',None,direct=[sys.executable,str(root/'scripts/test_distribution.py'),'--docker','--report',str(out/'distribution-results.json')],timeout=1800)
+        run('release_workflows','test_release_workflows.py',group='release-workflow-checks')
+        run('guided_native','test_experiments_guided.py',extra=['--live',args.live or ''],group='experiment-guided-checks',native=True)
+        run('demo_native','test_experiments_demo.py',extra=['--live',args.live or ''],group='experiment-demo-checks',native=True)
         run('inventory','release_inventory.py',direct=[sys.executable,str(root/'scripts/release_inventory.py'),'--report',str(out/'inventory-results.json')],timeout=300)
     except (OSError,ValueError,subprocess.SubprocessError) as error:blockers.append(str(error))
     # Never infer a missing stage from another passing gate.
-    for tag in ALL_STAGES:
+    for tag in ALL_STAGES | OPEN_SOURCE_STAGES:
         stages.setdefault(tag,{'status':'blocked','error':'Prerequisites failed; stage did not run.'})
     local_fixtures=all(v['status']=='passed' for k,v in stages.items() if k not in LIVE)
     if local_fixtures and not report['host']['containerized']:platforms.add(platform.system())
@@ -334,6 +352,7 @@ def main(arguments=None, *, root=None):
     for path in args.platform_report:
         try:
             other=verify_bundle(path,expected_source=snapshot)
+            if other.get('release_profile')!=RELEASE_PROFILE:raise ValueError('Platform release profiles differ')
             if not other.get('source_unchanged') or not other.get('local_fixture_passed') or other['host'].get('containerized') is not False:
                 raise ValueError('Other platform fixtures did not pass on an actual host')
             system=other['host']['system']
@@ -350,6 +369,8 @@ def main(arguments=None, *, root=None):
     report['cases']=classify(stages,requirements(root),platforms)
     inventory=stages.get('inventory',{})
     if inventory.get('status')!='passed':blockers.append('Dependency/notice inventory incomplete')
+    for tag in sorted(OPEN_SOURCE_STAGES):
+        if stages[tag]['status']!='passed':blockers.append(tag+': '+str(stages[tag].get('error')))
     for case in report['cases']:
         if case['status']!='passed':blockers.append(case['id']+': '+str(case['error']))
     report['platforms_verified']=sorted(platforms);report['local_fixture_passed']=local_fixtures

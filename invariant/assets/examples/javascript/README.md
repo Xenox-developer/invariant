@@ -6,7 +6,7 @@ Its initial tests intentionally fail. Prepare Node 18+ inside the project image:
 ```sh
 invariant init
 invariant config set command_network internet
-invariant environment prepare --command "apt-get update && apt-get install -y nodejs npm && npm ci --ignore-scripts --no-audit --no-fund" --timeout 600
+invariant environment prepare --command "sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources && apt-get update && apt-get install -y --no-install-recommends nodejs npm && npm ci --ignore-scripts --no-audit --no-fund" --timeout 600
 invariant config set command_network none
 invariant experiment init --name slug \
   --task "Implement slugify as specified in task.md" \
