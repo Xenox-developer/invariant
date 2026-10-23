@@ -82,24 +82,15 @@ checksum = "6dbf3de79e51f3d586ab4cb9d5c3e2c14aa28ed23d180cf89b4df0454a69cc87"
 [[package]]
 name = "invariant-broker"
 version = "0.1.0"
-source = "git+https://github.com/Xenox-developer/invariant.git#b751b9a79e192b5fb22b2e6174c1f06f166ab5a8"
+source = "git+https://github.com/Xenox-developer/invariant.git#c6e7b7e73240d0d8f695961eeed8bc6fcab362c0"
 dependencies = [
  "base64",
  "getrandom",
  "httparse",
- "invariant-core",
+ "invariant-workspace-core",
  "serde",
  "serde_json",
  "sha2",
-]
-
-[[package]]
-name = "invariant-core"
-version = "0.1.0"
-source = "git+https://github.com/Xenox-developer/invariant.git#b751b9a79e192b5fb22b2e6174c1f06f166ab5a8"
-dependencies = [
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -107,7 +98,16 @@ name = "invariant-embedding-example"
 version = "0.1.0"
 dependencies = [
  "invariant-broker",
- "invariant-core",
+ "invariant-workspace-core",
+]
+
+[[package]]
+name = "invariant-workspace-core"
+version = "0.1.0"
+source = "git+https://github.com/Xenox-developer/invariant.git#c6e7b7e73240d0d8f695961eeed8bc6fcab362c0"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
