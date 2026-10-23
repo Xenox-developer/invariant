@@ -21,14 +21,16 @@ Completed October 24, 2026 (Europe/Moscow). See the
 Libraries are consumed through Git for now. Registry publication and full
 experiment release acceptance are separate from extracting these libraries.
 
-## Remaining stages
+## 2–7. Packaged open-source release
 
-2. Complete Python package contents and verify all advertised installed commands.
-3. Finish onboarding, environment preparation and test preflight for user projects.
-4. Add shareable Markdown/JSON/CSV comparison reports.
-5. Add storage overview, cleanup guidance, backup/restore and support diagnostics.
-6. Rewrite the main README around one verified user journey and finish community docs.
-7. Verify supported platforms against matching final source and prepare release artifacts.
+- [x] Complete Python sdist/wheel contents and verify installed commands outside a checkout.
+- [x] Add onboarding, dependency preparation without models and baseline preflight.
+- [x] Export allowlisted Markdown, JSON and CSV comparisons with explicit private-content flags.
+- [x] Add honest storage accounting, scoped retention, private backups, recoverable restore and diagnostics.
+- [x] Rewrite the English README, ship Python/JavaScript examples and finish contribution/security/issue documentation.
+- [x] Pass matching-source macOS/Linux acceptance, Python/Rust CI, and prepare tested release files with checksums.
 
-Each stage needs its own concrete acceptance evidence. Earlier acceptance reports
-remain historical evidence for their recorded source, not proof of a newer release.
+Completed October 24, 2026. The [0.3.0 verification record](RELEASE_VERIFICATION.md)
+identifies the tested source, actual hosts, model turns, CI and archive evidence.
+The release remains a documented beta; registry publication, hard disk quotas
+and portable cross-path backups are outside its declared boundaries.

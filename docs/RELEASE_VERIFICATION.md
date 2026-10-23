@@ -1,83 +1,63 @@
-# MVP release verification — P21 complete
+# Open-source release verification — 0.3.0
 
-Verified October 21, 2026 (Europe/Moscow; evidence timestamps use UTC).
+Verified October 24, 2026 (Europe/Moscow; evidence timestamps use UTC).
 
-**Result: P01–P21 passed.** The combined report has `accepted: true`, all 18 stages
-passed, no blockers, and unchanged verified source. Its complete imported Linux
-bundle is retained alongside the macOS evidence.
+**Result: accepted.** All P01–P21 cases and all 22 stages of the
+`open-source-v0.3` profile passed, with no blockers and unchanged source.
 
 ## Source and evidence
 
-- Tested source commit: [`bcaf39dc1e57b59252522db14203c7c118d0cb23`](https://github.com/Xenox-developer/invariant/commit/bcaf39dc1e57b59252522db14203c7c118d0cb23).
-- Source manifest digest: `81d6853154929b37a9ccd3b5e241b238e57a6c8aa5fb223873fda896a68208fb`.
-- [Successful Linux GitHub Actions run](https://github.com/Xenox-developer/invariant/actions/runs/39511667205).
-- [Linux artifact](https://github.com/Xenox-developer/invariant/actions/runs/39511667205/artifacts/12305519262), named `linux-experiment-evidence`; GitHub retention is 14 days.
-- GitHub artifact archive digest: `sha256:f09dc9581fcd13b4cade0946d766cbd61ddfb8c5cd075c13f25e03d1187ec25a`.
-- Combined local report: `.invariant/experiment-acceptance/20261020T230716Z-01a4ee90/report.json`.
-- Combined report file SHA-256: `b83fda7938d59787ab23c89d2c1db5f032e3713ee09ccae8461bb3edf55faf42`.
-- Linux report file SHA-256: `9ac39bff2df0bfaf6a012b72f90c7249d10a87f7b21205e23111c6795a7271ea`.
+- Tested source: [`4fb90336da791567c9695ada8cb6e83da43d0645`](https://github.com/Xenox-developer/invariant/commit/4fb90336da791567c9695ada8cb6e83da43d0645).
+- Source manifest: 239 files; digest `fba68921d36beee3485eb19b61e53dbed4d612fc3c594fed22eb250449f1336f`.
+- Combined report SHA-256: `31565dfe591fcaddcbef426f8eef13cbf8aa2e7d312311a25999345301f0402c`.
+- Linux report SHA-256: `2f8d95a31df527acaa212e27ae364e1d080ad5fbadb59005485be6c23dcf2993`.
+- Local combined bundle: `.invariant/experiment-acceptance/20261023T224314Z-6444bb84/`.
+- [Linux fixture CI](https://github.com/Xenox-developer/invariant/actions/runs/40035395377); [complete artifact](https://github.com/Xenox-developer/invariant/actions/runs/40035395377/artifacts/12536514852).
+- Linux artifact archive digest: `sha256:2dac080ae5b60a3f731ef2e3c86e139757d7cfade0cab74c05c0ad9a99e0564d`; GitHub retention is 14 days.
+- [Python CI](https://github.com/Xenox-developer/invariant/actions/runs/40035395355): all 10 Linux/macOS × Python 3.11–3.15 jobs passed.
+- [Rust CI](https://github.com/Xenox-developer/invariant/actions/runs/40035414320): all four Linux/macOS × Rust 1.90/stable jobs passed.
 
-Generated evidence is excluded from Git. Preserve the whole combined report directory,
-including its copied platform bundle; a report JSON alone is insufficient. The verifier
-checks checksums, stage observations and host/source correspondence, rather than trusting
-a top-level success flag. These bundles are integrity records, not signed attestations.
-This verification record was added after the checks; the tested files are enumerated in
-the report's source manifest.
+Preserve the entire local bundle, including imported Linux artifacts. JSON alone
+is insufficient. It can contain synthetic project/model content and private native
+transcripts; only allowlisted summary evidence is attached to the public release.
+Use `invariant experiment acceptance --verify /absolute/path/to/report.json --json`
+to verify the full bundle. This record and the release roadmap were added after
+verification; the files in the tested source manifest still match the release.
+Checksums prove local integrity, not signed provenance.
 
-## Actual hosts and coverage
+## Actual host coverage
 
-| Host | Python | Docker | Verified scope |
+| Host | Architecture | Python | Docker |
 |---|---|---|---|
-| GitHub `ubuntu-24.04`, x86_64, kernel 6.17.0-1022-azure | 3.12.15 | 28.0.4 | All 16 fixture stages; actual non-containerized Linux launcher |
-| macOS, arm64, Darwin 24.6.0 | 3.12.1 | 27.4.0 | All 18 stages, including real-provider checks and imported Linux evidence |
+| macOS | arm64 | 3.12.1 | 27.4.0 |
+| Linux | x86_64 | 3.12.15 | 28.0.4 |
 
-Both hosts passed 233 Python unit tests plus 11 SDK tests, the Rust/legacy acceptance
-suite, and a ten-variant matrix with two cases and two repetitions (40 command trials
-per host). Checks include isolation, independent evaluation, resource reservations,
-OOM/deadlines, detached execution, stop/recovery/retry, resumable logs, continuation,
-recoverable apply, reference-aware deletion, and clean wheel installation followed by
-the published manual/JSON quickstart. Cleanup completed without errors.
+Both actual non-containerized host launchers passed 271 application unit tests,
+11 SDK tests, all 20 legacy acceptance cases and the 40-trial command matrix.
+The macOS aggregate passed all 22 stages. Linux passed all 18 provider-free
+stages; its four live stages remain explicitly blocked, with no account
+credentials or model calls in CI. macOS supplied 15 real `gpt-6.1-sol` turns:
+two native variants, two parent/child apply turns, three ordinary chat/resume
+turns and four each for guided setup and demo. Guided/demo compare low,
+medium and high reasoning effort. Other native stages use medium effort.
 
-The macOS gate additionally completed seven real Codex turns with `gpt-6.1-sol` at
-`medium` effort: two evaluated native variants, two parent/child continuation turns,
-and three ordinary chat/resume turns. Linux CI deliberately made no provider calls and
-received no Codex account credentials; its live stages remain explicitly blocked in
-its fixture report. The combined report obtains those live results from macOS.
+Coverage includes independent frozen evaluators, limits and overlap, OOM and
+deadlines, detached controllers, stop/recovery/retry, resumed logs, selection,
+continuation, recoverable apply and scoped deletion. New release checks cover
+sdist → wheel installation with a private `077` umask, installed legacy Docker
+commands, real Python/npm preflight and quality verdicts, all three export
+formats, private exact-image backup/restore and continued execution, retention
+and safe diagnostics. Fixture cleanup completed without errors.
 
-## Failures corrected
+## Release files
 
-- Native Linux retains root ownership on files created by administrator-mode trials.
-  Pre-created policy mount destinations and a bounded offline static helper now return
-  stopped private trial files to the operator, without following symlinks or mounting
-  the original project. Its resources fit the minimum supported trial reservation.
-- Recovery now accepts a crash that occurs before a phase's workspace exists, without
-  replaying claimed work or treating the missing directory as an ownership failure.
-- Fixture-only workspace checks use an empty credential home and the real Codex
-  app-server, catalog, thread creation and Docker executor. Their test entrypoint
-  skips sign-in and rejects provider turns/login requests; production entrypoints
-  and separate live authentication checks retain their normal behavior.
-- Linux host Rust unit fixtures no longer require privileged ownership changes.
-  Production capability delivery to workload UID 65532 remains exercised by the
-  real Docker legacy suite.
+The [0.3.0 beta release](https://github.com/Xenox-developer/invariant/releases/tag/v0.3.0)
+contains the tested Python wheel/sdist and Rust 0.1.0 archives, source manifest,
+sanitized verification summary and `SHA256SUMS`. Rust archives came from the
+passing minimum-toolchain Linux CI consumer check. No registry or image push
+is implied. See [installation](INSTALLATION.md), [Rust consumption](RUST_LIBRARY.md),
+[compatibility](COMPATIBILITY.md), [backup boundaries](STORAGE_AND_RECOVERY.md)
+and the [changelog](../CHANGELOG.md).
 
-CI now verifies the downloaded-style evidence bundle against its exact source and
-actual Linux host identity. JSON results stay on stdout; stage progress uses stderr.
-
-## Verify or reproduce
-
-From the checkout that retains the generated evidence:
-
-```sh
-invariant experiment acceptance --verify \
-  .invariant/experiment-acceptance/20261020T230716Z-01a4ee90/report.json --json
-```
-
-This command returned exit 0 with `valid: true` and `accepted: true`.
-For a new release, run the Linux workflow, download its complete artifact, then run:
-
-```sh
-invariant experiment acceptance --live gpt-6.1-sol --effort medium \
-  --platform-report /absolute/path/to/linux-bundle/report.json
-```
-
-Use matching source manifests on both hosts. See [acceptance and release limitations](experiments/ACCEPTANCE.md).
+The [October 21 verification](RELEASE_VERIFICATION_2026-10-21.md) remains historical
+evidence for its own source and earlier release requirements.
