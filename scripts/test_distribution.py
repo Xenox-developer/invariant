@@ -19,6 +19,9 @@ def main():
     parser.add_argument('--report', type=Path, default=ROOT/'.invariant/distribution/report.json')
     parser.add_argument('--docker', action='store_true', help='also run the installed legacy Docker demo')
     args = parser.parse_args()
+    # Real installations may use a private umask; image inputs must still work
+    # for the unprivileged workload UID after pip writes package files as 0600.
+    os.umask(0o077)
     args.report.parent.mkdir(parents=True, exist_ok=True)
     report = {'schema_version': 1, 'passed': False, 'checks': [], 'artifacts': []}
     try:
@@ -35,7 +38,10 @@ def main():
             def command(argv, *, cwd=work, env=None, expected=0, timeout=180):
                 result=subprocess.run(argv,cwd=cwd,env=env,capture_output=True,text=True,timeout=timeout)
                 if result.returncode!=expected:
-                    raise RuntimeError(str(argv)+'\n'+result.stdout[-3000:]+'\n'+result.stderr[-3000:])
+                    details=[]
+                    for evidence in (work/'project/.invariant/demo').glob('*/run.log'):
+                        details.append(evidence.read_text(errors='replace')[-6000:])
+                    raise RuntimeError(str(argv)+'\n'+result.stdout[-3000:]+'\n'+result.stderr[-3000:]+'\n'+'\n'.join(details))
                 return result
 
             command([sys.executable,'-c','from setuptools.build_meta import build_sdist; build_sdist("dist")'],cwd=checkout)

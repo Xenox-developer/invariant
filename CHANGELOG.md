@@ -20,6 +20,7 @@ parallel-experiment source milestone from October 21.
 ### Fixed
 
 - Installed legacy demos/build commands no longer require neighboring checkout files.
+- Legacy workload image code has explicit readable modes after installation under a private host umask.
 - User reports are written in the working project instead of the installed package.
 - Deleting trial checkpoints preserves untagged parent images still needed by saved studies or prepared environments.
 - Distribution checks build sdist → wheel and exercise the installed interface.

@@ -202,8 +202,11 @@ def main():
         machine('execute',queued['id'])
         cancelled=machine('results',queued['id']);remember(cancelled);report['cancelled']=cancelled
         require(cancelled['summary']['cancelled']==3,'Cancellation started queued work or left an active attempt')
-        active_cancelled=[row for row in cancelled['trials'] if row['runner']['status']=='cancelled']
-        require(len(active_cancelled)==1 and active_cancelled[0]['runner']['duration_seconds']<15,'Cancelled command ran to its natural 20-second finish')
+        # External stop can end Docker attach before the runner observes its
+        # cancellation event. The durable attempt reason is authoritative; the
+        # raw runner may accurately retain PROCESS_EXIT from that race.
+        active_cancelled=[row for row in cancelled['trials'] if row['runner']['status']!='not_started']
+        require(len(active_cancelled)==1 and active_cancelled[0]['reason']=='CANCELLED' and active_cancelled[0]['runner']['duration_seconds']<15,'Cancelled command ran to its natural 20-second finish')
         passed('persisted stop controls stop owned work and prevent queued starts')
         report['passed']=True
     except Exception as error:
