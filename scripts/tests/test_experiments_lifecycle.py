@@ -155,6 +155,27 @@ class LifecycleTests(unittest.TestCase):
             self.assertTrue(self.engine.delete(study['id'],confirm=True)['deleted'])
         self.assertEqual(self.engine.list()['studies'],[])
 
+    def test_deleting_checkpoint_keeps_untagged_frozen_parent_images(self):
+        from invariant import environment
+        study=self.submit();self.engine.store.stop(study['id'])
+        attempt=study['trials'][0]['attempts'][0]
+        image='sha256:'+'3'*64;owner=attempt['id']+'-runner'
+        workspace.private_write(self.engine.root/'attempts'/attempt['id']/'control/environment.json',
+                                {'schema':1,'project':str(self.project),'image':image,'owner':owner})
+        retained={image,study['frozen']['image']['id']}
+        def docker(*args,**kwargs):
+            if args[:2]==('image','inspect'):
+                return json.dumps([{'Config':{'Labels':{'io.invariant.checkpoint-project':environment.project_key(self.project),
+                                                        'io.invariant.checkpoint-owner':owner}}}])
+            if args[:2]==('image','rm'):
+                retained.discard(image)
+                if '--no-prune' not in args:retained.clear()
+                return ''
+            self.fail('Unexpected Docker mutation '+str(args))
+        with patch('invariant.experiments.deletion.owned_info',return_value=None),patch.object(workspace,'docker',side_effect=docker):
+            self.engine.delete(study['id'],confirm=True)
+        self.assertEqual(retained,{study['frozen']['image']['id']})
+
     def test_study_deletion_retains_shared_baseline(self):
         first=self.submit(request_id='one');second=self.submit(request_id='two')
         self.assertEqual(first['baseline_id'],second['baseline_id'])

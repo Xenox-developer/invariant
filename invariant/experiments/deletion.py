@@ -111,7 +111,9 @@ def delete(engine, identifier, *, confirm=False, request_id=None):
             if (labels.get('io.invariant.checkpoint-project') != environment.project_key(engine.project)
                     or labels.get('io.invariant.checkpoint-owner') != owner):
                 raise ExperimentError('FOREIGN_IMAGE', 'Refusing to delete an image without matching checkpoint ownership.')
-            workspace.docker('image', 'rm', image, timeout=120)  # No force; foreign/runtime references must win.
+            # Docker otherwise prunes untagged ancestors, including frozen bases
+            # retained by other studies or the ordinary prepared environment.
+            workspace.docker('image', 'rm', '--no-prune', image, timeout=120)
         for relative in plan['paths']:
             target = engine.root / relative
             if target.is_symlink():
