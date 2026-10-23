@@ -35,8 +35,13 @@ def main():
     try:
         # Export only source/package inputs. No local build, Git state, egg-info,
         # editable installation or saved workspace can make the wheel test pass.
-        for name in ('pyproject.toml','README.md','LICENSE','NOTICE'):
+        for name in ('pyproject.toml','README.md','LICENSE','NOTICE','_build.py','MANIFEST.in','Cargo.toml','Cargo.lock','.dockerignore'):
             shutil.copyfile(ROOT/name, checkout/name)
+        for name in ('crates','docker'):
+            shutil.copytree(ROOT/name,checkout/name)
+        for name in ('scripts/invariant','scripts/guided_demo.py','examples/guided_mvp.py','sdk/python/invariant_client.py'):
+            (checkout/name).parent.mkdir(parents=True,exist_ok=True)
+            shutil.copy2(ROOT/name,checkout/name)
         shutil.copytree(ROOT/'invariant',checkout/'invariant',ignore=shutil.ignore_patterns('__pycache__','*.pyc'))
         command([sys.executable,'-m','pip','wheel','--no-index','--no-build-isolation','--no-deps','--wheel-dir',str(output/'wheel'),'.'])
         wheel = next((output/'wheel').glob('*.whl'))

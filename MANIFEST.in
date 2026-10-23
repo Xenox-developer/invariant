@@ -1,0 +1,6 @@
+include _build.py Cargo.toml Cargo.lock .dockerignore LICENSE NOTICE
+include scripts/invariant scripts/guided_demo.py examples/guided_mvp.py sdk/python/invariant_client.py
+recursive-include crates *.rs *.toml README.md LICENSE NOTICE
+recursive-include docker *
+recursive-include invariant/assets *
+global-exclude __pycache__ *.py[cod]

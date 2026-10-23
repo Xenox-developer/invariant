@@ -9,8 +9,10 @@ import sys
 from datetime import datetime, timezone
 import re
 from .policy import DEFAULT_DURATION
+from . import __version__
+from .distribution import legacy_root, source_checkout
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = legacy_root()
 STATE_VOLUME = "invariant-supervisor-state-v1"
 PYTHON_IMAGE = "invariant-python:local"
 CONTROL_IMAGE = "invariant-supervisor:local"
@@ -27,6 +29,7 @@ def main():
         from .experiments.cli import main as experiment_main
         return experiment_main(sys.argv[2:])
     parser = argparse.ArgumentParser(description="Create isolated agent workspaces or run bounded Python programs. Use invariant experiment --help for frozen studies.")
+    parser.add_argument('--version', action='version', version='invariant '+__version__)
     parser.add_argument("command", choices=("setup", "init", "prepare", "run", "resume", "chats", "guardrails", "config", "demo", "test", "acceptance", "evidence", "status", "grant", "revoke", "stop"))
     parser.add_argument("target", nargs="?", help="model for agent run; chat ID for resume (omit for latest); Python file or execution ID")
     parser.add_argument("config_key", nargs="?", help="setting name for config set")
@@ -119,7 +122,7 @@ def main():
         from guided_demo import main as demo_main
         sys.exit(demo_main(step=args.step))
     if args.command == "acceptance":
-        subprocess.run([sys.executable, str(ROOT / "scripts" / "test_mvp_acceptance.py")], check=True)
+        subprocess.run([sys.executable, str(source_checkout() / "scripts" / "test_mvp_acceptance.py")], check=True)
         return
     if args.command in ("status", "grant", "revoke", "stop"):
         if args.command != "status" and not args.target:
@@ -166,7 +169,7 @@ def main():
         return
     if args.command == "evidence":
         # Explicit operator export; the volume holds only trusted supervisor data.
-        output = ROOT / ".invariant" / "docker-evidence"
+        output = Path.cwd() / ".invariant" / "docker-evidence"
         output.mkdir(parents=True, exist_ok=True, mode=0o700)
         result = docker("create", "--network=none", "--mount", f"type=volume,src={STATE_VOLUME},dst=/state,readonly", CONTROL_IMAGE, "--state", "/state", "--export-evidence", capture=True)
         container = result.stdout.strip()

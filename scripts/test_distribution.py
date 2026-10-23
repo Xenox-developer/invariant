@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+"""Build wheel and sdist, then exercise the installed CLI outside any checkout."""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tempfile
+import venv
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--report', type=Path, default=ROOT/'.invariant/distribution/report.json')
+    parser.add_argument('--docker', action='store_true', help='also run the installed legacy Docker demo')
+    args = parser.parse_args()
+    args.report.parent.mkdir(parents=True, exist_ok=True)
+    report = {'schema_version': 1, 'passed': False, 'checks': [], 'artifacts': []}
+    try:
+        with tempfile.TemporaryDirectory(prefix='iv-dist-') as temporary:
+            work = Path(temporary); checkout=work/'source'; checkout.mkdir()
+            for name in ('pyproject.toml','README.md','LICENSE','NOTICE','_build.py','MANIFEST.in','Cargo.toml','Cargo.lock','.dockerignore'):
+                shutil.copyfile(ROOT/name,checkout/name)
+            for name in ('invariant','crates','docker'):
+                shutil.copytree(ROOT/name,checkout/name,ignore=shutil.ignore_patterns('__pycache__','*.pyc','_legacy','target'))
+            for name in ('scripts/invariant','scripts/guided_demo.py','examples/guided_mvp.py','sdk/python/invariant_client.py'):
+                (checkout/name).parent.mkdir(parents=True,exist_ok=True)
+                shutil.copy2(ROOT/name,checkout/name)
+
+            def command(argv, *, cwd=work, env=None, expected=0, timeout=180):
+                result=subprocess.run(argv,cwd=cwd,env=env,capture_output=True,text=True,timeout=timeout)
+                if result.returncode!=expected:
+                    raise RuntimeError(str(argv)+'\n'+result.stdout[-3000:]+'\n'+result.stderr[-3000:])
+                return result
+
+            command([sys.executable,'-c','from setuptools.build_meta import build_sdist; build_sdist("dist")'],cwd=checkout)
+            sdist=next((checkout/'dist').glob('*.tar.gz'))
+            command([sys.executable,'-m','pip','wheel','--no-deps','--no-index','--no-build-isolation','--wheel-dir',str(work/'wheels'),str(sdist)])
+            wheel=next((work/'wheels').glob('*.whl'))
+            # Keep reviewable release files alongside the report.
+            for artifact in (sdist,wheel):
+                shutil.copyfile(artifact,args.report.parent/artifact.name)
+                report['artifacts'].append({'name':artifact.name,'sha256':hashlib.sha256(artifact.read_bytes()).hexdigest()})
+            venv.EnvBuilder(with_pip=True).create(work/'venv')
+            binary=work/'venv/bin'; python=binary/'python'; cli=binary/'invariant'
+            command([str(python),'-m','pip','install','--no-index','--no-deps',str(wheel)])
+            env=os.environ.copy();env.pop('PYTHONPATH',None);env['PATH']=str(binary)+os.pathsep+env.get('PATH','')
+            project=work/'project';project.mkdir()
+            version=command([str(cli),'--version'],cwd=project,env=env).stdout.strip()
+            assert version=='invariant 0.3.0',version
+            for argv in (['--help'],['experiment','--help'],['experiment','demo','--help'],['demo','--help']):
+                command([str(cli),*argv],cwd=project,env=env)
+            command([str(python),'-I','-c',
+                'from invariant.distribution import legacy_root; r=legacy_root(); '
+                'assert "site-packages" in str(r); '
+                'assert all((r/p).is_file() for p in ["Cargo.toml","crates/invariant-core/README.md","docker/seccomp.json","scripts/guided_demo.py","sdk/python/invariant_client.py"])'],cwd=project,env=env)
+            rejected=command([str(cli),'acceptance'],cwd=project,env=env,expected=1)
+            assert 'source checkout' in rejected.stderr and 'Traceback' not in rejected.stderr
+            command([str(cli),'init'],cwd=project,env=env)
+            command([str(cli),'config','--json'],cwd=project,env=env)
+            command([str(cli),'chats','--json'],cwd=project,env=env)
+            command([str(cli),'experiment','demo',str(work/'demo'),'--json'],cwd=project,env=env)
+            report['checks']=['sdist builds a complete wheel','fresh installed version/help and project commands',
+                'legacy source resources and examples are installed','maintainer command fails clearly without checkout',
+                'installed native demo scaffolds without provider calls']
+            if args.docker:
+                command([str(cli),'prepare'],cwd=project,env=env,timeout=1200)
+                command([str(cli),'demo','--auto'],cwd=project,env=env,timeout=600)
+                evidence=list((project/'.invariant/demo').glob('*/demo.json'))
+                assert len(evidence)==1 and json.loads(evidence[0].read_text())['passed'], 'Installed demo evidence did not verify'
+                report['checks'].append('installed legacy demo prepares images and verifies real Docker effects')
+            report['passed']=True
+    except (OSError,ValueError,AssertionError,RuntimeError,subprocess.SubprocessError) as error:
+        report['error']=str(error)
+    args.report.write_text(json.dumps(report,indent=2)+'\n')
+    print(json.dumps(report,indent=2))
+    return 0 if report['passed'] else 1
+
+
+if __name__=='__main__':
+    raise SystemExit(main())

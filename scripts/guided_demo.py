@@ -114,7 +114,7 @@ class Guide:
         self.step = step
         self.id = uuid.uuid4().hex
         stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-        self.output = ROOT / ".invariant/demo" / (stamp + "-" + self.id[:8])
+        self.output = Path.cwd() / ".invariant/demo" / (stamp + "-" + self.id[:8])
         self.output.mkdir(parents=True, mode=0o700)
         self.volume = "invariant-demo-" + self.id
         self.control = "iv-demo-control-" + self.id
