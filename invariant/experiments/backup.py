@@ -15,6 +15,7 @@ import uuid
 from .. import __version__, environment, workspace
 from ..execution import private_directory, project_lock
 from .errors import ExperimentError
+from .definitions import digest
 from .storage import images
 from .store import TERMINAL, SCHEMA
 
@@ -161,6 +162,9 @@ def recover_restore(engine):
     marker=engine.state/'restore-active.json'
     record=environment.read_record(marker)
     if record is None:return {'recovered':True,'changed':False}
+    if (type(record.get('schema')) is not int or record['schema']!=1 or
+            record.get('digest')!=digest({k:v for k,v in record.items() if k!='digest'})):
+        raise ExperimentError('RESTORE_RECOVERY_BLOCKED','Restore journal integrity failed; all copies were retained.')
     token=record.get('token','')
     if not re.fullmatch(r'[0-9a-f]{32}',token) or record.get('project')!=str(engine.project):
         raise ExperimentError('RESTORE_RECOVERY_BLOCKED','Unsafe restore journal; all copies were retained.')
@@ -270,7 +274,8 @@ def restore(engine, archive=None, *, replace=False, recover=False):
                 with ExitStack() as fresh_locks:
                     for folder in (stage/'state/controller',stage/'state/mutations'):
                         fresh_locks.callback(project_lock(folder).close)
-                    workspace.private_write(engine.state/'restore-active.json',{'token':token,'project':str(engine.project),'schema':1})
+                    journal={'token':token,'project':str(engine.project),'schema':1}
+                    workspace.private_write(engine.state/'restore-active.json',{**journal,'digest':digest(journal)})
                     sync_directory(engine.state)
                     if engine.root.exists():engine.root.rename(old)
                     sync_directory(engine.state)

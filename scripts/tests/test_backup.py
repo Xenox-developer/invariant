@@ -11,6 +11,7 @@ from invariant import workspace
 from invariant.experiments.backup import extract,recover_restore,verify_images
 from invariant.experiments.engine import ExperimentEngine
 from invariant.experiments.errors import ExperimentError
+from invariant.experiments.definitions import digest
 
 
 class BackupTests(unittest.TestCase):
@@ -48,7 +49,8 @@ class BackupTests(unittest.TestCase):
         with self.assertRaises(ExperimentError):extract(self.archive(),target,project=self.root/'wrong',destination=self.engine.root)
 
     def marker(self,token):
-        (self.engine.state/'restore-active.json').write_text(json.dumps({'token':token,'project':str(self.project)}))
+        record={'token':token,'project':str(self.project),'schema':1}
+        (self.engine.state/'restore-active.json').write_text(json.dumps({**record,'digest':digest(record)}))
         (self.engine.state/'restore-active.json').chmod(0o600)
 
     def test_crash_after_old_state_rename_rolls_back_without_replaying_work(self):
@@ -67,6 +69,13 @@ class BackupTests(unittest.TestCase):
         self.assertEqual(recover_restore(self.engine)['outcome'],'published')
         self.assertEqual((old/'old').read_text(),'old')
         self.assertFalse((self.engine.state/'restore-active.json').exists())
+
+    def test_corrupt_restore_journal_blocks_recovery(self):
+        self.marker('d'*32)
+        path=self.engine.state/'restore-active.json';record=json.loads(path.read_text());record['token']='e'*32
+        path.write_text(json.dumps(record))
+        with self.assertRaisesRegex(ExperimentError,'integrity'):recover_restore(self.engine)
+        self.assertTrue(path.exists())
 
     def test_ambiguous_external_change_blocks_recovery_and_preserves_every_copy(self):
         token='c'*32;(self.engine.state/('restore-before-'+token)).mkdir()
