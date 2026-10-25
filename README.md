@@ -1,3 +1,5 @@
+![INVARIANT — a terminal octopus managing parallel agent environments, code, tools and tests](.github/assets/invariant-cover.png)
+
 # INVARIANT
 
 **Compare coding-agent configurations locally, then keep the changes you choose.**
