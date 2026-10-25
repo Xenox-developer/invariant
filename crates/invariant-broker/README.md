@@ -10,17 +10,17 @@ The maintained host verification targets are macOS and Linux.
 
 ## Add to a Rust project
 
-The library is available from Git. A crates.io release has not been published.
-Commit your application's `Cargo.lock` to retain the resolved Git revision,
-or add `rev` to pin a reviewed commit.
+Install from [crates.io](https://crates.io/crates/invariant-broker).
+Commit your application's `Cargo.lock` to retain the resolved versions.
 
 ```toml
 [dependencies]
-invariant-broker = { git = "https://github.com/Xenox-developer/invariant.git" }
+invariant-broker = "0.1.0"
 ```
 
 Use `invariant_broker::core` for the broker's exact policy types. Existing direct
-dependencies on `invariant-core` and its root imports remain compatible.
+dependencies using the `invariant-core` alias for package `invariant-workspace-core`
+and its `invariant_core` imports remain compatible.
 
 ## Create and revoke access
 

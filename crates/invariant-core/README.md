@@ -12,13 +12,12 @@ network runtime requirement. Its scope remains the fixed mock invoice operation:
 
 The Rust import name remains `invariant_core`. The registry package name is
 `invariant-workspace-core`: the shorter `invariant-core` name belongs to another project.
-Until registry publication completes, use this Git dependency:
-Commit the consuming project's `Cargo.lock` to retain the resolved Git revision,
-or add `rev` to pin the dependency to a reviewed commit.
+Install from [crates.io](https://crates.io/crates/invariant-workspace-core).
+Commit the consuming project's `Cargo.lock` to retain the resolved versions.
 
 ```toml
 [dependencies]
-invariant-core = { package = "invariant-workspace-core", git = "https://github.com/Xenox-developer/invariant.git" }
+invariant-core = { package = "invariant-workspace-core", version = "0.1.0" }
 ```
 
 ## Check a request
