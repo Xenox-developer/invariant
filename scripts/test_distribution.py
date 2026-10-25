@@ -12,6 +12,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import tomllib
 import venv
 import zipfile
 from urllib.parse import urlsplit
@@ -98,7 +99,8 @@ def main():
             env=os.environ.copy();env.pop('PYTHONPATH',None);env['PATH']=str(binary)+os.pathsep+env.get('PATH','')
             project=work/'project';project.mkdir()
             version=command([str(cli),'--version'],cwd=project,env=env).stdout.strip()
-            assert version=='invariant 0.3.1',version
+            expected_version = tomllib.loads((ROOT/'pyproject.toml').read_text())['project']['version']
+            assert version=='invariant '+expected_version,version
             for argv in (['--help'],['experiment','--help'],['experiment','demo','--help'],['demo','--help']):
                 command([str(cli),*argv],cwd=project,env=env)
             command([str(python),'-I','-c',
