@@ -38,9 +38,10 @@ are unchanged. In the project's publishing settings, its identity is:
 | Workflow filename | `publish.yml` |
 | Environment | `pypi` |
 
-### crates.io — configure both crates
+### crates.io — both crates configured
 
-In each crate's **Settings → Trusted Publishing**, add a GitHub publisher:
+Both publishers were configured and verified on October 26, 2026. For a new
+crate or repository, use **Settings → Trusted Publishing** with the same fields:
 
 - [invariant-workspace-core settings](https://crates.io/crates/invariant-workspace-core/settings)
 - [invariant-broker settings](https://crates.io/crates/invariant-broker/settings)
@@ -52,10 +53,10 @@ In each crate's **Settings → Trusted Publishing**, add a GitHub publisher:
 | Workflow filename | `publish.yml` |
 | Environment | `crates-io` |
 
-The local first-publication token only has publication permissions; it cannot
-configure trusted publishers. This one-time owner setting is required before the
-crates.io OIDC job can authenticate. New publish tokens are short-lived and are
-revoked by the official Rust authentication action when its job finishes.
+This one-time owner setting is now complete for both packages. New publish
+tokens are short-lived and are revoked by the official Rust authentication
+action when its job finishes. The local first-publication token is not used
+by GitHub Actions.
 
 ## Publish a new version
 
@@ -113,6 +114,21 @@ OIDC authentication. It does not attach assets or upload package versions.
 For a Rust-only check use `-f tag=rust-v0.1.0`. A dry run is the default when
 starting the workflow manually. Check the job summary for selected versions and
 already-published packages.
+
+## Verified setup
+
+On October 26, 2026 the [GitHub dry run](https://github.com/Xenox-developer/invariant/actions/runs/40242604882)
+passed preparation and both registry authentication jobs after the crates.io
+publishers were configured. The assets job was skipped and no packages were
+uploaded. The Python CI matrix also passed for the workflow implementation.
+
+Local verification passed 288 application/maintainer tests (including 17 release
+regressions), 11 SDK tests, actionlint and both release-tag build modes. A separate
+local-only fixture changed Python to 0.3.2 and Rust to 0.1.1: all four distributions
+built and the installed CLI reported the new fixture version. Those fixture
+versions were not uploaded. Cargo's separate repackaging reproduced the checked
+archive hashes. Tests cover partial-upload recovery, mismatched hashes, moved
+commits, unsafe manifest paths, registry errors and preservation of release files.
 
 ## Retry a failed publication
 
