@@ -1,96 +1,167 @@
-name: Publish verified Python release
+name: Publish release packages
 on:
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Existing GitHub release tag, for example v0.3.1'
+        description: 'Release tag: vMAJOR.MINOR.PATCH or rust-vMAJOR.MINOR.PATCH'
         required: true
         type: string
+      dry_run:
+        description: 'Build and check registry authentication without uploading packages'
+        type: boolean
+        default: true
 permissions:
   contents: read
 concurrency:
-  group: publish-pypi
+  group: publish-registries
   cancel-in-progress: false
 jobs:
-  verify:
-    if: github.ref == 'refs/heads/main'
+  prepare:
+    if: github.event_name == 'release' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
+    timeout-minutes: 25
     outputs:
-      version: ${{ steps.verify.outputs.version }}
+      source_sha: ${{ steps.plan.outputs.source_sha }}
+      python_version: ${{ steps.plan.outputs.python_version }}
+      rust_version: ${{ steps.plan.outputs.rust_version }}
+      has_python: ${{ steps.plan.outputs.has_python }}
+      need_python: ${{ steps.plan.outputs.need_python }}
+      need_rust: ${{ steps.plan.outputs.need_rust }}
+      dry_run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
     steps:
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          path: automation
+          persist-credentials: false
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.12'
-      - name: Download and verify release distributions
-        id: verify
+      - name: Install verification tools
+        run: |
+          python -m pip install 'setuptools>=68' wheel twine
+          rustup toolchain install 1.90.0 --profile minimal --component clippy
+      - name: Validate tag, versions and registry state
+        id: plan
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        run: |
+          flags=()
+          if [ "$DRY_RUN" = true ]; then flags+=(--dry-run); fi
+          python automation/scripts/publish_release.py plan --source source \
+            --tag "$RELEASE_TAG" --plan plan.json "${flags[@]}"
+      - name: Build and verify distributions or reuse this commit's checked assets
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          RELEASE_TAG: ${{ inputs.tag }}
-        shell: python
-        run: |
-          import email.parser
-          import hashlib
-          import os
-          from pathlib import Path
-          import re
-          import subprocess
-          import tarfile
-          import zipfile
-
-          tag = os.environ['RELEASE_TAG']
-          if not re.fullmatch(r'v\d+\.\d+\.\d+', tag):
-              raise SystemExit('Expected a vMAJOR.MINOR.PATCH tag')
-          version = tag[1:]
-          names = [f'invariant_workspace-{version}-py3-none-any.whl',
-                   f'invariant_workspace-{version}.tar.gz']
-          subprocess.run(['gh', 'release', 'download', tag, '--dir', 'release',
-                          '--pattern', 'SHA256SUMS', '--pattern', names[0],
-                          '--pattern', names[1]], check=True)
-          sums = {}
-          for line in Path('release/SHA256SUMS').read_text().splitlines():
-              digest, name = line.split(maxsplit=1)
-              name = name.lstrip('*')
-              if name in sums or not re.fullmatch(r'[0-9a-f]{64}', digest):
-                  raise SystemExit('Invalid or duplicate release checksum')
-              sums[name] = digest
-          Path('dist').mkdir()
-          for name in names:
-              artifact = Path('release') / name
-              if hashlib.sha256(artifact.read_bytes()).hexdigest() != sums.get(name):
-                  raise SystemExit(f'Checksum mismatch: {name}')
-              if name.endswith('.whl'):
-                  with zipfile.ZipFile(artifact) as archive:
-                      metadata = archive.read(f'invariant_workspace-{version}.dist-info/METADATA')
-              else:
-                  with tarfile.open(artifact, 'r:gz') as archive:
-                      metadata = archive.extractfile(f'invariant_workspace-{version}/PKG-INFO').read()
-              parsed = email.parser.BytesParser().parsebytes(metadata)
-              if parsed['Name'] != 'invariant-workspace' or parsed['Version'] != version:
-                  raise SystemExit(f'Unexpected distribution metadata: {name}')
-              artifact.replace(Path('dist') / name)
-          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
-              output.write(f'version={version}\n')
-      - run: python -m pip install twine
-      - run: python -m twine check --strict dist/*
-      - uses: actions/upload-artifact@v4
+        run: python automation/scripts/publish_release.py build --source source --plan plan.json --bundle bundle
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          name: verified-pypi-distributions
-          path: dist/
+          name: release-packages
+          path: bundle/
           if-no-files-found: error
-          retention-days: 7
-  publish:
-    needs: verify
+          retention-days: 14
+  assets:
+    needs: prepare
+    if: needs.prepare.outputs.dry_run != 'true' && (needs.prepare.outputs.need_python == 'true' || needs.prepare.outputs.need_rust == 'true')
     runs-on: ubuntu-24.04
-    environment:
-      name: pypi
-      url: https://pypi.org/project/invariant-workspace/${{ needs.verify.outputs.version }}/
+    timeout-minutes: 10
     permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          path: automation
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: release-packages
+          path: bundle
+      - name: Attach verified packages and checksums without replacing files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python automation/scripts/publish_release.py attach --plan bundle/plan.json --bundle bundle
+  crates:
+    needs: [prepare, assets]
+    if: >-
+      always() && !cancelled() && needs.prepare.result == 'success' &&
+      (needs.assets.result == 'success' || needs.assets.result == 'skipped') &&
+      (needs.prepare.outputs.need_rust == 'true' || needs.prepare.outputs.dry_run == 'true')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment:
+      name: crates-io
+      url: https://crates.io/crates/invariant-broker
+    permissions:
+      contents: read
       id-token: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          name: verified-pypi-distributions
-          path: dist/
-      - name: Publish to PyPI using its registered trusted publisher
+          path: automation
+          persist-credentials: false
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ needs.prepare.outputs.source_sha }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: release-packages
+          path: bundle
+      - run: rustup toolchain install 1.90.0 --profile minimal
+      - name: Obtain a short-lived crates.io publishing token
+        id: auth
+        uses: rust-lang/crates-io-auth-action@3268eb413133e2960fa4ae0e963ca76380c54cd9 # v1
+      - name: Publish checked Rust archives in dependency order
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+        run: python automation/scripts/publish_release.py rust --source source --plan bundle/plan.json --bundle bundle
+  pypi:
+    needs: [prepare, assets]
+    if: >-
+      always() && !cancelled() && needs.prepare.result == 'success' &&
+      (needs.assets.result == 'success' || needs.assets.result == 'skipped') &&
+      needs.prepare.outputs.has_python == 'true' &&
+      (needs.prepare.outputs.need_python == 'true' || needs.prepare.outputs.dry_run == 'true')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment:
+      name: pypi
+      url: https://pypi.org/project/invariant-workspace/${{ needs.prepare.outputs.python_version }}/
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          path: automation
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: release-packages
+          path: bundle
+      - name: Check PyPI trusted publishing without uploading
+        if: needs.prepare.outputs.dry_run == 'true'
+        run: python automation/scripts/publish_release.py pypi-auth
+      - name: Check existing Python files before a retry
+        if: needs.prepare.outputs.dry_run != 'true'
+        id: state
+        run: python automation/scripts/publish_release.py python-status --plan bundle/plan.json --bundle bundle
+      - name: Publish the checked Python distributions
+        if: needs.prepare.outputs.dry_run != 'true' && steps.state.outputs.pending == 'true'
         uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # release/v1
+        with:
+          packages-dir: bundle/python/
+          # Existing filenames have already been checked against registry hashes.
+          skip-existing: true

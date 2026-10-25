@@ -1,88 +1,135 @@
 # Registry publishing
 
-The Python application and Rust libraries have separate versions:
-`invariant-workspace` 0.3.1, `invariant-workspace-core` 0.1.0 and
-`invariant-broker` 0.1.0. The crates.io name `invariant-core` belongs to an
-unrelated project. Our library keeps `invariant_core` as its Rust import name;
-use `package = "invariant-workspace-core"` with the `invariant-core` dependency alias.
-The internal `invariant-supervisor` is not published.
-
-`v0.3.0` and its original release assets remain historical verification evidence.
-`v0.3.1` records the package-name correction and publication tooling. Runtime code
-and saved-state formats are unchanged. Registry uploads require owner credentials;
-GitHub releases alone do not establish that a registry upload succeeded.
+[Publish release packages](../.github/workflows/publish.yml) runs when a GitHub
+Release is **published**, including a prerelease. Drafts do not upload packages.
+The workflow builds from the release tag, verifies the distributions, attaches
+packages and SHA-256 evidence to the release, then uploads new versions.
+There is no manual package-building or file-upload step.
 
 ## Published versions
 
-The first registry delivery is complete (October 26, 2026):
-
-| Package | Registry version | Source tag |
+| Package | First registry version | Source tag |
 |---|---|---|
 | `invariant-workspace` | [PyPI 0.3.1](https://pypi.org/project/invariant-workspace/0.3.1/) | `v0.3.1` |
 | `invariant-workspace-core` | [crates.io 0.1.0](https://crates.io/crates/invariant-workspace-core/0.1.0) | `rust-v0.1.0` |
 | `invariant-broker` | [crates.io 0.1.0](https://crates.io/crates/invariant-broker/0.1.0) | `rust-v0.1.0` |
 
-The Rust tag adds registry installation instructions to the library READMEs;
-implementation code and Cargo dependency declarations match `v0.3.1`.
-A consumer with an empty Cargo home passed on Rust 1.90 using only registry
-dependencies. Downloaded archives match the uploaded bytes and registry hashes.
-See [Rust publication verification](RUST_RELEASE_0.1.0.md).
+The Python application and Rust libraries have separate versions. The core's
+registry package is `invariant-workspace-core`; its import remains `invariant_core`.
+The internal supervisor is never published. Historical release tags/assets remain
+unchanged; see [first Rust publication evidence](RUST_RELEASE_0.1.0.md).
 
-The following first-upload steps describe the completed owner setup. Existing
-versions must not be uploaded again. Increase the relevant package version for
-future releases and verify the new artifacts before publishing.
+## One-time registry configuration
 
-## First crates.io upload
+Both registries use GitHub OIDC trusted publishing. No permanent registry token
+is stored in GitHub secrets. Publishing jobs use environments with the exact
+names below, and have the identity-token permission only for those jobs.
 
-Sign into crates.io using the owner's GitHub account, verify its email and create
-a narrowly scoped, short-lived publish token for both public packages. Save it
-locally with `cargo login`; never commit it or paste it into an issue or chat.
-From the clean release checkout:
+### PyPI — already configured
 
-```sh
-cargo publish --locked -p invariant-workspace-core
-# Wait until Cargo confirms that the new version is available in the index.
-cargo publish --locked -p invariant-broker
-```
-
-Publish the core first: the broker's normalized registry dependency uses its
-public package name. Re-query both versions and run a fresh registry-only
-consumer before marking publication complete. Upload versions cannot be replaced.
-For later releases, configure crates.io trusted publishing after the first upload.
-
-## First PyPI upload without a long-lived token
-
-In the owner's [PyPI account publishing settings](https://pypi.org/manage/account/publishing/),
-register a pending GitHub publisher with these exact fields:
+The existing publisher remains valid because the workflow filename and environment
+are unchanged. In the project's publishing settings, its identity is:
 
 | Field | Value |
 |---|---|
-| PyPI project name | `invariant-workspace` |
-| Owner | `Xenox-developer` |
+| Project | `invariant-workspace` |
+| Repository owner | `Xenox-developer` |
 | Repository | `invariant` |
 | Workflow filename | `publish.yml` |
 | Environment | `pypi` |
 
-The account needs a verified email and PyPI's required two-factor authentication.
-A pending publisher creates the project on its first successful upload; it does
-not reserve the name. No PyPI API token is stored in this repository.
+### crates.io — configure both crates
 
-After uploading the checked wheel, sdist and `SHA256SUMS` to the GitHub release,
-run the **Publish verified Python release** workflow from `main` with its tag:
+In each crate's **Settings → Trusted Publishing**, add a GitHub publisher:
+
+- [invariant-workspace-core settings](https://crates.io/crates/invariant-workspace-core/settings)
+- [invariant-broker settings](https://crates.io/crates/invariant-broker/settings)
+
+| Field | Value |
+|---|---|
+| Repository owner | `Xenox-developer` |
+| Repository name | `invariant` |
+| Workflow filename | `publish.yml` |
+| Environment | `crates-io` |
+
+The local first-publication token only has publication permissions; it cannot
+configure trusted publishers. This one-time owner setting is required before the
+crates.io OIDC job can authenticate. New publish tokens are short-lived and are
+revoked by the official Rust authentication action when its job finishes.
+
+## Publish a new version
+
+1. Update `pyproject.toml` and `invariant/__init__.py` for a new Python version.
+   For a Rust release, update `[workspace.package].version` in `Cargo.toml`, the
+   broker's `invariant-core` dependency version and the workspace lockfile.
+   Bump the Rust version whenever the Rust libraries change; existing registry
+   versions are skipped, not replaced.
+2. Run the documented application/library checks, update the changelog, commit
+   and push. The release commit must include the new `publish.yml` workflow.
+3. Create and publish a GitHub Release using one of these tag formats:
+
+| Tag | Packages considered |
+|---|---|
+| `vMAJOR.MINOR.PATCH` | Matching Python version and any new Rust workspace version |
+| `rust-vMAJOR.MINOR.PATCH` | Matching Rust workspace version, core then broker; no Python upload |
+
+For example, publishing `v0.3.2` requires Python version `0.3.2`. Rust can stay at
+`0.1.0` if unchanged: it will be reported as already published and skipped.
+Versions such as `0.x.y` can still be marked as a GitHub prerelease; the workflow
+handles both ordinary releases and prereleases. Tags currently use three numeric
+components; other version/tag formats fail validation before uploading anything.
+
+## Checks and delivery
+
+The unprivileged preparation job validates the tag, CLI version and broker/core
+version alignment. Registry errors other than an explicit 404 stop the run.
+It checks standalone Rust packages and an independent consumer on Rust 1.90, or
+builds a Python sdist → wheel and exercises the installed CLI outside a checkout.
+Python descriptions also pass strict Twine checks. Only packages needing upload
+are built during normal runs.
+
+The assets job attaches the checked archives, `SHA256SUMS` and
+`workflow-publication.json` before uploading to registries. A separate Rust job
+uses `rust-lang/crates-io-auth-action`; core is uploaded and indexed before
+broker. Cargo repackaging must reproduce the verified archive hash before an
+upload. The Python job uses `pypa/gh-action-pypi-publish` and publishes the checked
+wheel/sdist with provenance attestations. The registries publish independently;
+a partial failure can be resumed without uploading successful versions again.
+
+Preparation has no publishing credentials. Only the assets job can write GitHub
+release files. Registry jobs have OIDC permissions; verification never executes
+with a permanent registry token.
+
+## Verify setup without publishing
+
+After the one-time crates.io configuration, run from `main`:
 
 ```sh
-gh workflow run publish.yml --ref main -f tag=v0.3.1
+gh workflow run publish.yml --ref main -f tag=v0.3.1 -F dry_run=true
 ```
 
-The verification job downloads only the named distributions, checks SHA-256 and
-package/version metadata, and runs strict Twine validation. A separate upload job
-uses the `pypi` environment and GitHub's short-lived identity token. It publishes
-those exact bytes and PyPI provenance attestations. Re-running an already uploaded
-version fails instead of silently skipping or replacing it.
+This builds and validates the selected packages and checks both registries'
+OIDC authentication. It does not attach assets or upload package versions.
+For a Rust-only check use `-f tag=rust-v0.1.0`. A dry run is the default when
+starting the workflow manually. Check the job summary for selected versions and
+already-published packages.
 
-Download the published wheel from PyPI, compare the registry SHA-256 with the
-release and install it into a fresh environment outside the checkout. Only then
-update the release notes and default installation instructions to registry commands.
+## Retry a failed publication
 
-See the official [Cargo publishing guide](https://doc.rust-lang.org/cargo/reference/publishing.html)
-and [PyPI pending-publisher guide](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/).
+Use **Re-run failed jobs** on the original Actions run. A manual recovery can also
+use the same release tag with `-F dry_run=false`. Previously checked assets are
+reused only when the recorded commit and every SHA-256 value match. A moved tag
+or conflicting release asset fails instead of overwriting files.
+
+For a partial PyPI upload, existing filenames must match their checked hashes
+before the action is allowed to skip them and upload the remaining file. Rust
+uploads likewise compare registry hashes if a version appeared during a retry.
+Published versions skipped during planning still require the maintainer to bump
+the version when code changes. Never reuse a version for different code.
+
+The original `v0.3.1` assets are historical preparation evidence, with a different
+manifest format. They are preserved; new releases use the automatic manifest.
+
+Official references: [GitHub release events](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#release),
+[PyPI trusted publishing](https://docs.pypi.org/trusted-publishers/using-a-publisher/),
+[crates.io trusted publishing](https://crates.io/docs/trusted-publishing).

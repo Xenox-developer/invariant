@@ -14,7 +14,8 @@ PyPI installation passed; see [publication verification](docs/RUST_RELEASE_0.1.0
   name `invariant-core` belongs to an unrelated project. The Rust library/import
   name remains `invariant_core`; dependency aliases preserve broker/supervisor imports.
 - Mark the internal supervisor as non-publishable.
-- Add a manual PyPI trusted-publishing workflow for verified GitHub release assets.
+- Automate GitHub Release builds and registry uploads with PyPI/crates.io trusted
+  publishing, version checks, verified release assets and resumable uploads.
 - Preserve the original `v0.3.0` tag and its verification evidence.
 
 ## 0.3.0 — 2026-10-24

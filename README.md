@@ -261,6 +261,7 @@ for examples and the libraries' fixed capability scope.
 - [Standalone Rust libraries and embedding](https://github.com/Xenox-developer/invariant/blob/main/docs/RUST_LIBRARY.md)
 - [Changelog](https://github.com/Xenox-developer/invariant/blob/main/CHANGELOG.md)
 - [Contributing and tests](https://github.com/Xenox-developer/invariant/blob/main/CONTRIBUTING.md)
+- [Maintainer release process](https://github.com/Xenox-developer/invariant/blob/main/docs/PUBLISHING.md)
 
 For help, bug reports or feature proposals, [open an issue](https://github.com/Xenox-developer/invariant/issues).
 Include your command, version, a small reproduction and sanitized
