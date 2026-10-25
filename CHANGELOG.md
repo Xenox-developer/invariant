@@ -2,7 +2,13 @@
 
 ## 0.3.1 — 2026-10-24
 
-Registry publication preparation. Runtime logic and state formats are unchanged.
+First registry release. Runtime logic and state formats are unchanged.
+
+Registry delivery completed October 26, 2026: Python `invariant-workspace` 0.3.1
+on PyPI, and `invariant-workspace-core` / `invariant-broker` 0.1.0 on crates.io.
+The Rust packages use tag `rust-v0.1.0`, with updated installation documentation
+and unchanged implementation. A fresh registry-only Rust 1.90 consumer and
+PyPI installation passed; see [publication verification](docs/RUST_RELEASE_0.1.0.md).
 
 - Publish the policy library as `invariant-workspace-core` because the crates.io
   name `invariant-core` belongs to an unrelated project. The Rust library/import

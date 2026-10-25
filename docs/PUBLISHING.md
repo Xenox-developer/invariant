@@ -12,6 +12,26 @@ The internal `invariant-supervisor` is not published.
 and saved-state formats are unchanged. Registry uploads require owner credentials;
 GitHub releases alone do not establish that a registry upload succeeded.
 
+## Published versions
+
+The first registry delivery is complete (October 26, 2026):
+
+| Package | Registry version | Source tag |
+|---|---|---|
+| `invariant-workspace` | [PyPI 0.3.1](https://pypi.org/project/invariant-workspace/0.3.1/) | `v0.3.1` |
+| `invariant-workspace-core` | [crates.io 0.1.0](https://crates.io/crates/invariant-workspace-core/0.1.0) | `rust-v0.1.0` |
+| `invariant-broker` | [crates.io 0.1.0](https://crates.io/crates/invariant-broker/0.1.0) | `rust-v0.1.0` |
+
+The Rust tag adds registry installation instructions to the library READMEs;
+implementation code and Cargo dependency declarations match `v0.3.1`.
+A consumer with an empty Cargo home passed on Rust 1.90 using only registry
+dependencies. Downloaded archives match the uploaded bytes and registry hashes.
+See [Rust publication verification](RUST_RELEASE_0.1.0.md).
+
+The following first-upload steps describe the completed owner setup. Existing
+versions must not be uploaded again. Increase the relevant package version for
+future releases and verify the new artifacts before publishing.
+
 ## First crates.io upload
 
 Sign into crates.io using the owner's GitHub account, verify its email and create

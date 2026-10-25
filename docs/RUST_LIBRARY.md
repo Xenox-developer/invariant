@@ -7,23 +7,27 @@ INVARIANT offers two independently consumable Rust libraries:
 | [`invariant-workspace-core`](../crates/invariant-core/README.md) | Typed host identities, fixed-scope grants, bounded request parsing and read-only permission checks | Rust standard library and Serde; no external runtime |
 | [`invariant-broker`](../crates/invariant-broker/README.md) | Serialized admissions, durable audit, request deduplication, bounded HTTP dispatch and Unix effect sockets | Host filesystem and loopback/network access for admitted HTTP calls; Unix for sockets |
 
-Both require Rust 1.90 or newer. They are available as Git dependencies; no
-crates.io release has been published. Existing direct crate imports remain valid.
+Both require Rust 1.90 or newer and are published on crates.io as version 0.1.0:
+[core](https://crates.io/crates/invariant-workspace-core/0.1.0) and
+[broker](https://crates.io/crates/invariant-broker/0.1.0). Existing direct crate
+imports remain valid. The core dependency alias preserves `invariant_core`.
 
 ```toml
 [dependencies]
-invariant-broker = { git = "https://github.com/Xenox-developer/invariant.git" }
+invariant-core = { package = "invariant-workspace-core", version = "0.1.0" }
+invariant-broker = "0.1.0"
 ```
 
 Use `invariant_broker::core` to access the exact policy types used by the broker.
 Applications that only need policy checks can depend on `invariant-workspace-core`
 alone, using the dependency alias `invariant-core` to retain `invariant_core` imports.
-Commit the consuming application's lockfile or pin an explicit reviewed Git revision.
+Commit the consuming application's lockfile to retain resolved versions.
+The published Rust source is tagged [`rust-v0.1.0`](https://github.com/Xenox-developer/invariant/tree/rust-v0.1.0).
 
 ## Run an independent application
 
 The [embedding example](../examples/rust-embedding/README.md) is a separate Cargo
-project with Git dependencies, not a member of the INVARIANT workspace:
+project with registry dependencies, outside the INVARIANT workspace:
 
 ```sh
 cargo run --locked --manifest-path examples/rust-embedding/Cargo.toml

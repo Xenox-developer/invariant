@@ -130,7 +130,7 @@ def main():
 
             consumer = work/'consumer'; consumer.mkdir()
             shutil.copytree(ROOT/'examples/rust-embedding/src', consumer/'src')
-            # The published example uses Git. Only dependency locations change here.
+            # Only dependency locations change from the published example.
             manifest = tomllib.loads((ROOT/'examples/rust-embedding/Cargo.toml').read_text())
             text = ['[package]']
             for key in ('name', 'version', 'edition', 'rust-version'):

@@ -82,7 +82,8 @@ checksum = "6dbf3de79e51f3d586ab4cb9d5c3e2c14aa28ed23d180cf89b4df0454a69cc87"
 [[package]]
 name = "invariant-broker"
 version = "0.1.0"
-source = "git+https://github.com/Xenox-developer/invariant.git#c6e7b7e73240d0d8f695961eeed8bc6fcab362c0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2c470a33bcfeca4dc8a207860f7ffecf5553df12095aa27dcb93a77d578398b3"
 dependencies = [
  "base64",
  "getrandom",
@@ -104,7 +105,8 @@ dependencies = [
 [[package]]
 name = "invariant-workspace-core"
 version = "0.1.0"
-source = "git+https://github.com/Xenox-developer/invariant.git#c6e7b7e73240d0d8f695961eeed8bc6fcab362c0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "79219858cedab4363bec6d40ce074a50830b3e24849d1393383203f0949a83c6"
 dependencies = [
  "serde",
  "serde_json",

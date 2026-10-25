@@ -10,18 +10,20 @@ Rust libraries have their own [requirements](RUST_LIBRARY.md).
 ```sh
 python3 -m venv ~/.venvs/invariant
 . ~/.venvs/invariant/bin/activate
-python3 -m pip install "git+https://github.com/Xenox-developer/invariant.git@v0.3.1"
+python3 -m pip install "invariant-workspace==0.3.1"
 invariant --version
 invariant setup
 invariant login
 invariant prepare --agent codex
 ```
 
-Git installation is pinned to a release tag. You can instead download a wheel
+The package is available on [PyPI](https://pypi.org/project/invariant-workspace/0.3.1/).
+You can instead download a wheel
 from the repository's GitHub release, compare its SHA-256 against `SHA256SUMS`,
 and run `python3 -m pip install /absolute/path/to/FILE.whl`. The wheel includes
 runtime assets and the legacy launcher's build sources; it needs no adjacent
-checkout. No PyPI namespace ownership or container-registry publication is assumed.
+checkout. For a source installation pinned to the same Python release, use
+`python3 -m pip install "git+https://github.com/Xenox-developer/invariant.git@v0.3.1"`.
 Activate this virtual environment in another terminal before using `invariant`.
 
 Setup checks existing tools before offering changes. Its installations need

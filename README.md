@@ -74,11 +74,12 @@ Install the released CLI into a host virtual environment:
 ```sh
 python3 -m venv ~/.venvs/invariant
 . ~/.venvs/invariant/bin/activate
-python3 -m pip install "git+https://github.com/Xenox-developer/invariant.git@v0.3.1"
+python3 -m pip install "invariant-workspace==0.3.1"
 invariant --version
 ```
 
-Expected: `invariant 0.3.1`. This installation needs Git. You can also install
+Expected: `invariant 0.3.1`. The package is published on
+[PyPI](https://pypi.org/project/invariant-workspace/0.3.1/). You can also install
 the wheel from the [0.3.1 beta release](https://github.com/Xenox-developer/invariant/releases/tag/v0.3.1)
 after checking its SHA-256 against `SHA256SUMS`. See
 [installation, updates and removal](https://github.com/Xenox-developer/invariant/blob/main/docs/INSTALLATION.md).
@@ -231,6 +232,24 @@ include dependency preparation and tests.
 - Applying results requires review and performs no automatic merge. Private
   backups are unencrypted and restore to matching paths. Detailed logs and
   exports can contain project content; inspect them before sharing.
+
+## Embed the Rust libraries
+
+Embed the capability policy and execution broker in a Rust host with Rust 1.90+.
+Both packages are available on crates.io:
+[invariant-workspace-core](https://crates.io/crates/invariant-workspace-core/0.1.0) and
+[invariant-broker](https://crates.io/crates/invariant-broker/0.1.0).
+
+```toml
+[dependencies]
+invariant-core = { package = "invariant-workspace-core", version = "0.1.0" }
+invariant-broker = "0.1.0"
+```
+
+The alias preserves `invariant_core` imports; `invariant_broker::core` exposes the
+same policy types. Rust embedding needs no Docker, Python or Codex. See the
+[embedding guide](https://github.com/Xenox-developer/invariant/blob/main/docs/RUST_LIBRARY.md)
+for examples and the libraries' fixed capability scope.
 
 ## Documentation and contributing
 

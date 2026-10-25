@@ -9,5 +9,5 @@ publish = false
 [workspace]
 
 [dependencies]
-invariant-core = { package = "invariant-workspace-core", git = "https://github.com/Xenox-developer/invariant.git" }
-invariant-broker = { git = "https://github.com/Xenox-developer/invariant.git" }
+invariant-core = { package = "invariant-workspace-core", version = "0.1.0" }
+invariant-broker = "0.1.0"
