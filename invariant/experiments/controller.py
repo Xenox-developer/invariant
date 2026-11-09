@@ -1,5 +1,6 @@
 """Single-owner scheduler and workers over durable frozen command attempts."""
 from collections import deque
+import contextvars
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 import json
 import os
@@ -13,7 +14,7 @@ import uuid
 
 from .. import environment, workspace
 from ..execution import ExecutionContext, private_directory, project_lock
-from .errors import ExperimentError, recovery_for
+from .errors import ExperimentError, recovery_for, runtime_error_code
 from .evaluation import parse_result
 from .files import (apply_variant, capture_workspace, collect_artifacts, diff_entries,
                     materialize, prepare_inputs, write_file)
@@ -32,8 +33,9 @@ class Controller:
         self.native_runner = native_runner or CodexRunner()
         self.cancel = threading.Event()
         self.token = 'controller-' + uuid.uuid4().hex
+        self.before_model=None
 
-    def execute(self, identifier, *, owned_lock=False):
+    def execute(self, identifier, *, owned_lock=False,baseline_check=False):
         study = self.engine.inspect(identifier)
         if study['kind'] != 'study':
             raise ExperimentError('INVALID_REQUEST', 'execute requires a study ID.')
@@ -44,6 +46,7 @@ class Controller:
         except RuntimeError as error:
             raise ExperimentError('CONTROLLER_BUSY', str(error), 'Inspect the active study; no attempt was submitted twice.') from error
         handlers = {}
+        gate_pool=None;self.before_model=None;baseline_future=None
         try:
             blockers = self.store.blockers()
             if blockers:
@@ -53,15 +56,40 @@ class Controller:
             study = self.engine.inspect(identifier)
             slots = self.preflight(study)
             frozen = study['frozen']
-            self.control_path = self.engine.root / 'runtimes' / study['baseline_id'] / 'control'
-            environment.prepare_control(self.engine.project, frozen['image']['id'], path=self.control_path)
-            self.evaluator_source = self.control_path.parent / 'evaluator-source'
+            # Control executables depend on immutable image content, not a task's
+            # prompt, baseline ID or model settings. Evaluator sources stay scoped.
+            from .definitions import digest
+            self.control_path = self.engine.root / 'runtimes' / ('image-'+digest(frozen['image']['id'])) / 'control'
+            self.control_path = environment.prepare_control(self.engine.project, frozen['image']['id'], path=self.control_path)
+            self.evaluator_source = self.engine.root / 'runtimes' / study['baseline_id'] / 'evaluator-source'
             if not self.evaluator_source.exists():
+                private_directory(self.evaluator_source.parent)
                 baseline = self.engine.root / 'baselines' / study['baseline_id']
                 manifest = json.loads((baseline / 'manifest.json').read_text())['entries']
                 inputs = {path.removeprefix('@input/'): row for path, row in manifest.items() if path.startswith('@input/')}
                 materialize(baseline / 'inputs', self.evaluator_source, inputs)
                 seal_tree(self.evaluator_source)
+            if baseline_check:
+                if not frozen['definition'].get('evaluator'):raise ExperimentError('EVALUATOR_REQUIRED','Baseline evaluation is required before dispatch')
+                from .preflight import prepare_frozen
+                baseline=prepare_frozen(self.engine,identifier)
+                def evaluate_baseline():
+                    from ..telemetry import span
+                    with span('baseline.evaluate'):
+                        for trial in baseline['trials']:
+                            if trial['state']=='queued':
+                                attempt=self.store.claim(baseline['id'],trial['id'],self.token)
+                                if attempt:self.baseline_trial(baseline,trial,attempt)
+                        self.store.finish_study(baseline['id'])
+                        rows=self.engine.results(baseline['id'])['trials']
+                        ready=all(r['runner']['status']=='completed' and r['evaluation']['status']=='completed' and r['passed'] is not None for r in rows)
+                        if not ready:raise ExperimentError('BASELINE_NOT_READY','Inspect the retained baseline; no model request was dispatched')
+                        return {'ready':True,'study_id':baseline['id'],'model_turns':0}
+                gate_pool=ThreadPoolExecutor(max_workers=1,thread_name_prefix='invariant-baseline')
+                baseline_future=gate_pool.submit(contextvars.copy_context().run,evaluate_baseline)
+                self.before_model=lambda:baseline_future.result()
+                # Parallel warm-up must not expand a configured resource budget.
+                if frozen['effective_policy']['resource_mode']!='unlimited':self.before_model()
             if threading.current_thread() is threading.main_thread():
                 for signum in (signal.SIGINT, signal.SIGTERM):
                     handlers[signum] = signal.signal(signum, lambda *_: self.cancel.set())
@@ -76,7 +104,7 @@ class Controller:
                         trial = pending.popleft()
                         attempt = self.store.claim(identifier, trial['id'], self.token)
                         if attempt is not None:
-                            active[pool.submit(self.trial, study, trial, attempt)] = attempt['id']
+                            active[pool.submit(contextvars.copy_context().run, self.trial, study, trial, attempt)] = attempt['id']
                     if active:
                         done, _ = wait(active, timeout=0.1, return_when=FIRST_COMPLETED)
                         for future in done:
@@ -85,8 +113,11 @@ class Controller:
                             if not result['cleanup_confirmed']:
                                 self.cancel.set()
             self.store.finish_study(identifier)
-            return self.engine.inspect(identifier)
+            result=self.engine.inspect(identifier)
+            if baseline_future is not None:result['baseline_preflight']=baseline_future.result()
+            return result
         finally:
+            if gate_pool is not None:gate_pool.shutdown(wait=True)
             for signum, previous in handlers.items():
                 signal.signal(signum, previous)
             if lock is not None:
@@ -103,6 +134,8 @@ class Controller:
         if image.get('Id') != frozen['image']['id'] or info.get('OSType') != 'linux' or image.get('Os') != 'linux':
             raise ExperimentError('RUNTIME_MISMATCH', 'The frozen Linux image could not be verified.')
         requested = frozen['execution']
+        if not requested.get('headroom_fraction',.25) or requested['trial_cpus'] is None or requested['trial_memory_mib'] is None:
+            return requested['max_parallel']
         try:
             cpus = float(info['NCPU']) * 0.75
             memory = int(info['MemTotal']) // (1024 ** 2) * 3 // 4
@@ -136,11 +169,14 @@ class Controller:
             working_directory='/__invariant_inputs/source' if phase == 'evaluation' else '/workspace')
 
     def trial(self, study, trial, attempt):
+        if study['frozen'].get('evaluation_only'):
+            return self.baseline_trial(study,trial,attempt)
         started = time.time()
         frozen, definition = study['frozen'], study['frozen']['definition']
         baseline = self.engine.root / 'baselines' / study['baseline_id']
         folder = self.engine.root / 'attempts' / attempt['id']
         contexts, secrets, secret_paths = [], [], []
+        released=set()
         record = {**attempt['record'], 'started_at': started, 'cleanup_confirmed': True,
                   'runner': {'status': 'not_started'}, 'evaluation': {'status': 'not_run'},
                   'capture': {'complete': False}, 'checkpoint': {'complete': False},
@@ -199,7 +235,13 @@ class Controller:
                 log_path=folder / 'runner.log', limit=frozen['capture_limits']['log_bytes'],
                 secrets=secrets, on_started=running, on_intent=lambda operation: intent(runner_context, operation),
                 on_log=lambda kind, data: self.store.append_log(study['id'], attempt['id'], 'runner', kind, data))
+            validation=None
             if definition['runner']['type'] == 'codex':
+                if definition.get('evaluator') and not definition['secret_refs']:
+                    from .validation import ValidationSession
+                    validation=ValidationSession(self,study,attempt,runner_context,inputs,intent)
+                    options['validate']=validation.run
+                if self.before_model is not None:options['before_model']=self.before_model
                 prompt, _ = regular_bytes(baseline / 'inputs', case['prompt_file'], maximum=frozen['capture_limits']['source_bytes'])
                 instructions = ''
                 if variant.get('instructions_file'):
@@ -209,7 +251,8 @@ class Controller:
                     self.store.update_attempt(attempt['id'], 'running', record)
                 record['runner'] = self.native_runner.run(runner_context, variant=variant,
                     prompt=prompt.decode('utf-8'), instructions=instructions, home=folder / 'native-home',
-                    on_native=native_state, **options)
+                    on_native=native_state, context_entries=manifest['entries'],
+                    **({'complete_on_validation':True} if definition['runner'].get('completion')=='validated' else {}), **options)
             else:
                 record['runner'] = self.runner.run(runner_context, **options)
             if not record['runner']['cleanup_confirmed']:
@@ -220,23 +263,30 @@ class Controller:
             secret_paths.clear()
             seal_tree(inputs)
             self.store.update_attempt(attempt['id'], 'saving', record)
+            accepted=validation.consume() if validation and record['runner']['status']=='completed' and not cancel.is_set() else None
+            if accepted:released.add(runner_context.owner_token)
             snapshot_root = private_directory(folder / 'snapshot')
-            try:
-                saved = capture_workspace(writable, snapshot_root / 'workspace', frozen['capture_limits'])
-            except OSError as error:
-                raise ExperimentError('CAPTURE_FAILED', 'The stopped workspace could not be captured; it was retained.') from error
-            workspace.private_write(snapshot_root / 'manifest.json', saved)
+            if accepted:
+                saved=accepted['saved'];record['validation_receipt_digest']=accepted['receipt_digest']
+            else:
+                try:
+                    saved = capture_workspace(writable, snapshot_root / 'workspace', frozen['capture_limits'])
+                except OSError as error:
+                    raise ExperimentError('CAPTURE_FAILED', 'The stopped workspace could not be captured; it was retained.') from error
+                workspace.private_write(snapshot_root / 'manifest.json', saved)
             record['workspace_diff'] = diff_entries(manifest['entries'], saved['entries'])
             record['capture'] = {'complete': True, 'workspace': str(snapshot_root / 'workspace'),
                                  'manifest': str(snapshot_root / 'manifest.json'), 'content_digest': saved['content_digest']}
             record['artifacts'] = collect_artifacts(snapshot_root / 'workspace', saved['entries'], definition['artifacts'],
                                                      folder / 'artifacts', frozen['capture_limits']['artifact_bytes'])
             # Stop was independently verified before copying files or committing.
-            try:
-                intent(runner_context, 'checkpoint')
-                runner_context.preserve(runner_context.owner_token)
-            except (OSError, RuntimeError, subprocess.SubprocessError) as error:
-                raise ExperimentError('CHECKPOINT_FAILED', 'The stopped environment could not be saved; it was retained.') from error
+            if not accepted:
+                try:
+                    intent(runner_context, 'checkpoint')
+                    runner_context.preserve(runner_context.owner_token)
+                    released.add(runner_context.owner_token)
+                except (OSError, RuntimeError, subprocess.SubprocessError) as error:
+                    raise ExperimentError('CHECKPOINT_FAILED', 'The stopped environment could not be saved; it was retained.') from error
             checkpoint = environment.read_record(runner_context.checkpoint_path)
             if checkpoint is None and frozen['effective_policy']['workspace_access'] == 'read-write':
                 raise ExperimentError('CHECKPOINT_FAILED', 'No saved image was recorded; a fresh environment was not substituted.')
@@ -247,7 +297,8 @@ class Controller:
             record['disk'].update(workspace_bytes=saved['source_bytes'], artifact_bytes=record['artifacts']['bytes'],
                                    image_logical_bytes=size, image_size_includes_shared_layers=True)
             seal_tree(snapshot_root)
-            if record['runner']['status'] == 'completed' and definition.get('evaluator') and not cancel.is_set():
+            if accepted:record['evaluation']=accepted['evaluation']
+            elif record['runner']['status'] == 'completed' and definition.get('evaluator') and not cancel.is_set():
                 self.store.update_attempt(attempt['id'], 'evaluating', record)
                 record['evaluation'] = {'status': 'running', 'passed': None, 'metrics': {}}
                 record['evaluation'] = self.evaluate(study, attempt, folder, inputs, candidate_image, saved, contexts, secrets, cancel, intent)
@@ -263,13 +314,17 @@ class Controller:
             else:
                 terminal, reason = 'succeeded', 'COMPLETED'
         except Exception as error:
-            reason = getattr(error, 'code', 'RUNTIME_FAILED')
+            reason = runtime_error_code(error)
             record['error_type'] = type(error).__name__
             if cancel.is_set() and reason != 'UNRESOLVED_EXECUTION':
                 terminal, reason = 'cancelled', 'CANCELLED'
         finally:
             clean = True
             for context in contexts:
+                # A successful preserve/validation consume has already confirmed
+                # stop, durable storage and owned removal. Its lease is closed.
+                # Querying that deleted name again can only create false unknowns.
+                if context.owner_token in released:continue
                 try:
                     stopped = stop_owned(context)
                     clean &= stopped
@@ -278,8 +333,11 @@ class Controller:
                     # Failed saves keep the stopped candidate for future recovery.
                     if context.owner_token.endswith('-evaluation') and stopped:
                         workspace.remove_owned(context.owner_token)
-                except (OSError, RuntimeError, subprocess.SubprocessError):
+                except (OSError, RuntimeError, subprocess.SubprocessError) as error:
                     clean = False
+                    record.setdefault('cleanup_errors',[]).append({'container':context.owner_token,
+                        'error_type':type(error).__name__,'message':str(error)[:1000]})
+            record['released_contexts']=sorted(released)
             record['cleanup_confirmed'] = clean
             if not clean:
                 terminal, reason = 'interrupted', 'UNRESOLVED_EXECUTION'
@@ -296,7 +354,51 @@ class Controller:
             self.store.update_attempt(attempt['id'], terminal, record, reason)
         return record
 
-    def evaluate(self, study, attempt, folder, inputs, image, saved, contexts, secrets, cancel, intent):
+    def baseline_trial(self,study,trial,attempt):
+        """Evaluate frozen inputs directly: no fake worker or environment commit."""
+        started=time.time();folder=self.engine.root/'attempts'/attempt['id']
+        frozen=study['frozen'];definition=frozen['definition'];contexts=[]
+        cancel=AttemptCancellation(self.cancel,self.store,attempt['id'])
+        record={'started_at':started,'runner':{'status':'completed','evaluation_only':True},
+                'evaluation':{'status':'not_run'},'capture':{'complete':False},
+                'checkpoint':{'complete':False,'reason':'evaluation_only'},'base_image':frozen['image']['id'],
+                'resources':frozen['execution'],'cleanup_confirmed':True}
+        terminal,reason='failed','PREPARATION_FAILED'
+        def intent(context,operation):
+            record.setdefault('intents',{})['evaluation']={'container':context.owner_token,
+                'owner':context.checkpoint_owner,'state_directory':str(context.state),
+                'workspace':str(context.workspace),'image':context.image,'operation':operation,'updated_at':time.time()}
+            self.store.update_attempt(attempt['id'],'evaluating',record)
+        try:
+            private_directory(folder.parent);folder.mkdir(mode=0o700)
+            baseline=self.engine.root/'baselines'/study['baseline_id']
+            manifest=json.loads((baseline/'manifest.json').read_text())
+            writable=folder/'workspace';materialize(baseline/'workspace',writable,manifest['entries'])
+            variant=next(v for v in definition['variants'] if v['id']==trial['variant_id'])
+            case=next(c for c in definition['cases'] if c['id']==trial['case_id'])
+            apply_variant(baseline,writable,variant,case)
+            inputs=folder/'input';prepare_inputs(baseline,frozen,variant,case,inputs);seal_tree(inputs)
+            snapshot=private_directory(folder/'snapshot');saved=capture_workspace(writable,snapshot/'workspace',frozen['capture_limits'])
+            workspace.private_write(snapshot/'manifest.json',saved);seal_tree(snapshot)
+            record['evaluation']=self.evaluate(study,attempt,folder,inputs,frozen['image']['id'],saved,contexts,[],cancel,intent)
+            if cancel.is_set():terminal,reason='cancelled','CANCELLED'
+            elif record['evaluation']['status']=='completed':terminal,reason='succeeded','COMPLETED'
+            else:reason=record['evaluation'].get('reason','EVALUATION_FAILED')
+        except Exception as error:
+            reason=runtime_error_code(error);record['error_type']=type(error).__name__
+        finally:
+            for context in contexts:
+                try:
+                    if not stop_owned(context):raise RuntimeError('Unconfirmed baseline stop')
+                    reclaim_private(context);workspace.remove_owned(context.owner_token)
+                except (OSError,RuntimeError,subprocess.SubprocessError):record['cleanup_confirmed']=False
+            if not record['cleanup_confirmed']:terminal,reason='interrupted','UNRESOLVED_EXECUTION'
+            record.update(finished_at=time.time(),duration_seconds=time.time()-started,reason=reason)
+            if folder.exists():workspace.private_write(folder/'result.json',record)
+            self.store.update_attempt(attempt['id'],terminal,record,reason)
+        return record
+
+    def evaluate(self, study, attempt, folder, inputs, image, saved, contexts, secrets, cancel, intent, *, timeout=None, policy=None):
         evaluator = study['frozen']['definition']['evaluator']
         evaluation = private_directory(folder / 'evaluation')
         writable = evaluation / 'workspace'
@@ -307,9 +409,15 @@ class Controller:
         output = private_directory(evaluation / 'output')
         context = self.context(study, attempt, 'evaluation', writable, state, image, inputs,
                                output=output, command=evaluator['argv'])
+        if policy is not None:
+            from dataclasses import replace
+            context=replace(context,_policy_json=json.dumps(policy,sort_keys=True))
+            workspace.private_write(state/'policy/config.json',policy)
         contexts.append(context)
         intent(context, 'create')
-        outcome = self.runner.run(context, timeout=evaluator['timeout_seconds'], cancel=cancel,
+        seconds=evaluator['timeout_seconds'] or context.policy['duration_seconds']
+        if timeout is not None:seconds=min(seconds,timeout) if seconds else (timeout if timeout!=float('inf') else 0)
+        outcome = self.runner.run(context, timeout=seconds, cancel=cancel,
                                   log_path=folder / 'evaluation.log', limit=study['frozen']['capture_limits']['event_bytes'],
                                   secrets=secrets, kill_on_limit=True, on_intent=lambda operation: intent(context, operation),
                                   on_log=lambda kind, data: self.store.append_log(study['id'], attempt['id'], 'evaluation', kind, data))

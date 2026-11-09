@@ -19,6 +19,8 @@ def executable_file(path):
 
 
 def find_codex():
+    from .docker_storage import managed
+    if managed():return "/__invariant/codex"
     # An explicitly installed, pinned INVARIANT copy also works when an
     # incompatible global CLI is on PATH. Never replace the global installation.
     managed = managed_codex() / "bin/codex"
@@ -92,7 +94,7 @@ def probe_docker():
                                 capture_output=True, text=True, timeout=10)
         if result.returncode == 0 and result.stdout.strip() == "linux":
             return {"status": "ready", "path": path, "message": "Docker engine is running (Linux containers)"}
-        if result.returncode == 0:
+        if result.returncode == 0 and result.stdout.strip() == 'windows':
             return {"status": "incompatible", "path": path, "message": "Docker must use Linux containers"}
         # Do not print arbitrary daemon output, URLs, or credential diagnostics.
         return {"status": "unavailable", "path": path,
@@ -105,6 +107,7 @@ def inspect_dependencies():
     codex, docker = probe_codex(), probe_docker()
     supported = sys.platform in ("darwin", "linux")
     return {"ready": supported and codex["status"] == docker["status"] == "ready",
+            "required_codex_version": CODEX_VERSION,
             "platform": sys.platform, "supported": supported, "codex": codex, "docker": docker}
 
 

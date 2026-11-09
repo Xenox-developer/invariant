@@ -87,7 +87,7 @@ def test_files(project, roots):
             if info.st_nlink != 1:
                 raise ExperimentError('INVALID_PATH', 'Shared tests cannot be hard-linked files: '+relative)
             files.append({'path':relative, 'mode':info.st_mode & 0o777})
-        if len(files)>250:
+        if len(files)>250 and workspace.load_project(project)['restrictions_enabled']:
             raise ExperimentError('CAPTURE_LIMIT', 'Guided setup supports up to 250 shared test files.',
                                   'Choose narrower test paths, or use an advanced experiment definition.')
     if not files:
@@ -96,7 +96,7 @@ def test_files(project, roots):
 
 
 def create(engine, path=None, *, task, test_command, test_paths, name='comparison', model=None,
-           efforts=None, variants=None, max_parallel=None, test_timeout=120, request_id=None):
+           efforts=None, variants=None, max_parallel=None, test_timeout=0, request_id=None, apply_include=None, apply_exclude=None, test_report=None):
     text(task, 'task', maximum=MAX_DEFINITION//4)
     text(test_command, 'test command', maximum=8192)
     text(name, 'experiment name', maximum=64, pattern=NAME)
@@ -120,16 +120,25 @@ def create(engine, path=None, *, task, test_command, test_paths, name='compariso
     roots, files = test_files(engine.project, test_paths)
     if any(n==r or n.startswith(r+'/') for n in names for r in roots):
         raise ExperimentError('INVALID_PATH', 'Generated experiment files cannot overlap shared test paths.')
-    if type(test_timeout) is not int or not 1<=test_timeout<=3590:
-        raise ExperimentError('INVALID_ARGUMENTS', 'Test timeout must be between 1 and 3590 seconds.')
+    if type(test_timeout) is not int or not 0<=test_timeout<=3590:
+        raise ExperimentError('INVALID_ARGUMENTS', 'Test timeout must be between 0 and 3590 seconds; 0 disables it.')
+    if test_report is not None:
+        from .definitions import source_path
+        source_path(test_report,'test report')
+        if protected(test_report.casefold()) or any(test_report==r or test_report.startswith(r+'/') for r in roots):
+            raise ExperimentError('INVALID_PATH','Test report must be outside protected state and fixed test roots.')
     definition = {'schema_version':1, 'name':name, 'runner':{'type':'codex'},
         'variants':choices, 'cases':[{'id':'task','prompt_file':names[1]}], 'repetitions':1,
-        'workspace':{'include':['**/*'], 'exclude':names},
+        'workspace':{'include':['**/*'], 'exclude':names+([test_report] if test_report else []),
+                     'apply':{'include':['**/*'] if apply_include is None else apply_include,
+                              'exclude':apply_exclude or [], 'respect_gitignore':True}},
         'execution':{'max_parallel':len(choices) if max_parallel is None else max_parallel},
         'evaluator':{'argv':['python3','-I','-B',names[3],names[2]],
-                     'source_paths':[names[3],names[2]]+[r['path'] for r in files], 'timeout_seconds':test_timeout+5}}
+                     'source_paths':[names[3],names[2]]+[r['path'] for r in files], 'timeout_seconds':test_timeout+5 if test_timeout else 0}}
     validate(copy.deepcopy(definition))
-    spec = {'command':test_command, 'roots':roots, 'files':files, 'timeout_seconds':test_timeout}
+    spec = {'command':test_command, 'roots':roots, 'files':files, 'timeout_seconds':test_timeout,
+            'output_limit':1024*1024 if workspace.load_project(engine.project)['restrictions_enabled'] else None,
+            **({'report':test_report} if test_report else {})}
     prompt_text = task.strip()+'\n\nShared evaluation command: '+test_command+'\nKeep these shared test paths unchanged: '+', '.join(roots)+'.\n'
     content = {target:json.dumps(definition,indent=2)+'\n', prompt:prompt_text,
                settings:json.dumps(spec,indent=2)+'\n', verifier:(workspace.ASSETS/'experiment-check.py').read_text(),

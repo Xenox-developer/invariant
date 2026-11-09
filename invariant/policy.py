@@ -7,6 +7,7 @@ PROFILE = {"schema": 1, "profile": "codex-workspace-v1", "agent": "codex",
            "model_access": "openai", "command_network": "none"}
 DEFAULT_DURATION = 900
 DEFAULT_CONFIG = {**PROFILE, "resource_mode": "manual", "workspace_access": "read-write", "duration_seconds": DEFAULT_DURATION,
+                  "restrictions_enabled": True, "host_access": False, "tool_profile": "full",
                   "limits": {"cpus": 1, "memory_mib": 512, "extra_swap_mib": 0,
                              "processes": 128, "file_descriptors": 256, "scratch_mib": 128}}
 # Finite supported bounds; zero never means unlimited.
@@ -27,16 +28,24 @@ def normalize(value):
             raise RuntimeError(f"Unsupported workspace policy: {key} must remain {expected!r}")
     result = copy.deepcopy(DEFAULT_CONFIG)
     result['profile'] = value['profile']
-    result.update({key: value[key] for key in ("workspace_access", "duration_seconds", "command_network", "resource_mode") if key in value})
+    if result['profile'] == 'codex-environment-v2':
+        result['command_network'] = 'internet'
+    result.update({key: value[key] for key in ("workspace_access", "duration_seconds", "command_network", "resource_mode", "restrictions_enabled", "host_access", "tool_profile") if key in value})
+    if result['tool_profile'] not in ('coding','full'):raise RuntimeError('tool_profile must be coding or full')
+    for key in ('restrictions_enabled', 'host_access'):
+        if type(result[key]) is not bool:
+            raise RuntimeError(key + ' must be a boolean')
+    if result['profile'] != 'codex-environment-v2' and (not result['restrictions_enabled'] or result['host_access']):
+        raise RuntimeError('Unrestricted operation requires codex-environment-v2')
     if result["command_network"] not in ("none", "internet"):
         raise RuntimeError("Unsupported command_network; use none or internet")
     if result["workspace_access"] not in ("read-write", "read-only"):
         raise RuntimeError("workspace_access must be read-write or read-only")
-    if result["resource_mode"] not in ("auto", "manual"):
-        raise RuntimeError("resource_mode must be auto or manual")
+    if result["resource_mode"] not in ("auto", "manual", "unlimited"):
+        raise RuntimeError("resource_mode must be auto, manual or unlimited")
     duration = result["duration_seconds"]
-    if type(duration) is not int or not 1 <= duration <= 86400:
-        raise RuntimeError("duration_seconds must be an integer between 1 and 86400")
+    if type(duration) is not int or not 0 <= duration <= 86400:
+        raise RuntimeError("duration_seconds must be an integer between 0 and 86400 (0 disables the deadline)")
     limits = value.get("limits", {})
     if not isinstance(limits, dict) or set(limits) - set(DEFAULT_CONFIG["limits"]):
         raise RuntimeError("Unsupported limits key; see invariant config")
@@ -54,11 +63,16 @@ def normalize(value):
     return result
 
 
-NEW_PROJECT_CONFIG = {**DEFAULT_CONFIG, "profile": "codex-environment-v2", "resource_mode": "auto", "duration_seconds": 3600}
+NEW_PROJECT_CONFIG = {**DEFAULT_CONFIG, "profile": "codex-environment-v2", "resource_mode": "unlimited",
+                      "command_network": "internet", "duration_seconds": 0,
+                      "restrictions_enabled": False, "host_access": False, "tool_profile": "coding"}
 
 
 def resource_limits(policy):
-    limits = normalize(policy)["limits"]
+    policy = normalize(policy)
+    if policy['resource_mode'] == 'unlimited':
+        return dict.fromkeys(('cpus', 'memory_bytes', 'extra_swap_bytes', 'processes', 'file_descriptors', 'scratch_bytes'))
+    limits = policy["limits"]
     return {"cpus": limits["cpus"], "memory_bytes": limits["memory_mib"] * 1024 * 1024,
             "extra_swap_bytes": limits["extra_swap_mib"] * 1024 * 1024,
             "processes": limits["processes"], "file_descriptors": limits["file_descriptors"],
@@ -84,7 +98,14 @@ def unique_object(pairs):
 
 
 def docker_network(policy):
-    return "bridge" if normalize(policy)["command_network"] == "internet" else "none"
+    policy = normalize(policy)
+    if policy['command_network'] == 'none': return 'none'
+    return 'bridge'
+
+
+def deadline(seconds, now):
+    """Zero disables workload deadlines; control-plane RPC timeouts stay bounded."""
+    return now + seconds if seconds else float('inf')
 
 
 def seccomp_filename(policy):

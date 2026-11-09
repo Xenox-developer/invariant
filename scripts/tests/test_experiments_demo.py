@@ -51,7 +51,7 @@ class DemoTests(unittest.TestCase):
         self.assertEqual(definition['workspace']['include'], ['solution.py'])
         self.assertEqual(definition['evaluator']['source_paths'], ['verify.py','suite.json'])
         self.assertEqual(len(json.loads((self.project/'suite.json').read_text())), 23)
-        self.assertEqual(workspace.load_project(self.project)['command_network'], 'none')
+        self.assertEqual(workspace.load_project(self.project)['command_network'], 'internet')
         self.assertTrue(repeated['reused']); self.assertFalse(info['reused'])
         self.assertEqual(original, {str(p.relative_to(self.project)): p.read_bytes() for p in self.project.rglob('*') if p.is_file()})
         with self.assertRaisesRegex(ExperimentError, 'different settings'):

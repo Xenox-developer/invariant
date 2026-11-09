@@ -83,6 +83,14 @@ def wake(engine):
 
 
 def serve(engine):
+    from ..docker_storage import managed
+    if managed():
+        from ..storage_gc import gate
+        with gate():return _serve(engine)
+    return _serve(engine)
+
+
+def _serve(engine):
     """The kernel lease is authoritative; heartbeat age never authorizes replay."""
     directory = private_directory(engine.root / 'controller')
     try:

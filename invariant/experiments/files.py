@@ -85,7 +85,7 @@ def apply_variant(baseline, writable, variant, case):
 
 def capture_workspace(source, destination, limits):
     """After verified process stop. Never follow candidate symlinks or special files."""
-    destination.mkdir(mode=0o700)
+    if destination is not None:destination.mkdir(mode=0o700)
     entries, size, count = {}, 0, 0
     for base, directories, files in os.walk(source, topdown=True, followlinks=False,
                                             onerror=lambda error: (_ for _ in ()).throw(error)):
@@ -95,26 +95,26 @@ def capture_workspace(source, destination, limits):
                 if name in directories: directories.remove(name)
                 continue
             count += 1
-            if count > limits['entries']:
+            if limits['entries'] is not None and count > limits['entries']:
                 raise ExperimentError('CAPTURE_LIMIT', 'Final workspace exceeds its entry limit.')
-            path, target = source / relative, destination / relative
+            path, target = source / relative, destination / relative if destination is not None else None
             info = path.lstat()
             if stat.S_ISDIR(info.st_mode):
-                target.mkdir(parents=True, exist_ok=True, mode=0o700)
+                if target is not None:target.mkdir(parents=True, exist_ok=True, mode=0o700)
                 entries[relative] = {'type': 'directory', 'mode': info.st_mode & 0o777}
             elif stat.S_ISLNK(info.st_mode):
                 # Link text is evidence, never a file to dereference on the host.
                 entries[relative] = {'type': 'symlink', 'target': os.readlink(path)}
             elif stat.S_ISREG(info.st_mode):
-                content, _ = regular_bytes(source, relative, maximum=max(0, limits['source_bytes'] - size))
+                content, _ = regular_bytes(source, relative, maximum=None if limits['source_bytes'] is None else max(0, limits['source_bytes'] - size))
                 size += len(content)
-                write_file(target, content, info.st_mode & 0o777)
+                if target is not None:write_file(target, content, info.st_mode & 0o777)
                 entries[relative] = {'type': 'file', 'size': len(content), 'mode': info.st_mode & 0o777,
                                      'sha256': hashlib.sha256(content).hexdigest()}
             else:
                 raise ExperimentError('UNSAFE_OUTPUT', 'Cannot preserve a candidate socket, FIFO or device: ' + relative)
     for relative, row in entries.items():
-        if row['type'] == 'symlink':
+        if row['type'] == 'symlink' and destination is not None:
             target = destination / relative
             target.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
             target.symlink_to(row['target'])
@@ -136,7 +136,7 @@ def collect_artifacts(source, manifest, patterns, destination, maximum):
             continue
         if row['type'] != 'file':
             skipped.append({'path': relative, 'reason': 'symlink_not_followed'}); continue
-        if total + row['size'] > maximum:
+        if maximum is not None and total + row['size'] > maximum:
             skipped.append({'path': relative, 'reason': 'artifact_limit'}); continue
         content, _ = regular_bytes(source, relative, maximum=row['size'])
         write_file(destination / relative, content)

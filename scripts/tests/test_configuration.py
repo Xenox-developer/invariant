@@ -23,13 +23,25 @@ class ProjectConfigurationTests(unittest.TestCase):
             workspace.init(self.project)
         self.path = self.project / '.invariant/config.json'
 
-    def test_new_and_legacy_configs_have_identical_default_enforcement(self):
+    def test_new_projects_enable_downloads_and_legacy_defaults_remain_offline(self):
         self.assertEqual(json.loads(self.path.read_text()), NEW_PROJECT_CONFIG)
+        self.assertEqual(workspace.load_project(self.project)['command_network'], 'internet')
         self.path.write_text(json.dumps(PROFILE))
         before = self.path.read_bytes()
         self.assertEqual(workspace.load_project(self.project), DEFAULT_CONFIG)
         self.assertEqual(resource_limits(workspace.load_project(self.project)), LIMITS)
         self.assertEqual(self.path.read_bytes(), before)
+
+    def test_general_profile_defaults_to_internet_without_overriding_saved_offline_choice(self):
+        self.path.write_text(json.dumps({**PROFILE, 'profile': 'codex-environment-v2'}))
+        before = self.path.read_bytes()
+        self.assertEqual(workspace.load_project(self.project)['command_network'], 'none')
+        with contextlib.redirect_stdout(io.StringIO()): workspace.init(self.project)
+        self.assertEqual(self.path.read_bytes(), before)
+        self.assertIn('--network=none', workspace.container_command('owned', self.project, 'sha256:image'))
+        self.path.write_text(json.dumps({'schema': 1, 'profile': 'codex-environment-v2',
+                                         'agent': 'codex', 'model_access': 'openai'}))
+        self.assertEqual(workspace.load_project(self.project)['command_network'], 'internet')
 
     def test_each_project_has_independent_settings_and_partial_overrides(self):
         other = self.project.parent / 'other';other.mkdir()
@@ -58,10 +70,12 @@ class ProjectConfigurationTests(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()): workspace.init(self.project)
         self.assertEqual(self.path.read_bytes(), before)
 
-    def test_internet_opt_in_is_per_project_and_uses_matching_docker_and_seccomp(self):
+    def test_default_internet_uses_matching_docker_and_seccomp_and_can_be_disabled(self):
         from invariant.policy import seccomp_filename
+        configuration.set_value(self.project, 'restrictions_enabled', 'true')
+        configuration.set_value(self.project, 'command_network', 'internet')
         configuration.set_value(self.project, 'resource_mode', 'manual')
-        selected = configuration.set_value(self.project, 'command_network', 'internet')
+        selected = workspace.load_project(self.project)
         args = workspace.container_command('owned', self.project, 'sha256:image')
         self.assertIn('--network=bridge', args)
         self.assertIn('--security-opt=seccomp=' + str(workspace.ASSETS / 'seccomp-environment-internet.json'), args)

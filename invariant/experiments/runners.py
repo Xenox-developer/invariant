@@ -10,7 +10,7 @@ import sys
 import time
 import uuid
 
-from .. import environment, workspace
+from .. import environment, resources, workspace
 from ..dependencies import docker_env, find_docker
 from .errors import ExperimentError
 
@@ -52,7 +52,7 @@ class BoundedLog:
     def write(self, data, *, final=False):
         data = self.redactor.feed(data, final=final)
         self.observed += len(data)
-        remaining = self.limit - self.saved
+        remaining = self.limit - self.saved if self.limit is not None else len(data)
         content = data[:max(0, remaining)]
         if content and self.on_log:
             self.on_log('log_chunk', {'data_base64': base64.b64encode(content).decode('ascii')})
@@ -159,7 +159,7 @@ def reclaim_private(context):
 class CommandRunner:
     def run(self, context, *, timeout, cancel, log_path, limit, secrets=(), kill_on_limit=False, on_started=None, on_intent=None, on_log=None):
         started = time.time()
-        deadline = time.monotonic() + timeout
+        deadline = workspace.deadline(timeout, time.monotonic())
         log = BoundedLog(log_path, limit, secrets, on_log)
         process = None
         reason = None
@@ -172,12 +172,13 @@ class CommandRunner:
             inspected = owned_info(context)
             workspace.verify_container(context.owner_token, context.project, context.image, context=context, info=inspected)
             evidence = {'image': inspected['Image'], 'mounts': inspected['Mounts'],
+                        **resources.execution_evidence(inspected,context.policy),
                         'memory_bytes': inspected['HostConfig']['Memory'], 'nano_cpus': inspected['HostConfig']['NanoCpus'],
                         'pids_limit': inspected['HostConfig']['PidsLimit'], 'network': inspected['HostConfig']['NetworkMode']}
             executable = find_docker()
             # Preparation is a separate phase; the workload deadline starts at launch.
             started = time.time()
-            deadline = time.monotonic() + timeout
+            deadline = workspace.deadline(timeout, time.monotonic())
             if on_intent: on_intent('start')
             if cancel.is_set():
                 raise ExperimentError('CANCELLED_BEFORE_START', 'This attempt was stopped before container launch.')

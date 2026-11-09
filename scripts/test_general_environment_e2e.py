@@ -112,11 +112,15 @@ printf 'all-toolchains-restored\n'
     try:
         cli('init');policy=json.loads(cli('config','--json'))
         require(policy['profile']==environment.PROFILE,'New project selected a language-specific profile')
+        require(policy['command_network']=='internet','New projects must allow dependency downloads')
+        require(not policy['restrictions_enabled'] and policy['host_access'],'New projects must default to unrestricted access')
+        cli('config','set','restrictions_enabled','true')
+        cli('config','set','command_network','none')
         log=start('offline-initial');r,name=inspect('offline-initial')
         k=r['runtime']['kernel']
         require(k['uid']==0 and not k['root_read_only'] and k['control_read_only'] and k['policy_read_only'],'Incorrect administrator/control isolation')
         require(k['network_sockets']=={'ipv4':'denied','ipv6':'denied'},'Offline sockets not blocked')
-        passed('default_general_environment_and_static_kernel_guardrails')
+        passed('general_environment_explicit_offline_and_static_kernel_guardrails')
         command(name,"""set -eu
 python3 -m venv /workspace/.venv
 printf saved >/root/environment-marker

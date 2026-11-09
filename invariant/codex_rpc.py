@@ -30,6 +30,7 @@ class RpcCancelled(RpcError):
 
 class CodexRpc:
     def __init__(self, command, *, env, cwd, guard_parent=False):
+        self.agent_runtime=(env.get('INVARIANT_AGENT_CONTAINER'),env.get('INVARIANT_AGENT_HOME'),env.get('INVARIANT_AGENT_EXECUTOR'))
         self.guard = None
         options = {}
         if guard_parent:
@@ -52,6 +53,7 @@ class CodexRpc:
         self.messages = queue.Queue(maxsize=64)
         self.closing = threading.Event()
         self.counter = 0
+        self.tool_handler = None
         self.reader = threading.Thread(target=self._read, daemon=True)
         self.reader.start()
 
@@ -100,7 +102,10 @@ class CodexRpc:
         # No server request can expand the Docker profile or enable another tool.
         if "method" in message and "id" in message:
             method = message["method"]
-            if method in ("item/commandExecution/requestApproval", "item/fileChange/requestApproval"):
+            if method == 'item/tool/call' and self.tool_handler is not None:
+                result=self.tool_handler(message.get('params',{}))
+                self.send({'id':message['id'],'result':result})
+            elif method in ("item/commandExecution/requestApproval", "item/fileChange/requestApproval"):
                 self.send({"id": message["id"], "result": {"decision": "decline"}})
             elif method == "item/permissions/requestApproval":
                 self.send({"id": message["id"], "result": {"permissions": {}, "scope": "turn"}})
@@ -156,3 +161,6 @@ class CodexRpc:
                 self.process.wait(timeout=3)
         self.reader.join(timeout=2)
         self.process.stdout.close()
+        if self.agent_runtime[0]:
+            from .agent_runtime import cleanup
+            cleanup(*self.agent_runtime)

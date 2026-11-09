@@ -106,7 +106,9 @@ def plan(engine,identifier,*,request_id=None):
                 if p.startswith('@input/'):continue
                 if p.casefold() in names and names[p.casefold()]!=p:raise ExperimentError('CASE_COLLISION','Case-only path replacements require a new unambiguous result.')
                 names[p.casefold()]=p
-            paths={r['path'] for r in changes}
+            from ..task_evidence import protected_tests
+            protected_inputs=protected_tests(engine,study)
+            paths={r['path'] for r in changes}|set(protected_inputs)
             desired={p:r for p,r in after['entries'].items() if not excluded(p,study)}
             link_paths=safe_links(desired)
             paths|=link_paths
@@ -115,6 +117,8 @@ def plan(engine,identifier,*,request_id=None):
             for p in sorted(paths):
                 current=tree.entry(engine.project,p);guards[p]={'entry':current}
                 if current and current['type']=='directory':guards[p]['identity']=tree.identity(engine.project/p)
+                if p in protected_inputs and (current!=protected_inputs[p] or p in changed and changed[p]['after']!=protected_inputs[p]):
+                    conflicts.append({'path':p,'reason':'fixed_test_changed'})
                 if p in changed and current!=changed[p]['before']:
                     conflicts.append({'path':p,'reason':'baseline_changed','expected':changed[p]['before'],'actual':current})
                 if p not in changed and current and current['type']!='directory' and any(q.startswith(p+'/') for q in changed):
@@ -130,7 +134,9 @@ def plan(engine,identifier,*,request_id=None):
             plan_id='plan-'+uuid.uuid4().hex
             value={**report,'schema_version':1,'plan_id':plan_id,'project':str(engine.project),
                 'root_identity':tree.identity(engine.project),'guards':guards,'conflicts':conflicts,
-                'steps':steps_for(changes,plan_id),'applied':False,'state':'conflicted' if conflicts else 'planned'}
+                'steps':steps_for(changes,plan_id),'protected_inputs':protected_inputs,'applied':False,'state':'conflicted' if conflicts else 'planned'}
+            from ..docker_storage import managed
+            if managed():value['storage_layout']=2
             value['destination_revision']=digest({'root':value['root_identity'],'guards':guards})
             if len(json.dumps(value,indent=2).encode())+1>MAX_PLAN:raise ExperimentError('APPLY_LIMIT','Apply plan exceeds its metadata limit.')
             folder=private_directory(engine.root/'apply-plans')/plan_id;folder.mkdir(mode=0o700)
@@ -267,12 +273,35 @@ def apply(engine,plan_id,*,request_id=None):
                     journal['progress'][index]='intent';save_journal(folder,journal)
                     tree.set_entry(engine.project,step['path'],step['before'],step['after'],folder/'desired'/str(index),step['temporary'],value['root_identity'])
                     journal['progress'][index]='done';save_journal(folder,journal)
+                verification=verify_applied(value)
                 result={'plan_id':plan_id,'study_id':value['study_id'],'attempt_id':value['attempt_id'],'applied':True,
                         'paths':[r['path'] for r in value['changes']],'destination_revision':value['destination_revision'],
-                        'environment_applied':False}
+                        'environment_applied':False,'verification':verification}
                 journal.update(state='committed',result=result);save_journal(folder,journal)
                 (engine.root/'apply-active.json').unlink();sync(engine.root)
             except BaseException:
                 reconcile_pending(engine.state)
                 raise
             return engine.store.control_operation(request_id,fingerprint,result,complete=True)
+
+
+def verify_applied(plan):
+    """Verify committed contents under the existing apply lease, before commit."""
+    observed={}
+    for row in plan['changes']:
+        actual=tree.entry(Path(plan['project']),row['path'])
+        if actual!=row['after']:
+            raise ExperimentError('APPLY_VERIFICATION_FAILED','Written content differs from the reviewed plan: '+row['path'])
+        observed[row['path']]=actual
+    protected={}
+    for path,expected in plan.get('protected_inputs',{}).items():
+        actual=tree.entry(Path(plan['project']),path)
+        if actual!=expected:
+            raise ExperimentError('APPLY_VERIFICATION_FAILED','Fixed input changed during application: '+path)
+        protected[path]=actual
+    import time
+    from .definitions import digest
+    return {'schema_version':1,'verified':True,'verified_at':time.time(),
+            'plan_digest':digest(plan),'result_digest':plan['result_digest'],
+            'changed_paths':len(observed),'written_entries_digest':digest(observed),
+            'protected_inputs':len(protected),'protected_entries_digest':digest(protected)}

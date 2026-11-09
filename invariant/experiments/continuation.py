@@ -15,8 +15,11 @@ from .results import resolve, safe_links
 from .snapshots import regular_bytes, seal_tree, protected
 
 
-def create(engine, identifier, prompt_file, *, request_id=None):
+def create(engine, identifier, prompt_file, *, request_id=None, evaluation=None):
     from .engine import sync_tree, sync_directory
+    if evaluation is not None:
+        from .child_evaluation import validate_options
+        validate_options(evaluation)
     request_id=request_key(request_id) or str(uuid.uuid4())
     relative=engine._path(prompt_file)
     with project_lock(engine.root/'mutations',timeout=3):
@@ -27,7 +30,7 @@ def create(engine, identifier, prompt_file, *, request_id=None):
             try:
                 if not prompt.decode('utf-8').strip(): raise ValueError()
             except (UnicodeError,ValueError):raise ExperimentError('INVALID_INPUT','Continuation prompt must be nonempty UTF-8 text.') from None
-            fingerprint=digest({'operation':'continue','identifier':identifier,'prompt_file':relative,'prompt_digest':hashlib.sha256(prompt).hexdigest()})
+            fingerprint=digest({'operation':'continue','identifier':identifier,'prompt_file':relative,'prompt_digest':hashlib.sha256(prompt).hexdigest(),**({'evaluation':evaluation} if evaluation is not None else {})})
             existing=engine.store.lookup_request(request_id,fingerprint)
             if existing:return {**engine.inspect(existing),'idempotent_replay':True}
             study,attempt,base,saved,_,manifest=resolve(engine,identifier)
@@ -45,6 +48,10 @@ def create(engine, identifier, prompt_file, *, request_id=None):
             materialize(saved,staging/'workspace',entries)
             inputs=staging/'inputs';inputs.mkdir(mode=0o700)
             frozen=copy.deepcopy(study['frozen']);definition=frozen['definition']
+            if 'delivery' not in frozen:
+                from .delivery import DeliveryPolicy
+                frozen['delivery']=DeliveryPolicy.freeze(definition['workspace'].get('apply',{}),
+                    base/'workspace',study['_baseline_manifest']['entries'])
             trial=next(t for t in study['trials'] if t['id']==attempt['trial_id'])
             variant=copy.deepcopy(next(v for v in definition['variants'] if v['id']==trial['variant_id']))
             variant.pop('patch_file',None)  # Already present in the saved parent workspace.
@@ -57,6 +64,11 @@ def create(engine, identifier, prompt_file, *, request_id=None):
                 data,_=regular_bytes(base/'inputs',path,maximum=frozen['capture_limits']['source_bytes'])
                 if hashlib.sha256(data).hexdigest()!=expected:raise ExperimentError('CORRUPT_STATE','Parent input changed: '+path)
                 write_file(inputs/path,data,0o400)
+            if evaluation is not None:
+                from .child_evaluation import freeze
+                freeze(engine,study,frozen,inputs,evaluation)
+            from .definitions import validate
+            if definition['runner']['type']=='codex':validate(copy.deepcopy(definition))
             write_file(inputs/prompt_name,prompt,0o400)
             frozen['inputs'][prompt_name]=hashlib.sha256(prompt).hexdigest()
             combined={**entries,**{'@input/'+path:{'type':'file','mode':0o400,'size':len(regular_bytes(inputs,path)[0]),'sha256':sha}
@@ -65,7 +77,7 @@ def create(engine, identifier, prompt_file, *, request_id=None):
                 'source_bytes':sum(r.get('size',0) for r in combined.values()),'excluded':[],
                 'host_exclusions':study['_baseline_manifest'].get('host_exclusions',study['_baseline_manifest'].get('excluded',[])),
                 'mandatory_exclusions':manifest.get('mandatory_exclusions',[])}
-            if capture['source_bytes']>frozen['capture_limits']['source_bytes']:
+            if frozen['capture_limits']['source_bytes'] is not None and capture['source_bytes']>frozen['capture_limits']['source_bytes']:
                 raise ExperimentError('CAPTURE_LIMIT','Child workspace and captured inputs exceed the frozen capture limit.')
             image={**frozen['image'],'id':selected,'repo_digests':[]}
             baseline={'schema_version':1,'project':str(engine.project),'manifest':capture,'image':image,'policy':frozen['effective_policy']}

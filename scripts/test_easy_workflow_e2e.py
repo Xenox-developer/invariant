@@ -93,13 +93,15 @@ def main():
     try:
         initialized = cli('init')
         require('Next: invariant run' in initialized, 'Init still requires model flags')
+        require(json.loads(cli('config','--json'))['resource_mode']=='unlimited','New projects must default to no quotas')
+        cli('config','set','restrictions_enabled','true')
         config = project/'.invariant/config.json';baseline=config.read_bytes()
         require(json.loads(baseline)['resource_mode']=='auto', 'New project does not use auto sizing')
         require(json.loads(baseline)['duration_seconds']==3600, 'New session budget differs')
         cli('init');require(config.read_bytes()==baseline, 'Init reset settings')
         inactive = json.loads(cli('guardrails','--json'))
         require(not inactive['verified'] and inactive['configured']['memory_bytes'] is None, 'Auto guesses labeled live/selected')
-        passed('bare_init_selects_auto_defaults_without_questions_or_overwrites')
+        passed('restricted_preset_selects_auto_limits_without_overwriting_existing_settings')
 
         log = start('run')
         initial,name=inspect('initial')

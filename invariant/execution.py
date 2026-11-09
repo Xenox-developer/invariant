@@ -89,6 +89,7 @@ class ExecutionContext:
     output_directory: Path | None = None
     command_environment: tuple = ()
     working_directory: str = '/workspace'
+    host_mounts: tuple = ()
 
     @classmethod
     def create(cls, *, project, workspace, state, image, owner_token, policy,
@@ -122,6 +123,8 @@ class ExecutionContext:
             raise RuntimeError('Invalid command argument vector')
         if working_directory not in ('/workspace', '/__invariant_inputs/source'):
             raise RuntimeError('Invalid command working directory')
+        from .workspace import host_mounts
+        policy=normalize(policy)
         return cls(project=project, workspace=writable, state=state, image=image, owner_token=owner_token,
                    policy_directory=Path(policy_directory or writable / '.invariant').resolve(),
                    control_directory=Path(control_directory).resolve() if control_directory is not None else None,
@@ -129,7 +132,8 @@ class ExecutionContext:
                    _policy_json=json.dumps(normalize(policy), sort_keys=True, allow_nan=False),
                    command=tuple(command) if command is not None else None, readonly_mounts=mounts,
                    output_directory=Path(output_directory).resolve() if output_directory is not None else None,
-                   command_environment=tuple(sorted(extras.items())), working_directory=working_directory)
+                   command_environment=tuple(sorted(extras.items())), working_directory=working_directory,
+                   host_mounts=host_mounts(policy))
 
     @property
     def policy(self):

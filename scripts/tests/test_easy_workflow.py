@@ -18,7 +18,7 @@ class AutomaticResourceTests(unittest.TestCase):
     def test_general_build_capacity_caps_unknown_and_tiny_engines(self):
         with tempfile.TemporaryDirectory() as folder:
             project = Path(folder)
-            policy = normalize(NEW_PROJECT_CONFIG)
+            policy = normalize({**NEW_PROJECT_CONFIG, 'resource_mode':'auto'})
             selected, plan = resources.select(policy, project, {'cpus': 10, 'memory_bytes': 8*1024**3})
             self.assertEqual(selected['limits']['memory_mib'], 1024)
             self.assertEqual(selected['limits']['cpus'], 2)
@@ -35,7 +35,7 @@ class AutomaticResourceTests(unittest.TestCase):
             self.assertTrue(plan['conservative_fallback'])
             with self.assertRaisesRegex(RuntimeError, 'too little memory'):
                 resources.select(policy, project, {'memory_bytes': 64*1024**2})
-            self.assertEqual(policy, normalize(NEW_PROJECT_CONFIG))
+            self.assertEqual(policy, normalize({**NEW_PROJECT_CONFIG, 'resource_mode':'auto'}))
 
     def test_manual_settings_are_not_resized_and_explicit_edit_selects_manual_mode(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -55,11 +55,11 @@ class AutomaticResourceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             project, state = Path(folder)/'project', Path(folder)/'private'
             project.mkdir()
-            policy, plan = resources.select(NEW_PROJECT_CONFIG, project, {'cpus': 4, 'memory_bytes': 8*1024**3})
+            policy, plan = resources.select({**NEW_PROJECT_CONFIG,'resource_mode':'auto'}, project, {'cpus': 4, 'memory_bytes': 8*1024**3})
             self.assertEqual(preferences.remember_pressure(state, project, plan), 2048)
             self.assertEqual((state/'resources.json').stat().st_mode & 0o777, 0o600)
             hint = preferences.memory_hint(state, project)
-            selected, _ = resources.select(NEW_PROJECT_CONFIG, project, {'cpus': 2, 'memory_bytes': 2*1024**3}, hint)
+            selected, _ = resources.select({**NEW_PROJECT_CONFIG,'resource_mode':'auto'}, project, {'cpus': 2, 'memory_bytes': 2*1024**3}, hint)
             self.assertEqual(selected['limits']['memory_mib'], 1024)
             self.assertIsNone(preferences.memory_hint(state, project/'other'))
             self.assertIsNone(preferences.remember_pressure(state, project, {'mode':'manual'}))
@@ -72,13 +72,13 @@ class AutomaticResourceTests(unittest.TestCase):
         self.assertEqual(resources.pressure(docker, 'owned'), 2)
         self.assertIn('-I', docker.call_args.args)
 
-    def test_inactive_auto_resources_are_not_claimed_as_selected_or_live(self):
+    def test_inactive_unlimited_resources_are_not_claimed_as_live(self):
         with tempfile.TemporaryDirectory() as folder:
             project = Path(folder)
             with contextlib.redirect_stdout(io.StringIO()): workspace.init(project)
             with patch.object(guardrails, 'state_for', return_value=project/'not-present'), patch.object(guardrails, 'docker') as docker:
                 result = guardrails.inspect(project)
-            self.assertEqual(result['configured']['resource_mode'], 'auto')
+            self.assertEqual(result['configured']['resource_mode'], 'unlimited')
             self.assertIsNone(result['configured']['memory_bytes'])
             self.assertFalse(result['verified'])
             docker.assert_not_called()

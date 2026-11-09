@@ -10,6 +10,13 @@ from invariant import workspace, dependencies
 
 
 class CodexDiscoveryTests(unittest.TestCase):
+    def setUp(self):
+        # Discovery tests must not depend on a real operator's managed install.
+        temporary=tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        managed=patch.object(dependencies,'managed_codex',return_value=Path(temporary.name)/'codex-0.163.0')
+        managed.start();self.addCleanup(managed.stop)
+
     def test_prefers_codex_from_operator_path(self):
         with patch.object(workspace.shutil, "which", return_value="/opt/bin/codex"):
             self.assertEqual(workspace.find_codex(), "/opt/bin/codex")
@@ -48,7 +55,7 @@ class CodexDiscoveryTests(unittest.TestCase):
                   patch.object(dependencies, "find_docker", side_effect=RuntimeError("Docker CLI was not found")),
                   patch.object(dependencies, "interactive_terminal", return_value=False)):
                 with self.assertRaisesRegex(RuntimeError, "Docker CLI was not found"):
-                    workspace.run("gpt-6.1-sol", effort="medium")
+                    workspace._run("gpt-6.1-sol", effort="medium")
 
 
 if __name__ == "__main__":

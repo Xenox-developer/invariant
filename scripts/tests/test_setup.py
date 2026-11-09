@@ -45,7 +45,8 @@ class DiscoveryTests(unittest.TestCase):
             self.assertEqual(deps.probe_codex()['status'], 'unavailable')
 
     def test_docker_requires_accessible_linux_engine_without_printing_diagnostics(self):
-        for output, code, status in [('linux\n', 0, 'ready'), ('windows\n', 0, 'incompatible'), ('', 1, 'unavailable')]:
+        for output, code, status in [('linux\n', 0, 'ready'), ('windows\n', 0, 'incompatible'),
+                                     ('', 0, 'unavailable'), ('invalid proxy output', 0, 'unavailable'), ('', 1, 'unavailable')]:
             with self.subTest(status=status), patch.object(deps, 'find_docker', return_value='/docker'), \
                  patch.object(deps.subprocess, 'run', return_value=subprocess.CompletedProcess([], code, output, 'secret-diagnostic')):
                 value = deps.probe_docker()
@@ -264,7 +265,7 @@ class InstallerTests(unittest.TestCase):
 
 class CliTests(unittest.TestCase):
     def test_setup_routes_and_exit_status_propagate(self):
-        with patch.object(sys, 'argv', ['invariant', 'setup', '--check', '--json']), patch.object(setup, 'main', return_value=1) as main:
+        with patch.object(sys, 'argv', ['invariant', 'setup', '--check', '--json']), patch('invariant.docker_storage.forward',return_value=None), patch.object(setup, 'main', return_value=1) as main:
             with self.assertRaises(SystemExit) as raised:
                 cli.entrypoint()
             self.assertEqual(raised.exception.code, 1)

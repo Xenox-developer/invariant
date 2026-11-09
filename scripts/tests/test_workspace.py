@@ -125,7 +125,7 @@ class WorkspacePolicyTests(unittest.TestCase):
               patch.object(workspace, "remove_owned", side_effect=RuntimeError("daemon unavailable")),
               contextlib.redirect_stdout(io.StringIO())):
             with self.assertRaisesRegex(RuntimeError, "daemon unavailable"):
-                workspace.run("gpt-6.1-sol")
+                workspace._run("gpt-6.1-sol")
         self.assertEqual(json.loads((state / "current.json").read_text()), previous)
 
 

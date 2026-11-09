@@ -13,6 +13,12 @@ class ExperimentError(RuntimeError):
                 'details': self.details}
 
 
+def runtime_error_code(error):
+    """Protocol exceptions may use numeric codes; durable states use our strings."""
+    code=getattr(error,'code',None)
+    return code if isinstance(code,str) and code else 'RUNTIME_FAILED'
+
+
 def recovery_for(code):
     """Concrete actions never imply an automatic replay of an uncertain attempt."""
     if code in ('AUTH_REQUIRED', 'AUTH_FAILED'):

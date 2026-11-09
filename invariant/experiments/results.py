@@ -19,6 +19,10 @@ def excluded(path, study):
     rules = study['frozen']['definition']['workspace']['exclude']
     baseline = study.get('_baseline_manifest', {})
     omissions=baseline.get('host_exclusions',baseline.get('excluded', []))+study.get('_host_secret_paths',[])
+    delivery=study.get('_delivery_policy')
+    row=study.get('_result_entries',{}).get(path) or baseline.get('entries',{}).get(path)
+    if delivery and (delivery.excluded(path,row) or
+        path in baseline.get('entries',{}) and delivery.excluded(path,baseline['entries'][path])):return True
     return any(glob_match(p, rule) or glob_match(p+'/', rule) for p in candidates for rule in rules) or any(
         path.casefold() == p.casefold() or path.casefold().startswith(p.casefold()+'/') for p in omissions)
 
@@ -102,6 +106,9 @@ def resolve(engine, identifier):
     before=json.loads(regular_bytes(base,'manifest.json')[0])
     verify_tree(base/'workspace',{p:r for p,r in before['entries'].items() if not p.startswith('@input/')})
     study['_baseline_manifest']=before
+    from .delivery import DeliveryPolicy
+    study['_delivery_policy']=DeliveryPolicy(study['frozen']['definition']['workspace'].get('apply',{}),base/'workspace',before['entries'],frozen=study['frozen'].get('delivery'),result_entries=manifest['entries'])
+    study['_result_entries']=manifest['entries']
     from .lifecycle import references
     study['_host_secret_paths']=[]
     for value in references(engine,study).values():
@@ -110,8 +117,8 @@ def resolve(engine, identifier):
     return study,attempt,base,root,before,manifest
 
 
-def describe(engine, identifier):
-    study,attempt,base,root,before,after=resolve(engine,identifier)
+def describe(engine, identifier, *, _resolved=None):
+    study,attempt,base,root,before,after=_resolved or resolve(engine,identifier)
     changes=[];omitted=[];remaining=2*1024**2
     patch_paths=study['frozen']['input_checks'].get('variant_changed_paths',{}).get(
         next(t['variant_id'] for t in study['trials'] if t['id']==attempt['trial_id']),[])

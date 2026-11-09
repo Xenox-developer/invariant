@@ -2,7 +2,7 @@
 
 # INVARIANT
 
-**Persistent, isolated environments for coding agents.**
+**Persistent Linux environments for coding agents, with optional restrictions.**
 
 Give each project its own Linux environment with tools and settings that survive
 between runs. Work with one agent, or run configurations in parallel on the same
@@ -106,19 +106,44 @@ invariant run
 
 The first run prepares the Linux image and opens a Codex chat. Ask the agent
 to work on your project. It can install the Linux-compatible tools it needs;
-ordinary sessions write directly to your project files.
+ordinary sessions work on a Docker-backed project copy; reviewed task results can be applied to the original project.
 
-Command networking is off by default. To allow package downloads, exit with
-`/exit`, change the project setting, and resume:
+New environments have internet access by default, so the agent can download and
+install the Linux-compatible packages it needs without a separate setup step.
+Installed tools and dependencies are saved with the environment.
+
+Agent installations, settings, plugins, caches, chats and working copies live in
+Docker volumes and images. The host retains source files, exported results and
+logs, and a small volume registry. Internet is enabled; resource quotas and
+workload deadlines are off by default. Agents never receive the host home,
+Docker socket, devices or privileged execution. Only the trusted manager controls Docker.
+
+Optional resource/network restrictions remain available:
 
 ```sh
-invariant config set command_network internet
+invariant config set restrictions_enabled true
+invariant storage status --json
+invariant storage migrate --all
+```
+
+Set `restrictions_enabled false` to disable optional limits again. It does not
+grant access to the host. See [Docker state storage](docs/DOCKER_STORAGE.md).
+
+Automatic Docker maintenance checks hourly while idle and removes disposable
+objects older than 30 days. Results, logs and saved task/continuation state do not
+expire. Inspect or change the policy with `invariant storage maintenance --json`;
+preview cleanup with `invariant storage cleanup --json`.
+
+To work offline, exit with `/exit`, disable networking, and resume:
+
+```sh
+invariant config set command_network none
 invariant resume
 ```
 
-For example, ask the agent to install your project's dependencies, then build
-or test it. To work offline again, exit and run
-`invariant config set command_network none` before resuming.
+Existing projects keep their saved network setting. If an older project has
+networking disabled, enable it once with
+`invariant config set command_network internet` before running or resuming.
 
 After `/exit` or closing the terminal, return to the same project and run:
 
@@ -173,12 +198,13 @@ invariant experiment init
 
 The guided setup asks for a task, a Linux test command, fixed test files and
 agent configurations. It checks that evaluation can run before starting model
-calls. Trials work on private project copies; their edits reach your original
-files only through an explicit apply step.
+calls. Trials work on private project copies and deliver results through an
+explicit apply step. Comparisons export each variant separately and never choose or apply a winner automatically.
 
 Prepare missing dependencies with an ordinary agent session or an explicit
 `invariant environment prepare --command "YOUR_LINUX_SETUP_COMMAND"`.
-Enable command networking first if downloads are needed. Installed tools become
+New environments already allow downloads; existing offline projects keep their
+saved policy. Installed tools become
 part of the project's saved environment and the baseline for new experiments.
 See [environment preparation](https://github.com/Xenox-developer/invariant/blob/main/docs/ENVIRONMENT_PREPARATION.md)
 and [guided experiments, flags and JSON](https://github.com/Xenox-developer/invariant/blob/main/docs/experiments/GUIDED_SETUP.md).
@@ -201,6 +227,52 @@ explicit recovery and retry commands. See the
 [experiment reference](https://github.com/Xenox-developer/invariant/blob/main/docs/experiments/README.md)
 and [storage, backups and recovery](https://github.com/Xenox-developer/invariant/blob/main/docs/STORAGE_AND_RECOVERY.md).
 
+## Use from an AI assistant
+
+For related jobs, use a [reusable execution context](docs/EXECUTION_CONTEXTS.md).
+It shares preparation and runtime caches while retaining independent worker
+snapshots. `invariant context --help` exposes prepare, submit, execute, status and
+explicit collection. New projects select a compact coding tool profile separately
+from network access and resource limits.
+
+
+The optional [INVARIANT skill](https://github.com/Xenox-developer/invariant/blob/main/skills/invariant/SKILL.md) teaches an assistant to
+prepare environments, submit coding tasks, inspect results and apply reviewed
+changes through the existing CLI. It requires an installed INVARIANT CLI and
+shell access. It defaults to one executor; comparisons use multiple configurations
+when requested.
+
+The coordinated workflow is available in the current checkout through
+`invariant task execute`; check `invariant task --help` before using the skill with
+an older installed release. It owns preparation, baseline checks, dispatch and
+waiting as one durable request. A bounded semantic reviewer runs after execution;
+provider response usage is saved and reconciled with session totals. New child
+evaluations are frozen independently from their saved workspace/tools. Compact
+review packages bind application to a
+concrete plan; private continuation snapshots retain caches without applying them
+to the host. See [task automation](https://github.com/Xenox-developer/invariant/blob/main/docs/TASK_AUTOMATION.md) for
+resumption, package download retries and verified comparison contracts.
+
+For Codex, copy the skill from the repository root into your personal skills
+directory (the command leaves an existing installation alone):
+
+```sh
+mkdir -p ~/.codex/skills
+test ! -e ~/.codex/skills/invariant && test ! -L ~/.codex/skills/invariant && \
+  cp -R skills/invariant ~/.codex/skills/invariant
+```
+
+The entire folder is portable, including its two reference files. Other agents
+that support `SKILL.md` can load the same folder through their skill mechanism.
+Example requests:
+
+- `$invariant Implement the requested fix in this project, run its tests, and apply the reviewed result.`
+- `$invariant Compare low, medium and high effort on this task and show me the results.`
+- `$invariant Prepare this project's Linux dependencies without model calls.`
+
+See the [assistant and JSON interface](https://github.com/Xenox-developer/invariant/blob/main/docs/experiments/ASSISTANT_GUIDE.md) for the
+underlying command contract. The skill does not add a separate server or API.
+
 ## Supported agents
 
 | Workflow | Integration |
@@ -220,11 +292,14 @@ include dependency preparation and tests.
 - Native Codex sends task content and tool results to the provider. Local
   environments do not mean local model inference. Credentials stay outside the
   workload containers.
-- Agents run as administrator inside Docker, without the host home or Docker
-  socket. Internet mode also permits reachable local-network services. See the
+- Agents run as administrator inside Docker. Unrestricted defaults include host
+  home, local Docker access and available devices. The restricted preset removes
+  host mounts and additional privileges. Internet mode also permits reachable local-network services. See the
   [security boundaries](https://github.com/Xenox-developer/invariant/blob/main/SECURITY.md).
-- Environments use Linux on Docker. Windows workspaces, host macOS APIs,
-  GPUs/devices and nested Docker are outside the supported environment backend.
+- Environments use Linux on Docker. Native macOS/Windows kernels and process-memory
+  restoration are outside this backend. Device/GPU passthrough and host networking
+  depend on Docker's platform support; Docker Desktop may need host networking
+  enabled in its own settings. Host Docker access can launch other containers.
 - Experiments use full workspace copies and saved Docker layers. Leave disk
   headroom; hard disk quotas are not provided.
 - Shared checks make evaluation consistent, but model responses are not
@@ -275,3 +350,11 @@ See [NOTICE](https://github.com/Xenox-developer/invariant/blob/main/NOTICE) and 
 [licensing inventory](https://github.com/Xenox-developer/invariant/blob/main/docs/LICENSING.md)
 for third-party components. Docker Desktop, Codex and provider accounts retain
 their own terms.
+
+Related stages can pass accepted files using digest-bound `result_inputs`, entirely
+inside Docker. Run contexts keep a manager connection open, expose compact status,
+and collect results explicitly with optional log cursors. Background Codex recipes
+can select `runner.completion: validated` to finish from a protected acceptance
+receipt without an extra model-written final response. Full environment snapshots,
+continuation and guarded application remain available. See
+[execution contexts](docs/EXECUTION_CONTEXTS.md) for the Python API and guarantees.

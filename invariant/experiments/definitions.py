@@ -20,6 +20,12 @@ LIMITS = {'definition_bytes': MAX_DEFINITION, 'trials': MAX_TRIALS,
           'event_bytes': 2 * 1024 ** 2}
 
 
+def capture_limits(policy):
+    return dict(LIMITS) if policy.get('restrictions_enabled', True) else {
+        key: None if key in ('source_bytes','entries','log_bytes','artifact_bytes','event_bytes') else value
+        for key,value in LIMITS.items()}
+
+
 def invalid(message):
     raise ExperimentError('INVALID_DEFINITION', message)
 
@@ -105,22 +111,32 @@ def validate(value):
         raise ExperimentError('UNSUPPORTED_SCHEMA', 'Only experiment schema_version 1 is supported.')
     text(value['name'], 'name', maximum=64, pattern=NAME)
     runner = value['runner']
-    object_keys(runner, ('type', 'argv'), ('type',), 'runner')
+    object_keys(runner, ('type', 'argv','completion'), ('type',), 'runner')
     if runner['type'] == 'command':
+        if 'completion' in runner:invalid('completion is only available for Codex runners')
         if 'argv' not in runner:
             invalid('command runner requires argv')
         argv(runner['argv'], 'runner.argv')
     elif runner['type'] == 'codex':
-        if set(runner) != {'type'}:
-            invalid('Codex runner accepts only type; put model/effort/instructions_file on each variant')
+        if set(runner)-{'type','completion'}:
+            invalid('Codex runner accepts type and completion; put model/effort/instructions_file on each variant')
+        if runner.get('completion','message') not in ('message','validated'):
+            invalid('Codex completion must be message or validated')
     else:
         invalid('runner.type must be command or codex')
     workspace = value.setdefault('workspace', {})
-    object_keys(workspace, ('include', 'exclude'), (), 'workspace')
+    object_keys(workspace, ('include', 'exclude', 'apply'), (), 'workspace')
     patterns(workspace.setdefault('include', ['**/*']), 'workspace.include')
     if not workspace['include']:
         invalid('workspace.include cannot be empty')
     patterns(workspace.setdefault('exclude', []), 'workspace.exclude')
+    if 'apply' in workspace:
+        delivery=workspace['apply']
+        object_keys(delivery, ('include','exclude','respect_gitignore'), (), 'workspace.apply')
+        patterns(delivery.setdefault('include',['**/*']), 'workspace.apply.include')
+        patterns(delivery.setdefault('exclude',[]), 'workspace.apply.exclude')
+        if type(delivery.setdefault('respect_gitignore',False)) is not bool:
+            invalid('workspace.apply.respect_gitignore must be boolean')
     variants, cases = value['variants'], value['cases']
     for rows, label in ((variants, 'variants'), (cases, 'cases')):
         if not isinstance(rows, list) or not 1 <= len(rows) <= MAX_TRIALS:
@@ -178,7 +194,7 @@ def validate(value):
     object_keys(execution, ('max_parallel', 'trial_cpus', 'trial_memory_mib', 'trial_timeout_seconds',
                             'cpu_budget', 'memory_budget_mib'), (), 'execution')
     bounds = {'max_parallel': (1, 128, True), 'trial_cpus': (0.1, 64, False),
-              'trial_memory_mib': (64, 65536, True), 'trial_timeout_seconds': (1, 86400, True),
+              'trial_memory_mib': (64, 65536, True), 'trial_timeout_seconds': (0, 86400, True),
               'cpu_budget': (0.1, 65536, False), 'memory_budget_mib': (64, 2**40, True)}
     for key, val in execution.items():
         low, high, integer = bounds[key]
@@ -190,11 +206,11 @@ def validate(value):
     if evaluator is not None:
         object_keys(evaluator, ('argv', 'source_paths', 'timeout_seconds'), ('argv', 'source_paths'), 'evaluator')
         argv(evaluator['argv'], 'evaluator.argv')
-        if not isinstance(evaluator['source_paths'], list) or not 1 <= len(evaluator['source_paths']) <= 256:
+        if not isinstance(evaluator['source_paths'], list) or not evaluator['source_paths']:
             invalid('evaluator.source_paths must name its captured source files')
         for path in evaluator['source_paths']:
             source_path(path, 'evaluator source')
-        number(evaluator.setdefault('timeout_seconds', 60), 'evaluator.timeout_seconds', 1, 3600, integer=True)
+        number(evaluator.setdefault('timeout_seconds', 0), 'evaluator.timeout_seconds', 0, 3600, integer=True)
     patterns(value.setdefault('artifacts', ['outputs/**']), 'artifacts')
     external = value.setdefault('external_dependencies', [])
     if not isinstance(external, list) or len(external) > 256:
@@ -207,6 +223,8 @@ def validate(value):
     for name, reference in refs.items():
         text(name, 'secret name', maximum=64, pattern=NAME)
         text(reference, 'secret reference', maximum=64, pattern=r'[A-Z][A-Z0-9_]{0,63}')
+    if runner.get('completion')=='validated' and (not evaluator or refs):
+        invalid('Validated completion requires an evaluator without secret references')
     return value
 
 

@@ -101,12 +101,16 @@ def main():
             version=command([str(cli),'--version'],cwd=project,env=env).stdout.strip()
             expected_version = tomllib.loads((ROOT/'pyproject.toml').read_text())['project']['version']
             assert version=='invariant '+expected_version,version
-            for argv in (['--help'],['experiment','--help'],['experiment','demo','--help'],['demo','--help']):
+            for argv in (['--help'],['task','--help'],['compare','--help'],['environment','--help'],
+                         ['experiment','--help'],['experiment','demo','--help'],['demo','--help']):
                 command([str(cli),*argv],cwd=project,env=env)
             command([str(python),'-I','-c',
                 'from invariant.distribution import legacy_root; r=legacy_root(); '
                 'assert "site-packages" in str(r); '
                 'assert all((r/p).is_file() for p in ["Cargo.toml","crates/invariant-core/README.md","docker/seccomp.json","scripts/guided_demo.py","sdk/python/invariant_client.py"])'],cwd=project,env=env)
+            command([str(python),'-I','-c',
+                'from invariant.environment_cli import package_command; '
+                'assert "--no-download" in package_command(["cmake"])'],cwd=project,env=env)
             rejected=command([str(cli),'acceptance'],cwd=project,env=env,expected=1)
             assert 'source checkout' in rejected.stderr and 'Traceback' not in rejected.stderr
             command([str(cli),'init'],cwd=project,env=env)

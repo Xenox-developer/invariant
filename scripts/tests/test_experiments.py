@@ -40,6 +40,7 @@ class FakeRuntime:
     def resolve(self, project, state, definition, policy):
         self.calls += 1
         effective = normalize({**policy, 'resource_mode': 'manual',
+                               'restrictions_enabled':True,'host_access':False,'duration_seconds':3600,
                                'limits': {**policy['limits'], 'cpus': 2, 'memory_mib': 1024}})
         return {'image': {'id': IMAGE, 'repo_digests': [], 'os': 'linux', 'architecture': 'arm64'},
                 'runtime': {'adapter_version': 1}, 'capacity': {'cpus': 8, 'memory_bytes': 8 * 1024**3},

@@ -62,7 +62,7 @@ class GuidedTests(unittest.TestCase):
         for paths in (['../escape'],['.invariant'],['missing'],['linked'],['tests','tests/check.py']):
             with self.subTest(paths=paths),self.assertRaises((ExperimentError,OSError)):
                 guided.create(self.engine,task='task',test_command='true',test_paths=paths)
-        for options in ({'efforts':['high','high']},{'max_parallel':0},{'test_timeout':0},
+        for options in ({'efforts':['high','high']},{'max_parallel':0},{'test_timeout':-1},
                         {'variants':[('one','medium')],'model':'two'}):
             with self.subTest(options=options),self.assertRaises(ExperimentError): self.create(**options)
         self.assertFalse((self.project/'experiments').exists())

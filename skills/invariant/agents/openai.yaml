@@ -1,0 +1,6 @@
+interface:
+  display_name: "INVARIANT"
+  short_description: "Run coding tasks in persistent Linux environments"
+  default_prompt: "Use $invariant for this task: run or compare the requested work, inspect the evidence, and apply reviewed changes only when application is part of the request."
+policy:
+  allow_implicit_invocation: true

@@ -94,12 +94,30 @@ class NativeTests(unittest.TestCase):
                 self.context, variant={'id': 'v', 'model': 'actual', 'effort': 'medium'},
                 prompt='frozen prompt', instructions='frozen instructions', home=self.root/'home',
                 timeout=options.pop('timeout', 10), cancel=self.cancel, log_path=self.root/'runner.log',
-                limit=options.pop('limit', 65536), secrets=[b'synthetic-secret'], on_native=native.append,
+                limit=options.pop('limit', 65536), secrets=options.pop('secrets',[b'synthetic-secret']), on_native=native.append,
                 on_intent=intents.append, **options)
         if factory.called:
             self.assertTrue(rpc.closed)
             self.assertTrue(factory.call_args.kwargs['guard_parent'])
         return result, rpc, native, intents
+    def test_command_evidence_comes_from_matching_executor_events(self):
+        from invariant.command_evidence import verified_summary
+        class CommandsRpc(FakeRpc):
+            def request(self,method,params,**kwargs):
+                reply=super().request(method,params,**kwargs)
+                if method=='turn/start':
+                    def command(thread):
+                        return {'method':'item/completed','params':{'threadId':thread,'turnId':'turn-1',
+                            'item':{'type':'commandExecution','id':'stop','command':'python3 helper.py stop',
+                                    'cwd':'/workspace','status':'completed','exitCode':0}}}
+                    self.messages[:0]=[command('foreign-thread'),command(THREAD)]
+                return reply
+        result,*_=self.run_native(CommandsRpc(),secrets=[])
+        evidence=verified_summary(result['command_evidence'])
+        self.assertEqual(evidence['omitted_commands'],0)
+        self.assertEqual(len(evidence['commands']),1)
+        self.assertEqual(evidence['commands'][0]['command'],'python3 helper.py stop')
+        self.assertEqual(evidence['commands'][0]['exit_code'],0)
     def test_observed_identity_usage_frozen_prompt_and_private_remote_tools(self):
         result, rpc, native, intents = self.run_native()
         self.assertEqual(result['status'], 'completed')
@@ -110,8 +128,8 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(intents, ['create', 'start', 'model_turn'])
         calls = dict(rpc.calls)
         self.assertFalse(calls['thread/start']['ephemeral'])
-        self.assertIn('frozen instructions', calls['thread/start']['developerInstructions'])
-        self.assertEqual(calls['turn/start']['input'][0]['text'], 'frozen prompt')
+        self.assertIn('Work only in /workspace', calls['thread/start']['developerInstructions'])
+        self.assertEqual(calls['turn/start']['input'][0]['text'], 'frozen prompt\nfrozen instructions')
         self.assertEqual(calls['turn/start']['environments'], [{'environmentId': 'invariant', 'cwd': '/workspace'}])
         self.assertNotIn('synthetic-secret', (self.root/'runner.log').read_text())
         self.assertEqual(native[-1]['turn_id'], 'turn-1')
@@ -140,9 +158,14 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(result['reason'], 'CANCELLED')
         self.assertEqual(rpc.calls, [])
     def test_deadline_prevents_dispatch(self):
-        result, rpc, *_ = self.run_native(timeout=0)
+        result, rpc, *_ = self.run_native(timeout=-1)
         self.assertEqual(result['reason'], 'DEADLINE_EXCEEDED')
         self.assertEqual(rpc.calls, [])
+
+    def test_zero_deadline_allows_execution(self):
+        result, rpc, *_ = self.run_native(timeout=0)
+        self.assertEqual(result['status'],'completed')
+        self.assertIn('turn/start',dict(rpc.calls))
     def test_absent_usage_is_unknown_not_zero(self):
         self.assertIsNone(usage_record(None))
         self.assertIsNone(usage_record({'total': {}, 'last': {}}))

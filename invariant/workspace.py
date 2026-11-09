@@ -22,7 +22,7 @@ from .chats import ChatStore, valid_id, MODEL, EFFORT
 from . import preferences, resources, recovery, packages
 from . import environment as machine
 from .dependencies import find_codex, find_docker, docker_env, ensure_runtime
-from .policy import DEFAULT_DURATION, LIMITS, PROFILE, DEFAULT_CONFIG, NEW_PROJECT_CONFIG, normalize, resource_limits, scratch_options, unique_object, docker_network, seccomp_filename, network_instructions
+from .policy import DEFAULT_DURATION, LIMITS, PROFILE, DEFAULT_CONFIG, NEW_PROJECT_CONFIG, normalize, resource_limits, scratch_options, unique_object, docker_network, seccomp_filename, network_instructions, deadline
 
 ASSETS = Path(__file__).parent / "assets"
 IMAGE = "invariant-codex-workspace:0.163.0-v2"
@@ -36,6 +36,7 @@ DISABLED_FEATURES = (
     "goals", "tool_suggest", "skill_mcp_dependency_install",
     "workspace_dependencies", "worktrees", "sleep_tool",
 )
+BUNDLED_CODING_SKILLS=('imagegen','openai-docs','skill-creator','skill-installer')
 
 
 class SessionStopped(Exception):
@@ -89,15 +90,18 @@ def init(project=None, *, automatic=True):
         print("INVARIANT is already initialized here.")
         return
     # Exclusive creation never replaces an existing project's configuration.
+    policy = NEW_PROJECT_CONFIG if automatic else DEFAULT_CONFIG
     fd = os.open(config, os.O_CREAT | os.O_EXCL | os.O_WRONLY | os.O_NOFOLLOW, 0o600)
     with os.fdopen(fd, "w") as output:
-        json.dump(NEW_PROJECT_CONFIG if automatic else DEFAULT_CONFIG, output, indent=2)
+        json.dump(policy, output, indent=2)
         output.write("\n")
     print("Initialized INVARIANT in " + str(project))
     print("Policy: edit this project" + (" and its isolated Linux environment" if automatic else "")
-          + "; no command networking; project content and tool results may be sent to the selected OpenAI model.")
+          + ("; command internet access enabled for package downloads" if policy['command_network'] == 'internet' else "; no command networking")
+          + "; project content and tool results may be sent to the selected OpenAI model.")
     print("Settings: invariant config (edit with invariant config set KEY VALUE)")
-    print("Resources:", "managed automatically." if automatic else "manual limits.", "Advanced settings: invariant config")
+    print("Restrictions:", "disabled; agent storage stays in Docker." if not policy['restrictions_enabled'] else "enabled.")
+    print("Resources:", policy['resource_mode'] + '.', "Advanced settings: invariant config")
     print("Next: invariant run")
 
 
@@ -119,13 +123,15 @@ def load_project(project):
     except (ValueError, OSError):
         raise RuntimeError("Invalid INVARIANT configuration (expected a regular, single-link JSON file up to 8 KiB)") from None
     value = normalize(value)
+    from .docker_storage import managed
+    if managed():value['host_access']=False
     trusted = state_for(project).resolve()
     if trusted.is_relative_to(project) or project == Path.home().resolve():
         raise RuntimeError("The project must not contain INVARIANT's trusted state or your home directory")
     return value
 
 
-def check_project_files(project, *, allow_symlinks=False):
+def check_project_files(project, *, allow_symlinks=False, max_entries=200000):
     # Bind mounts preserve hard links and host sockets. Refuse them before
     # exposing the tree. Symlinks are also refused to avoid surprising mounts.
     def unreadable(error):
@@ -138,7 +144,7 @@ def check_project_files(project, *, allow_symlinks=False):
             path = Path(base) / name
             info = path.lstat()
             count += 1
-            if count > 200000:
+            if max_entries and count > max_entries:
                 raise RuntimeError("Workspace exceeds the 200,000-entry startup limit")
             if allow_symlinks and stat.S_ISLNK(info.st_mode):
                 continue  # Resolved only inside the container's filesystem.
@@ -161,10 +167,14 @@ def check_project_files(project, *, allow_symlinks=False):
 
 
 def docker(*arguments, timeout=30):
+    from .docker_storage import translate_mounts,clear_desktop_mount_hints
+    arguments=clear_desktop_mount_hints(translate_mounts(arguments))
     executable = find_docker()
     result = subprocess.run([executable, *arguments], env=docker_env(executable), capture_output=True, text=True, timeout=timeout)
     if result.returncode:
         raise RuntimeError("Docker " + arguments[0] + " failed: " + inert(result.stderr[-2000:]))
+    if arguments[0]=='create' and 'ws://0.0.0.0:4501' in arguments:
+        docker('start', result.stdout.strip())
     return result.stdout.strip()
 
 
@@ -179,7 +189,25 @@ def remove_owned(container):
     labels = info["Config"].get("Labels") or {}
     if labels.get("io.invariant.role") != "codex-workspace" or labels.get("io.invariant.session") != container:
         raise RuntimeError("Refusing to remove a container owned by another workload")
-    docker("rm", "--force", container)
+    from .docker_storage import managed
+    if managed():
+        from .agent_runtime import cleanup
+        for name in docker('ps','--all','--filter','label=io.invariant.executor='+container,'--format','{{.Names}}').splitlines():
+            if name:cleanup(name)
+    docker("rm", "--force", "--volumes", container)
+    from .docker_storage import managed
+    if managed():
+        from .agent_runtime import cleanup_network
+        cleanup_network(container)
+
+
+def host_mounts(policy):
+    """Agent state may only be mounted from Docker-owned storage."""
+    return ()
+
+
+def requirements_file(policy):
+    return ASSETS / ('environment-requirements.toml' if policy['restrictions_enabled'] else 'environment-requirements-unrestricted.toml')
 
 
 def prepare(*, persistent=False):
@@ -187,12 +215,7 @@ def prepare(*, persistent=False):
     from .dependencies import probe_docker, interactive_terminal
     status = probe_docker()
     if status["status"] != "ready":
-        if interactive_terminal():
-            from .setup import guided_setup
-            guided_setup()
-            status = probe_docker()
-        if status["status"] != "ready":
-            raise RuntimeError(status["message"] + ". Run invariant setup first")
+        raise RuntimeError(status["message"] + ". Start the preinstalled Docker engine, then retry")
     print("Preparing the Codex workspace image…", flush=True)
     executable = find_docker()
     result = subprocess.run([executable, "build", "--tag", machine.IMAGE if persistent else IMAGE, "--file",
@@ -211,19 +234,26 @@ def execution_context(name, project, image, *, policy=None):
 
 
 def container_command(name, project, image, *, policy=None, context=None):
+    from .docker_storage import managed
+    contained=managed()
     context = context or execution_context(name, project, image, policy=policy)
     if (context.project != Path(project).resolve() or context.image != image
             or context.owner_token != name):
         raise RuntimeError('Execution context identity does not match container request')
     policy = context.policy
     writable = context.workspace
-    limits = resource_limits(policy)
     for path in (writable, context.policy_directory, context.control_directory or ASSETS, ASSETS):
         if any(c in str(path) for c in (",", "\n", "\r")):
             raise RuntimeError("Workspace and installation paths cannot contain commas or newlines")
-    if os.getuid() == 0:
+    if os.getuid() == 0 and not contained:
         raise RuntimeError("Run agent workspaces as a non-root operator")
     general = machine.enabled(policy)
+    restricted = policy['restrictions_enabled']
+    remote=contained and context.command is None
+    if remote:
+        from .agent_runtime import executor_network
+        network=executor_network(name)
+    else:network=docker_network(policy)
     if context.checkpoint_owner is not None:
         # Docker otherwise creates a root-owned nested bind-mount destination
         # inside the host's private workspace on native Linux.
@@ -233,16 +263,16 @@ def container_command(name, project, image, *, policy=None, context=None):
         placeholder.mkdir(mode=0o700, exist_ok=True)
     command = ["create", "--name", name, "--pull=never", "--interactive", "--init",
             "--label=io.invariant.role=codex-workspace", "--label=io.invariant.session=" + name,
-            "--network=" + docker_network(policy), "--user=0:0" if general else f"--user={os.getuid()}:{os.getgid()}", "--cap-drop=ALL",
-            "--security-opt=no-new-privileges", "--security-opt=seccomp=" + str(ASSETS / seccomp_filename(policy)),
-            f"--cpus={limits['cpus']}", f"--memory={limits['memory_bytes']}",
-            f"--memory-swap={limits['memory_bytes'] + limits['extra_swap_bytes']}", f"--pids-limit={limits['processes']}",
-            f"--ulimit=nofile={limits['file_descriptors']}:{limits['file_descriptors']}",
+            "--network=" + network, "--user=0:0" if general else f"--user={os.getuid()}:{os.getgid()}",
+            *resources.execution_contract(policy)['docker_args'],
             "--restart=no", "--stop-timeout=3", "--log-driver=none",
-            "--tmpfs=/scratch:" + scratch_options(policy),
             "--mount", f"type=bind,src={writable},dst=/workspace" + (",readonly" if policy["workspace_access"] == "read-only" else ""),
             "--mount", f"type=bind,src={context.policy_directory},dst=/workspace/.invariant,readonly",
             *[f"--env={key}=" for key in PROXY_VARIABLES]]
+    seccomp=ASSETS / (('seccomp-environment-internet.json' if general else 'seccomp-internet.json') if remote else seccomp_filename(policy))
+    command += ['--cap-drop=ALL', '--security-opt=no-new-privileges', '--security-opt=seccomp=' + str(seccomp)]
+    for source, destination in context.host_mounts:
+        command += ['--mount', f'type=bind,src={source},dst={destination}']
     if not general or policy['workspace_access'] == 'read-only':
         command += ['--read-only']
     if general:
@@ -250,9 +280,11 @@ def container_command(name, project, image, *, policy=None, context=None):
                     '--label=io.invariant.project=' + machine.project_key(project),
                     *['--cap-add=' + cap for cap in machine.CAPABILITIES],
                     '--mount', f'type=bind,src={context.control_directory},dst=/__invariant,readonly',
-                    '--mount', f'type=bind,src={ASSETS / "environment-requirements.toml"},dst=/etc/codex/requirements.toml,readonly',
+                    '--mount', f'type=bind,src={requirements_file(policy)},dst=/etc/codex/requirements.toml,readonly',
                     '--workdir=' + context.working_directory,
                     '--entrypoint=' + (context.command[0] if context.command is not None else '/__invariant/codex')]
+    elif remote:
+        command += ['--entrypoint=/usr/local/bin/codex','--workdir='+context.working_directory]
     if context.checkpoint_owner is not None:
         command += ['--label=io.invariant.owner=' + context.checkpoint_owner]
         if context.checkpoint_owner.startswith('attempt-'):
@@ -268,22 +300,28 @@ def container_command(name, project, image, *, policy=None, context=None):
     command += [image]
     if context.command is not None:
         command += list(context.command[1:])
-    elif general:
-        command += ['exec-server', '--listen', 'stdio://']
+    elif general or remote:
+        if contained:
+            from .agent_runtime import server_arguments
+            command += server_arguments(name)
+        else:command += ['exec-server', '--listen', 'stdio://']
     return command
 
 
 def verify_container(name, project, image, *, info=None, policy=None, context=None):
+    from .docker_storage import managed,mount_source
+    contained=managed()
     context = context or execution_context(name, project, image, policy=policy)
     if (context.project != Path(project).resolve() or context.image != image
             or context.owner_token != name):
         raise RuntimeError('Execution context identity does not match container inspection')
     policy = context.policy
     writable = context.workspace
-    limits = resource_limits(policy)
     if info is None:
         info = json.loads(docker("inspect", name))[0]
     host = info["HostConfig"]
+    from .resources import execution_contract, verify_contract
+    verify_contract(info,execution_contract(policy))
     if context.checkpoint_owner is not None:
         labels = info.get('Config', {}).get('Labels') or {}
         if (labels.get('io.invariant.owner') != context.checkpoint_owner
@@ -302,13 +340,17 @@ def verify_container(name, project, image, *, info=None, policy=None, context=No
     required_environment = machine.ENVIRONMENT if general else packages.ENVIRONMENT
     if any(environment.get(key) != value for key, value in required_environment.items()):
         raise RuntimeError("Unexpected project dependency environment")
-    expected = {"NetworkMode": docker_network(policy), "ReadonlyRootfs": not general or policy['workspace_access'] == 'read-only', "Privileged": False,
-                "NanoCpus": round(limits['cpus'] * 1000000000), "Memory": limits['memory_bytes'],
-                "MemorySwap": limits['memory_bytes'] + limits['extra_swap_bytes'],
-                "PidsLimit": limits['processes'], "PublishAllPorts": False}
+    remote=contained and context.command is None
+    if remote:
+        from .agent_runtime import executor_network
+        network=executor_network(name)
+    else:network=docker_network(policy)
+    expected = {"NetworkMode": network, "ReadonlyRootfs": not general or policy['workspace_access'] == 'read-only',
+                "Privileged": False,"PublishAllPorts": False}
     if any(host.get(key) != value for key, value in expected.items()):
         raise RuntimeError("Docker did not apply the required workspace profile")
-    if set(info.get("NetworkSettings", {}).get("Networks", {})) != {docker_network(policy)}:
+    networks=set(info.get("NetworkSettings", {}).get("Networks", {}))
+    if networks not in ({network},{network,'bridge'} if remote and policy['command_network']=='internet' else {network}):
         raise RuntimeError("Unexpected workspace network attachments")
     mounts = {(m["Destination"], m["Type"], m["Source"], m["RW"]) for m in info["Mounts"]}
     for key, value in context.command_environment:
@@ -316,20 +358,28 @@ def verify_container(name, project, image, *, info=None, policy=None, context=No
             raise RuntimeError('Unexpected command input environment')
     expected_mounts = {("/workspace", "bind", str(writable), policy["workspace_access"] == "read-write"),
                        ("/workspace/.invariant", "bind", str(context.policy_directory), False)}
+    expected_mounts |= {(destination,'bind',str(source),True) for source,destination in context.host_mounts}
     if general:
         machine.verify_control(project, path=context.control_directory)
         expected_mounts |= {('/__invariant', 'bind', str(context.control_directory), False),
-                            ('/etc/codex/requirements.toml', 'bind', str(ASSETS / 'environment-requirements.toml'), False)}
+                            ('/etc/codex/requirements.toml', 'bind', str(requirements_file(policy)), False)}
         entrypoint = context.command[0] if context.command is not None else '/__invariant/codex'
         if info['Config'].get('Entrypoint') != [entrypoint] or info['Config'].get('WorkingDir') != context.working_directory:
             raise RuntimeError('The protected environment executor was not selected')
+    if remote and not general and (info['Config'].get('Entrypoint')!=['/usr/local/bin/codex'] or info['Config'].get('WorkingDir')!=context.working_directory):
+        raise RuntimeError('The legacy remote executor was not selected')
     expected_mounts |= {(destination, 'bind', str(source), False) for source, destination in context.readonly_mounts}
     if context.output_directory is not None:
         expected_mounts.add(('/__invariant_output', 'bind', str(context.output_directory), True))
     if context.command is not None and (info['Config'].get('Cmd') or []) != list(context.command[1:]):
         raise RuntimeError('Unexpected command argument vector')
     # Docker inspect represents tmpfs mounts separately on supported engines.
-    if {m for m in mounts if m[1] != "tmpfs"} != expected_mounts:
+    if policy['resource_mode']=='unlimited':
+        scratch=[m for m in mounts if m[0]=='/scratch']
+        if len(scratch)!=1 or scratch[0][1]!='volume' or not scratch[0][3]:
+            raise RuntimeError('Unlimited scratch requires a writable disk volume')
+    if contained:expected_mounts={(dest,kind,mount_source(src),rw) for dest,kind,src,rw in expected_mounts}
+    if {m for m in mounts if m[1] != "tmpfs" and not (policy['resource_mode']=='unlimited' and m[0]=='/scratch' and m[1]=='volume')} != expected_mounts:
         raise RuntimeError("Unexpected workspace mounts")
     options = host.get("SecurityOpt") or []
     profiles = [json.loads(option.partition("=")[2]) for option in options if option.startswith("seccomp=")]
@@ -337,17 +387,16 @@ def verify_container(name, project, image, *, info=None, policy=None, context=No
     if (info["Image"] != image or info["Config"]["User"] != ('0:0' if general else f"{os.getuid()}:{os.getgid()}")
             or capabilities != (set(machine.CAPABILITIES) if general else set()) or not {"ALL"}.issubset(set(host.get("CapDrop") or []))
             or "no-new-privileges" not in options
-            or profiles != [json.loads((ASSETS / seccomp_filename(policy)).read_text())]
+            or profiles != [json.loads((ASSETS / (('seccomp-environment-internet.json' if general else 'seccomp-internet.json') if remote else seccomp_filename(policy))).read_text())]
             or host.get("Binds") or host.get("Devices") or host.get("PortBindings")
             or host.get("PidMode") or host.get("IpcMode") != "private" or not host.get("Init")
-            or host.get("Tmpfs") != {"/scratch": scratch_options(policy)}
-            or host.get("Ulimits") != [{"Name": "nofile", "Hard": limits['file_descriptors'], "Soft": limits['file_descriptors']}]
             or host.get("RestartPolicy", {}).get("Name") != "no"):
         raise RuntimeError("Unexpected Docker authority")
 
 
-def codex_configuration(home, container, executable, *, policy=None):
+def codex_configuration(home, container, executable, *, policy=None, coding_profile=False):
     # Only this executor exists. Codex cannot fall back to a local host shell.
+    restricted = policy is None or policy.get('restrictions_enabled', True) or policy.get('tool_profile')=='coding'
     environment = ('default = "invariant"\ninclude_local = false\n[[environments]]\n'
                    'id = "invariant"\nprogram = ' + json.dumps(find_docker()) + '\nargs = ' +
                    json.dumps(["start", "--attach", "--interactive", container]) + '\n')
@@ -370,22 +419,67 @@ inherit = "none"
 '''
     environment_settings = machine.ENVIRONMENT if policy is not None and machine.enabled(policy) else {'HOME': '/scratch', 'TMPDIR': '/scratch', **packages.ENVIRONMENT}
     config += ''.join(key + ' = ' + json.dumps(value) + '\n' for key, value in environment_settings.items())
+    if not restricted:
+        config=config.replace('web_search = "disabled"','web_search = "live"').replace('[agents]\nenabled = false','[agents]\nenabled = true')
+    if coding_profile and restricted:
+        # Some supported models expose only Code Mode even when its host is
+        # disabled. Keep their transport functional and let the host await a
+        # complete validation instead of yielding a model-visible script cell.
+        config+='\n[features]\ncode_mode_host = true\nskip_host_skill_discovery = true\nskill_search = false\nview_image = false\n'
+        config+='\n[features.code_mode]\ndefault_exec_yield_time_ms = '+str(int(((policy or {}).get('duration_seconds') or 1200)*1000))+'\n'
+        config+=''.join('\n[[skills.config]]\nname = '+json.dumps(name)+'\nenabled = false\n' for name in BUNDLED_CODING_SKILLS)
     (home / "config.toml").write_text(config)
+    safe_env=codex_private_environment(home)
+    safe_env["PATH"] = docker_env(find_docker())["PATH"]
+    command=codex_private_command(executable, restricted=restricted)
+    from .docker_storage import managed
+    if managed():
+        from .agent_runtime import configuration
+        return configuration(home,container,command,safe_env)
+    return command,safe_env
+
+
+def codex_private_environment(home):
     # Existing file-based Codex sign-in can be reused without reading or copying
     # tokens into this program. Keyring-only accounts sign in once in this home.
     auth = home / "auth.json"
-    original = Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))) / "auth.json"
-    if not auth.exists() and not auth.is_symlink() and original.is_file():
+    from .docker_storage import managed
+    if managed():
+        from .agent_runtime import seed_private_auth
+        seed_private_auth(home)
+        original=Path(home)/'auth.json'
+    else:original = Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))) / "auth.json"
+    if not auth.exists() and not auth.is_symlink() and original.is_file() and original!=auth:
         auth.symlink_to(original.resolve())
     safe_env = {k: v for k, v in os.environ.items()
                 if k in ("PATH", "HOME", "USER", "LOGNAME", "SHELL", "LANG", "LC_ALL", "TERM",
                          "TMPDIR", "SSL_CERT_FILE", "SSL_CERT_DIR", "CODEX_CA_CERTIFICATE")}
     safe_env["CODEX_HOME"] = str(home)
-    safe_env["PATH"] = docker_env(find_docker())["PATH"]
+    return safe_env
+
+
+def codex_private_command(executable, *, restricted=True):
     command = [executable, "app-server", "--strict-config", "--listen", "stdio://"]
-    for feature in DISABLED_FEATURES:
+    for feature in DISABLED_FEATURES if restricted else ():
         command += ["-c", f"features.{feature}=false"]
-    return command, safe_env
+    return command
+
+
+def codex_review_configuration(home,executable):
+    """Private read-only host profile; no global CLI flags or ambient user config."""
+    home=Path(home);home.mkdir(parents=True,exist_ok=True,mode=0o700)
+    text='approval_policy = "never"\nsandbox_mode = "read-only"\nweb_search = "disabled"\ncheck_for_update_on_startup = false\ncli_auth_credentials_store = "file"\nproject_root_markers = []\nproject_doc_max_bytes = 0\n[analytics]\nenabled = false\n[feedback]\nenabled = false\n[agents]\nenabled = false\n[features]\ncode_mode_host = false\nshell_tool = false\nmulti_agent = false\nimage_generation = false\nview_image = false\nskill_search = false\nskip_host_skill_discovery = true\nsleep_tool = false\ntool_suggest = false\nshell_snapshot = false\n'
+    text+=''.join('\n[[skills.config]]\nname = '+json.dumps(name)+'\nenabled = false\n' for name in BUNDLED_CODING_SKILLS)
+    import tempfile
+    with tempfile.NamedTemporaryFile(mode='w',dir=home,prefix='.config-',delete=False) as stream:
+        stream.write(text);stream.flush();os.fsync(stream.fileno());temporary=Path(stream.name)
+    temporary.replace(home/'config.toml')
+    command,env=codex_private_command(executable),codex_private_environment(home)
+    from .docker_storage import managed
+    if managed():
+        from .agent_runtime import configuration
+        return configuration(home,'review-'+uuid.uuid4().hex,command,env)
+    return command,env
 
 
 def authenticate(rpc):
@@ -575,18 +669,30 @@ def chat_turn(rpc, thread_id, text, audit, *, effort=None, on_started=None):
 
 
 def run(model=None, *, duration=None, effort=None, resume=None):
+    from .docker_storage import managed,forward
+    if not managed():
+        arguments=['resume'] if resume is not None else ['run','--agent','codex']
+        if resume is not None and resume is not True:arguments.append(resume)
+        elif model is not None:arguments.append(model)
+        if duration is not None:arguments+=['--duration',str(duration)]
+        if effort is not None:arguments+=['--effort',effort]
+        return forward(arguments)
+    return _run(model,duration=duration,effort=effort,resume=resume)
+
+
+def _run(model=None, *, duration=None, effort=None, resume=None):
     project = Path.cwd().resolve()
     project_policy = load_project(project)
     policy = project_policy
     duration = policy["duration_seconds"] if duration is None else duration
-    if type(duration) is not int or not 1 <= duration <= 86400:
-        raise RuntimeError("Agent duration must be between 1 and 86400 seconds")
+    if type(duration) is not int or not 0 <= duration <= 86400:
+        raise RuntimeError("Agent duration must be between 0 and 86400 seconds (0 disables the deadline)")
     if effort is not None and (not isinstance(effort, str) or not re.fullmatch(r"[a-z][a-z0-9_-]{0,31}", effort)):
         raise RuntimeError("Invalid reasoning effort name; use a level supported by the selected model, such as high")
     if model is not None and (not isinstance(model, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}", model)):
         raise RuntimeError("Supply a model name, for example invariant run --agent codex gpt-6.1-sol")
     executable, _docker_executable = ensure_runtime()
-    check_project_files(project, allow_symlinks=machine.enabled(policy))
+    check_project_files(project, allow_symlinks=machine.enabled(policy), max_entries=200000 if policy['restrictions_enabled'] else 0)
     state = state_for(project)
     state.mkdir(mode=0o700, parents=True, exist_ok=True)
     if state.is_symlink() or state.stat().st_uid != os.getuid():
@@ -629,7 +735,7 @@ def run(model=None, *, duration=None, effort=None, resume=None):
 
     def watch():
         nonlocal stop_reason
-        end = time.monotonic() + duration
+        end = deadline(duration, time.monotonic())
         while not watchdog_done.wait(0.2):
             if stop.is_set() or time.monotonic() >= end:
                 stop_reason = "operator" if stop.is_set() else "deadline"
@@ -707,6 +813,10 @@ def run(model=None, *, duration=None, effort=None, resume=None):
                                           event_sink=audit)
         created = True
         docker(*container_command(container, project, image, context=context))
+        from .docker_storage import managed
+        if managed():
+            from .agent_runtime import connect_internet
+            connect_internet(container, policy)
         verify_container(container, project, image, context=context)
         # A previous interrupted host process cannot leave a usable control socket.
         (state / "control.sock").unlink(missing_ok=True)
@@ -743,7 +853,7 @@ def run(model=None, *, duration=None, effort=None, resume=None):
                             "developerInstructions": "Work in /workspace. Docker is the external sandbox. " + network_instructions(policy)
                             + (machine.instructions(policy) if machine.enabled(policy) else packages.instructions(policy))
                             + ("The project is read-only; write temporary files only in /scratch. " if policy["workspace_access"] == "read-only" else "")
-                            + "Do not request host access, additional tools, credentials, or sandbox escalation."}
+                            + ("Do not request host access, additional tools, credentials, or sandbox escalation." if policy['restrictions_enabled'] else "Use the available tools inside the Docker environment as needed for the task.")}
         if saved:
             thread_params.update(threadId=saved["id"], excludeTurns=True)
         else:
@@ -787,9 +897,12 @@ def run(model=None, *, duration=None, effort=None, resume=None):
         print("Launch settings:", launch_source, "· remembered for the next run")
         print("Project:", project)
         print("Project access:", policy["workspace_access"])
-        print("Files: this project only; host home, credentials and Docker socket are outside the environment.")
-        print("Resources:", "managed automatically" if plan["mode"] == "auto" else "your configured limits",
-              f"({policy['limits']['cpus']} CPU, {policy['limits']['memory_mib']} MiB memory; details: invariant guardrails)")
+        print("Files:", "project plus host home at /host-home and available host Docker socket." if policy['host_access'] else "this project only; host home and Docker socket are outside the environment.")
+        if plan['mode']=='unlimited':
+            print('Resources: no INVARIANT quotas; Docker/OS capacity applies. Details: invariant guardrails')
+        else:
+            print("Resources:", "managed automatically" if plan["mode"] == "auto" else "your configured limits",
+                  f"({policy['limits']['cpus']} CPU, {policy['limits']['memory_mib']} MiB memory; details: invariant guardrails)")
         if plan.get("conservative_fallback"):
             print("Docker capacity could not be fully measured; conservative limits were selected.")
         print("Session:", session)
@@ -810,7 +923,7 @@ def run(model=None, *, duration=None, effort=None, resume=None):
         else:
             print("Python dependencies: saved in .invariant-deps/ and available automatically on run/resume"
                   + (" (read-only in this session)." if policy["workspace_access"] == "read-only" else ". Install with python3 -m pip install PACKAGE."))
-        print("Chat below. /exit closes the workspace; Ctrl+C interrupts a turn. Limit: " + str(duration) + " seconds.", flush=True)
+        print("Chat below. /exit closes the workspace; Ctrl+C interrupts a turn. " + ("Limit: " + str(duration) + " seconds." if duration else "No session deadline."), flush=True)
         while True:
             try:
                 text = input("\nYou> ")
@@ -880,7 +993,9 @@ def run(model=None, *, duration=None, effort=None, resume=None):
         signal.signal(signal.SIGTERM, old_handler)
         signal.signal(signal.SIGHUP, old_hup)
         signal.signal(signal.SIGINT, old_int)
-        print("Session evidence:", audit_path, flush=True)
+        from .docker_storage import managed,volume_ref
+        evidence=volume_ref(audit_path) if managed() else audit_path
+        print("Session evidence:", evidence, flush=True)
         if errors:
             raise RuntimeError("Workspace cleanup failed; the recovery record was kept. Try invariant run to recover the workspace, or invariant resume if a chat was saved. Container " + container + ": " + "; ".join(errors))
     if failure:

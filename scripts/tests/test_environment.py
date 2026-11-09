@@ -39,6 +39,7 @@ class PersistentEnvironmentTests(unittest.TestCase):
         with self.assertRaises(RuntimeError): configuration.set_value(self.project, 'profile', 'unconfined')
 
     def test_general_environment_has_no_language_paths_and_has_protected_control(self):
+        configuration.set_value(self.project, 'restrictions_enabled', 'true')
         args = workspace.container_command(NAME, self.project, IMAGE)
         self.assertIn('--user=0:0', args)
         self.assertNotIn('--read-only', args)

@@ -62,11 +62,11 @@ def regular_bytes(project, relative, *, maximum=MAX_SOURCE_BYTES):
         before = os.fstat(stream.fileno())
         if not stat.S_ISREG(before.st_mode):
             raise ExperimentError('UNSAFE_INPUT', 'Expected a regular source file: ' + relative)
-        if before.st_size > maximum:
+        if maximum is not None and before.st_size > maximum:
             raise ExperimentError('CAPTURE_LIMIT', 'Source file exceeds capture limit: ' + relative)
-        content = stream.read(maximum + 1)
+        content = stream.read() if maximum is None else stream.read(maximum + 1)
         after = os.fstat(stream.fileno())
-    if len(content) > maximum:
+    if maximum is not None and len(content) > maximum:
         raise ExperimentError('CAPTURE_LIMIT', 'Source file exceeds capture limit: ' + relative)
     if fingerprint(before) != fingerprint(after):
         raise ExperimentError('SOURCE_CHANGED', 'Source changed during capture: ' + relative,
@@ -87,12 +87,17 @@ def _write(path, content, mode):
 
 
 class SourceCapture:
-    def __init__(self, project, definition, *, secret_paths=(), extra_inputs=()):
+    def __init__(self, project, definition, *, secret_paths=(), extra_inputs=(), limits=None, virtual_files=None):
         self.project = Path(project)
         self.definition = definition
         self.inputs = set(declared_inputs(definition)) | set(extra_inputs)
         self.secret_paths = {str(Path(path).resolve()) for path in secret_paths}
         self.rules = definition['workspace']
+        self.limits = limits or {'entries':MAX_ENTRIES,'source_bytes':MAX_SOURCE_BYTES}
+        self.virtual_files=virtual_files or {}
+        for path in self.virtual_files:
+            source_path(path)
+            if self.excluded(path):raise ExperimentError('UNSAFE_INPUT','Result input is excluded: '+path)
         for path in self.inputs:
             if protected(path) or str(self.project / path) in self.secret_paths:
                 raise ExperimentError('UNSAFE_INPUT', 'Declared input is a protected/credential path: ' + path)
@@ -115,10 +120,13 @@ class SourceCapture:
             relative_base = Path(base).relative_to(self.project)
             for name in sorted(directories + files):
                 count += 1
-                if count > MAX_ENTRIES:
+                if self.limits['entries'] is not None and count > self.limits['entries']:
                     raise ExperimentError('CAPTURE_LIMIT', 'Workspace exceeds the entry-count limit.')
                 relative = (relative_base / name).as_posix()
                 path = self.project / relative
+                if relative in self.virtual_files:
+                    if name in directories:raise ExperimentError('UNSAFE_INPUT','Result input cannot replace a directory')
+                    continue
                 is_input = relative in self.inputs
                 # Excluded directories may contain explicit non-secret input files.
                 descendants = any(item.startswith(relative + '/') for item in self.inputs)
@@ -155,8 +163,8 @@ class SourceCapture:
                     continue
                 if not stat.S_ISREG(info.st_mode):
                     raise ExperimentError('UNSAFE_INPUT', 'Cannot capture a socket, FIFO or device: ' + relative)
-                remaining = MAX_SOURCE_BYTES - total
-                content, read_info = regular_bytes(self.project, relative, maximum=max(0, remaining))
+                maximum = self.limits['source_bytes']
+                content, read_info = regular_bytes(self.project, relative, maximum=None if maximum is None else max(0,maximum-total))
                 if fingerprint(info) != fingerprint(read_info):
                     raise ExperimentError('SOURCE_CHANGED', 'Source changed before capture: ' + relative)
                 total += len(content)
@@ -171,6 +179,32 @@ class SourceCapture:
                     entries['@input/' + relative] = row
                     if destination:
                         _write(destination / 'inputs' / relative, content, 0o400)
+        for relative,content in sorted(self.virtual_files.items()):
+            selected=self.selected(relative);is_input=relative in self.inputs
+            if not selected and not is_input:raise ExperimentError('INVALID_INPUT','Result input is not used by the recipe: '+relative)
+            total+=len(content);count+=1
+            if self.limits['source_bytes'] is not None and total>self.limits['source_bytes'] or self.limits['entries'] is not None and count>self.limits['entries']:
+                raise ExperimentError('CAPTURE_LIMIT','Result inputs exceed capture limits')
+            row={'type':'file','mode':0o600,'size':len(content),'sha256':hashlib.sha256(content).hexdigest()}
+            for parent in reversed(PurePosixPath(relative).parents):
+                name=parent.as_posix()
+                if name=='.':continue
+                if name in entries and entries[name]['type']!='directory':raise ExperimentError('UNSAFE_INPUT','Result input traverses a non-directory')
+                disk=self.project/name
+                if disk.is_symlink() or disk.exists() and not disk.is_dir():raise ExperimentError('UNSAFE_INPUT','Result input traverses a non-directory')
+                if name not in entries and not disk.exists():
+                    count+=1
+                    if self.limits['entries'] is not None and count>self.limits['entries']:
+                        raise ExperimentError('CAPTURE_LIMIT','Result input directories exceed capture limits')
+                if selected:
+                    entries.setdefault(name,{'type':'directory','mode':0o700})
+                    if destination:(destination/'workspace'/name).mkdir(parents=True,exist_ok=True,mode=0o700)
+            if selected:
+                entries[relative]=row
+                if destination:_write(destination/'workspace'/relative,content,row['mode'])
+            if is_input:
+                encountered_inputs.add(relative);entries['@input/'+relative]=row
+                if destination:_write(destination/'inputs'/relative,content,0o400)
         missing = self.inputs - encountered_inputs
         if missing:
             raise ExperimentError('INPUT_MISSING', 'Missing declared source inputs: ' + ', '.join(sorted(missing)))

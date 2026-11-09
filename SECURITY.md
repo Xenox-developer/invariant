@@ -19,15 +19,22 @@ versioned separately; fixes to supported source are documented in the changelog.
 
 ## Scope and boundaries
 
-The trusted host owns Docker control, policy, identity, authentication and durable
-state. Trials receive private workspaces and configured resources/network; they
-do not receive the host home, auth files or Docker socket. Host Docker access is
-powerful and is a prerequisite for the operator, not a capability of the workload.
+Storage layout 2 runs the coordinator, Codex runtime, reviewer and task execution
+inside Docker. Only the trusted manager mounts the Docker socket. Agent and
+executor containers have no host home, device passthrough, privileged mode,
+published control port or arbitrary host filesystem mount. Optional quotas and
+workload deadlines are disabled by default; this does not disable storage boundaries.
 
-Native agent tasks/results can reach the provider. Internet mode permits reachable
+The host launcher streams project inputs into Docker volumes and writes only
+exported artifacts/logs, a credential-free registry, and reviewed source changes.
+An existing ChatGPT auth file may be copied once into Docker. Token refresh and
+subsequent sign-in state remain there. Original personal Codex settings are not removed.
+
+Native agent tasks/results can reach the provider. New persistent environments
+enable command internet access by default; saved offline policies and the legacy
+profile remain unchanged. Internet mode permits reachable
 local-network services as well as the public internet. Workloads are administrator
-inside their Linux environment. Original project writes occur in ordinary sessions,
-explicit preparation and reviewed apply. This is not a multi-tenant isolation or
+inside their Linux environment. Original project writes occur only through guarded, reviewed delivery. This is not a multi-tenant isolation or
 adversarial-evaluator attestation claim.
 
 Reports omit private content by default, but user-selected IDs/metric names remain

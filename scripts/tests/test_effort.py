@@ -107,7 +107,7 @@ class EffortSessionTests(unittest.TestCase):
               patch("builtins.input", side_effect=["first", "second", "/exit"]),
               contextlib.redirect_stdout(output)):
             try:
-                workspace.run("selected", effort=requested)
+                workspace._run("selected", effort=requested)
             except RuntimeError as caught:
                 error = caught
         records = [json.loads(line) for line in next(state.glob("ws-*.jsonl")).read_text().splitlines()]

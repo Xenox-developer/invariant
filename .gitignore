@@ -1,5 +1,10 @@
 /target
-/.invariant/
+.invariant/
+.DS_Store
+/.github/assets/readme-cover*.png
+/.github/assets/readme-cover*.prompt.txt
+/examples/experiments/*/results/**/*.log
+/examples/experiments/*/results/**/*.jsonl
 __pycache__/
 *.egg-info/
 /build/

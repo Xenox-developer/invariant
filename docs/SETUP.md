@@ -31,26 +31,14 @@ Non-interactive runs never interpret piped chat text as install consent.
 
 ## Codex
 
-INVARIANT detects a managed copy first, then the operator's PATH, then the
-ChatGPT application's bundled CLI on macOS. Existing versions must match
-0.163.0, including prereleases, because the execution adapter is version-pinned.
-An incompatible global version is reported without replacing it.
+Layout 2 builds the pinned Linux Codex CLI 0.163.0 and its Code Mode companion
+inside the Docker runtime image. Package integrity is checked during the image
+build. No managed Codex directory or package cache is installed on the host.
+Existing personal Codex installations and settings are left alone.
 
-After confirmation, setup downloads the exact official OpenAI npm platform
-package for macOS/Linux ARM64 or x86_64. It verifies an embedded SHA-512 digest,
-extracts regular files/directories with path, link and size checks, verifies the
-native executable's version, then atomically installs the directory at:
-
-```text
-~/.invariant/tools/codex-0.163.0/
-```
-
-The Code Mode host and bundled resources are included. This is a native install:
-Node/npm, sudo, shell configuration changes and a global npm install are not
-required. `curl` is required for downloads and uses certificate-verified HTTPS;
-setup does not execute a downloaded shell installer. Staging/download failures
-leave a previous managed installation intact. This managed copy is used only
-by INVARIANT; native Codex continues to handle authentication during chat launch.
+`invariant setup --check` and `invariant doctor` inspect Docker and the cached
+runtime without building images. `invariant setup` prepares the Docker runtime.
+See [Docker storage](DOCKER_STORAGE.md) for authentication and migration.
 
 ## Docker on macOS
 

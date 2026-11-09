@@ -81,7 +81,7 @@ class ResumeTests(unittest.TestCase):
               patch.object(workspace, 'codex_configuration', return_value=(['codex'], {})),
               patch.object(workspace, 'CodexRpc', return_value=rpc),
               patch('builtins.input', side_effect=messages), contextlib.redirect_stdout(output)):
-            workspace.run(None if resume is not None else model, resume=resume, effort=effort, duration=duration)
+            workspace._run(None if resume is not None else model, resume=resume, effort=effort, duration=duration)
         return calls, output.getvalue()
 
     def test_new_chat_is_persistent_and_metadata_private(self):
@@ -292,7 +292,7 @@ class ResumeTests(unittest.TestCase):
             listing.assert_called_once_with(machine=True)
 
     def test_cli_rejects_ambiguous_or_unrelated_options(self):
-        for arguments in (['chats', 'extra'], ['resume', '--json'], ['resume', '--duration', '0'], ['chats', '--agent', 'codex']):
+        for arguments in (['chats', 'extra'], ['resume', '--json'], ['resume', '--duration', '-1'], ['chats', '--agent', 'codex']):
             with self.subTest(arguments=arguments), patch.object(sys, 'argv', ['invariant', *arguments]), contextlib.redirect_stderr(io.StringIO()):
                 with self.assertRaises(SystemExit):
                     cli.main()

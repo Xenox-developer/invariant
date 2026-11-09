@@ -1,5 +1,6 @@
 """Read-only host preparation: pin images and resolve account-advertised settings."""
 import json
+import copy
 import os
 from pathlib import Path
 import stat
@@ -46,11 +47,25 @@ class LocalRuntime:
                 'capacity': capacity, 'policy': effective, 'resource_sizing': sizing, 'variants': variants}
 
     def models(self, project, state, definition, policy):
+        from ..docker_storage import managed
+        if managed():
+            from ..catalog import models
+            return resolve_models(definition['variants'],models(project,policy),preferences.load(state,project))
+        # Coordinator-local reuse only. Dispatch independently verifies live
+        # authentication/catalog and exact requested model; no fallback is added.
+        from .definitions import digest
+        key=digest({'project':str(project),'variants':definition['variants'],'policy':policy,
+                    'preferences':preferences.load(state,project)})
+        cache=getattr(self,'_model_cache',{})
+        if key in cache:return copy.deepcopy(cache[key])
         status = probe_codex()
         if status['status'] != 'ready':
             raise ExperimentError('CODEX_UNAVAILABLE', status['message'], 'Run invariant setup before using the Codex runner.')
         # No executor is started and no thread/turn is created for catalog lookup.
-        with tempfile.TemporaryDirectory(prefix='invariant-catalog-') as directory:
+        from ..docker_storage import managed
+        cache_directory=state/'catalog-runtime' if managed() else None
+        if cache_directory is not None:cache_directory.mkdir(parents=True,exist_ok=True,mode=0o700)
+        with tempfile.TemporaryDirectory(prefix='invariant-catalog-',dir=cache_directory) as directory:
             home = Path(directory)
             command, env = workspace.codex_configuration(home, 'invariant-catalog-unused', status['path'], policy=policy)
             rpc = CodexRpc(command, env=env, cwd=home, guard_parent=True)
@@ -79,7 +94,9 @@ class LocalRuntime:
                         raise ExperimentError('INVALID_CATALOG', 'Codex returned invalid catalog pagination.')
                     seen.add(cursor)
                 remembered = preferences.load(state, project)
-                return resolve_models(definition['variants'], catalog, remembered)
+                result=resolve_models(definition['variants'], catalog, remembered)
+                self._model_cache={**cache,key:copy.deepcopy(result)}
+                return result
             finally:
                 rpc.close()
 
@@ -149,10 +166,25 @@ def allocations(definition, prepared):
     policy = prepared['policy']
     requested = definition['execution']
     limits = policy['limits']
+    if policy['resource_mode']=='unlimited':
+        # Omitted allocations impose no quotas. Explicit trial allocations remain available.
+        cpus=requested.get('trial_cpus')
+        memory=requested.get('trial_memory_mib')
+        duration=requested.get('trial_timeout_seconds',policy['duration_seconds'])
+        if cpus is not None or memory is not None:
+            if cpus is None or memory is None:
+                raise ExperimentError('INVALID_ARGUMENTS','Explicit trial allocation requires both trial_cpus and trial_memory_mib.')
+            policy=normalize({**policy,'resource_mode':'manual','limits':{**limits,'cpus':cpus,'memory_mib':memory},'duration_seconds':duration})
+        else:
+            policy=normalize({**policy,'duration_seconds':duration})
+        return {'requested_max_parallel':requested['max_parallel'],'max_parallel':requested['max_parallel'],
+                'trial_cpus':cpus,'trial_memory_mib':memory,'trial_timeout_seconds':duration,
+                'cpu_budget':requested.get('cpu_budget'),'memory_budget_mib':requested.get('memory_budget_mib'),
+                'headroom_fraction':0,'trial_policy':policy}
     cpus = requested.get('trial_cpus', limits['cpus'])
     memory = requested.get('trial_memory_mib', limits['memory_mib'])
     duration = requested.get('trial_timeout_seconds', policy['duration_seconds'])
-    if cpus > limits['cpus'] or memory > limits['memory_mib'] or duration > policy['duration_seconds']:
+    if cpus > limits['cpus'] or memory > limits['memory_mib'] or (policy['duration_seconds'] and (not duration or duration > policy['duration_seconds'])):
         raise ExperimentError('POLICY_EXCEEDED', 'Trial resources/deadline exceed the effective project policy.',
                               'Lower the experiment request or explicitly edit the project limits before submitting.')
     capacity = prepared['capacity']

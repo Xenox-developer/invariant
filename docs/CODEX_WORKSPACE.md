@@ -15,20 +15,11 @@ original grants and acceptance matrix.
 
 ## Use
 
-Install with `python3 -m pip install -e /path/to/invariant`. Python 3.11+, a
-running Linux-container Docker engine, and Codex CLI 0.163.0 are required. Run
-`invariant setup` to detect existing installations and offer missing downloads.
-See [guided setup](SETUP.md). `run` and `resume` offer the same guided flow in an
-interactive terminal; piped input never becomes permission to install software.
-
-This adapter accepts 0.163.0 prereleases as well; other versions fail closed.
-An explicitly installed INVARIANT copy under `~/.invariant/tools/codex-0.163.0`
-takes precedence. Otherwise, it uses `codex` from PATH, then the bundled CLI
-inside `ChatGPT.app` in `/Applications` or `~/Applications` on macOS. Docker is
-detected on PATH, in `~/.docker/bin`, or inside either system/user `Docker.app`.
-No shell configuration changes are needed. Detection checks both tools and
-whether Docker's engine is reachable; missing, stopped, inaccessible and
-incompatible installations are reported separately.
+Install the INVARIANT interface with Python 3.11+ and provide a running Linux
+Docker engine. The pinned Codex CLI, Code Mode companion, reviewer and model
+catalog operations run in Docker. No managed Codex installation is created on
+the host. Existing file-based ChatGPT sign-in can bootstrap the Docker account;
+subsequent changes remain in its volume. See [storage layout 2](DOCKER_STORAGE.md).
 
 In an empty project directory:
 
@@ -57,21 +48,24 @@ the workspace permissions.
 
 `init` exclusively creates `.invariant/config.json`. It never overwrites a
 configuration. The policy allows project writes and disclosure of project
-content/tool results to the selected OpenAI model, and denies command
-networking by default. Networking, resource limits, session duration and project access can be changed
+content/tool results to the selected OpenAI model, and enables command
+internet access by default for new persistent environments. Existing projects
+keep their saved network setting; the legacy profile defaults to offline.
+Networking, resource limits, session duration and project access can be changed
 per project as described below. Unknown or unsupported settings fail closed.
 
 The first `run` builds the pinned Codex executor image automatically. Run
 `invariant prepare --agent codex` to build it beforehand. The image contains
 Python 3.12, bash, git, ripgrep and the official Codex 0.163.0 Linux executable.
 Both supported architectures have SHA-512-pinned package downloads. Package
-downloads during a chat require the per-project internet opt-in described below.
+downloads during a chat use the project's network setting described below.
 
 Chat at `You>`. Messages share one thread until `/exit`, `/quit`, EOF, stop or
 the session deadline. Ctrl+C interrupts an active turn; another Ctrl+C stops
-the session. Ctrl+C at the prompt stops it. New projects default to 3600
-seconds; existing policies keep their old 900-second default or chosen duration; change `duration_seconds` per project or override one session with
-`--duration SECONDS` (1–86400). Allowed file edits persist immediately.
+the session. Ctrl+C at the prompt stops it. New projects have no session deadline
+(`duration_seconds: 0`); existing policies keep their saved duration. Change
+`duration_seconds` per project or override one session with `--duration SECONDS`
+(0–86400; 0 disables the deadline). Allowed file edits persist immediately.
 
 ### Continue a saved chat
 
@@ -157,7 +151,7 @@ Unknown capacity uses finite conservative fallback limits (1 CPU when CPU is
 unknown; 512 MiB memory when memory is unknown), and the startup screen says so.
 Tiny engines below the minimum supported workspace budget stop with guidance to
 increase Docker memory. These budgets are per executor, not reservations or a
-global scheduler across concurrent projects, and do not constrain host Codex or
+global scheduler across concurrent projects, and do not constrain containerized Codex or
 model tokens. Detection does not prove that the chosen budget is currently free.
 
 The actual selected values form an immutable session snapshot. `guardrails`
@@ -226,10 +220,12 @@ selected separately at launch. Supported settings:
 
 | Setting | Initial default | Allowed values |
 | --- | --- | --- |
-| `resource_mode` | `auto` for new projects; `manual` for legacy | `auto`, `manual` |
-| `command_network` | `none` | `none`, `internet` |
+| `restrictions_enabled` | `false` for new projects; `true` for existing/legacy policies | `false`, `true` (CLI applies an unrestricted/restricted preset) |
+| `host_access` | `false` | Host access cannot be enabled in storage layout 2 |
+| `resource_mode` | `unlimited` for new projects; `manual` for legacy | `unlimited`, `auto`, `manual` |
+| `command_network` | `internet` for new persistent environments; `none` for legacy | `none`, `internet` |
 | `workspace_access` | `read-write` | `read-write`, `read-only` |
-| `duration_seconds` | 3600 for new projects; 900 for legacy | Integer 1–86400 |
+| `duration_seconds` | 0 for new projects; 900 for legacy | Integer 0–86400; 0 disables the deadline |
 | `limits.cpus` | 1 | 0.1–64, at most two decimal places |
 | `limits.memory_mib` | 512 | Integer 64–65536 |
 | `limits.extra_swap_mib` | 0 | Integer 0–65536 (additional to memory) |
@@ -239,7 +235,7 @@ selected separately at launch. Supported settings:
 
 Each change is validated and atomically saved. Invalid values do not replace the
 previous policy. Unknown keys, duplicate JSON keys, booleans used as numbers,
-unlimited values and unsupported authority changes are rejected. Concurrent
+invalid numeric limits and unsupported authority changes are rejected. Concurrent
 terminal edits use a project lock. Existing five-field fixed-profile files
 remain valid and use the same defaults; no migration is required. `init` never
 resets an existing policy. Projects keep independent settings.
@@ -257,18 +253,27 @@ live inspection verify that flag. Temporary files can still be written in
 need to write build output in the project must use `/scratch` or editable mode.
 `.invariant` always remains read-only inside either kind of executor.
 
-Host mounts, privileges, root filesystem access, model provider and local
-execution fallback are not configurable in this profile. Host credentials
-remain outside the executor, and
+New environments have no optional quotas or workload deadlines. They retain
+container-only storage, package-management capabilities, filtered system calls
+and no-new-privileges. The host home, Docker socket and devices are unavailable.
+`restrictions_enabled true` enables optional quotas and offline commands;
+`false` disables those optional limits while preserving container storage.
+
+Model provider and local execution fallback are not configurable here, and
 project content/tool results may still be sent to the selected OpenAI model.
-Limits apply to the command container; they are not host Codex limits or a model
+Optional limits apply to the command container; they are not containerized Codex limits or a model
 token budget. The project has no disk quota. Docker must support and have enough
 capacity for the selected limits; unsupported or unapplied settings stop startup.
 Very small limits can prevent tools from running even within the supported range.
 
 ## Internet access and installing packages
 
-Enable networking explicitly inside the project, then start or resume a chat:
+New persistent environments allow package downloads without configuring the
+network. Ask the agent to install dependencies normally with apt, pip, npm or
+another Linux-compatible package manager. Tools and home settings persist.
+
+Existing projects retain their saved policy. If an existing project is offline,
+enable networking once, then start or resume a chat:
 
 ```sh
 invariant config set command_network internet
@@ -276,7 +281,8 @@ invariant run --agent codex gpt-6.1-sol --effort medium
 # Or: invariant resume
 ```
 
-Ask Codex to install the package and use it. Python 3.12 and pip are included.
+The following project-local Python installation details apply to the legacy
+`codex-workspace-v1` profile. Python 3.12 and pip are included.
 Install normally inside the chat; no activation or special import path is needed:
 
 ```sh
@@ -349,7 +355,7 @@ empty proxy variables prevent Docker CLI from automatically injecting its saved
 proxy URLs (including credentials); startup rejects nonempty inherited proxy
 variables. Configure any required project-specific proxy explicitly inside the
 container without exposing host credentials.
-The host Codex web-search feature remains disabled in both modes.
+The containerized Codex web-search feature remains disabled in both modes.
 
 Disable networking for the next launch:
 
@@ -403,7 +409,7 @@ policy files, read authentication/history, submit model requests, or enforce new
 settings. It briefly runs a bounded inspection process in the existing executor.
 Configured values and the launcher use the same validated project policy. The
 printed scope also explains the selected project access and permitted disclosure
-to the OpenAI model, that the project has no disk quota, and that host Codex/model
+to the OpenAI model, that the project has no disk quota, and that containerized Codex/model
 communication are outside the command container's resource limits. Launcher
 settings are configuration evidence, not a fresh attestation of every host tool.
 A successful snapshot does not prove the absence of every possible sandbox escape.
@@ -411,9 +417,9 @@ A successful snapshot does not prove the absence of every possible sandbox escap
 ## Placement and enforcement
 
 ```text
-Terminal chat → trusted host Codex app-server → OpenAI model
+Terminal chat → trusted containerized Codex app-server → OpenAI model
                          │
-                  stdio execution protocol
+                  authenticated private WebSocket
                          │
                  isolated Codex exec-server
                          │
@@ -429,24 +435,23 @@ connecting, requires the executor's working directory to be `/workspace`, and
 pins the thread to that environment. A missing executor never falls back to a
 host shell.
 
-Host Codex, the INVARIANT launcher, host OS, Docker engine and prepared image
+Containerized Codex, the INVARIANT launcher, host OS, Docker engine and prepared image
 are trusted. Model instructions, project files, commands and their subprocesses
-are untrusted. The model connection and authentication lifecycle remain in the
-trusted host process. A file-based existing Codex auth cache is linked into the
-private home without the launcher reading tokens. Keyring-only accounts may
-need to sign in once using the displayed browser link. Native Codex handles
-refresh. API-key accounts are rejected by this subscription-oriented profile;
+are untrusted. The model connection and authentication lifecycle remain in Docker. An existing
+file-based sign-in is copied once without modifying its original store. Native
+Codex handles refresh in its Docker home. Keyring-only accounts use the container
+device login. API-key accounts are rejected by this subscription-oriented profile;
 ambient API keys and other credentials are not inherited.
 
 Host hooks, plugins, apps, browser/computer tools, image generation, delegation,
 worktrees and dependency helpers are disabled by startup overrides. Codex's Code
 Mode runner remains part of the trusted host runtime for tool orchestration;
-its shell/file tools use the isolated executor. Host Codex and its orchestration
+its shell/file tools use the isolated executor. Containerized Codex and its orchestration
 processes are not covered by the command container's resource limits.
 The executor's read-only managed requirements deny MCP/plugin configuration.
 Server requests cannot grant wider permissions. Web search is disabled.
 
-The executor has a read-only root, non-root UID, no capabilities, no new
+The legacy `codex-workspace-v1` executor has a read-only root, non-root UID, no capabilities, no new
 privileges and a seccomp filter. By default it permits AF_UNIX only and has no
 network; the internet opt-in adds IPv4/IPv6 TCP/UDP over Docker bridge. Initial resource
 manual defaults are one CPU, 512 MiB memory with no additional swap, 128 tasks, 256 file
@@ -461,13 +466,14 @@ changed or deleted; use version control or backups when needed. In read-only
 mode, project writes and deletion are denied by the mount. Container system files
 and its private scratch are readable; unrelated *host* files are not exposed.
 Model disclosure is a permitted output channel, not an information-flow proof.
-The host model connection is operated by trusted Codex; this profile does not
+The containerized model connection is operated by trusted Codex; this profile does not
 proxy or audit individual model HTTP requests.
 
 ## Lifecycle and evidence
 
-Trusted state lives at `~/.invariant/workspaces/PROJECT_HASH/`, outside the
-project. Each session has a private JSONL journal recording its policy, model,
+Trusted state lives in the `invariant-state-v2` Docker volume. Logical paths
+such as `~/.invariant/workspaces/PROJECT_HASH/` refer to paths inside the manager.
+The host contains only the small `~/.invariant/registry.json` volume registry. Each session has a private JSONL journal recording its policy, model,
 immutable image ID, executor connection, turn/tool completion, operator stop
 and cleanup result. The saved chat ID and resume status link separate execution
 sessions to the same conversation. The requested effort, confirmed thread effort

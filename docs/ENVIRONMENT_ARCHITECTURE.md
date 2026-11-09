@@ -22,14 +22,43 @@ flowchart LR
 
 ```sh
 invariant init
-invariant config set command_network internet  # when downloads are needed
 invariant run
 ```
+
+New environments have `restrictions_enabled: false`, `host_access: false`,
+`resource_mode: unlimited`, `duration_seconds: 0` and internet access. No INVARIANT
+resource quotas, scratch size, workspace entry/byte caps or workload deadlines
+are applied. Docker's own capacity, inherited OS limits and platform capabilities
+remain in effect. Scratch uses an anonymous disk volume removed with its owned
+container, rather than a sized tmpfs.
+
+Container storage boundaries always apply: agents have package-management
+capabilities, filtered system calls and no-new-privileges, without host home,
+Docker socket, device mounts or published control ports. The manager alone has
+Docker control. Codex runs separately from its authenticated WebSocket executor
+on an internal Docker network; internet uses an additional bridge interface.
+See [storage layout 2](DOCKER_STORAGE.md).
+
+To restore the restricted preset:
+
+```sh
+invariant config set restrictions_enabled true
+```
+
+This enables resource sizing, a 3600-second session deadline, offline networking,
+restricted container privileges and agent features, and disables host mounts.
+Set `restrictions_enabled false` to restore unrestricted defaults. Individual
+settings can then be changed independently. Existing configurations without the
+new flags retain their previous restricted behavior; frozen experiments retain
+their captured policy.
 
 Ask the agent to build the application using whichever Linux-compatible tools it
 needs. It is administrator inside the environment and may install system
 packages, compilers, runtimes, services and dependencies using their normal
-workflows. Virtual environments, symlinks, project-contained hard links, global tool installs, home-directory
+workflows. New projects enable command internet access by default so dependency
+downloads require no manual toggle. Existing saved network settings are preserved;
+`invariant config set command_network none` explicitly selects offline operation
+for the next launch. Virtual environments, symlinks, project-contained hard links, global tool installs, home-directory
 configuration and shell profiles are supported. No INVARIANT-specific package
 installation path or activation convention is needed. Normal login shells load
 custom PATH/setup from `/root/.profile` without a language adapter.
@@ -55,10 +84,13 @@ This follows [Docker's filesystem checkpoint semantics](https://docs.docker.com/
 Read-only project access freezes both the project and the environment root;
 saved tools remain usable, scratch stays writable and no checkpoint is replaced.
 
-## Ownership and isolation
+## Ownership and isolation in restricted mode
 
 The agent owns its Linux filesystem, but not the host launcher, account
 connection, policy, control executables or checkpoint identity:
+
+These boundaries apply even when optional resource and network restrictions are disabled.
+
 
 - Codex credentials and native chat history remain in private host state,
   outside the environment and its checkpoints.
@@ -128,12 +160,9 @@ use their original explicit path or reinstall normally. Already deleted scratch
 packages cannot be recovered. The invoice-broker MVP remains a separate fixed
 execution profile with its original acceptance contract.
 
-Technology choice is unrestricted at the language/package-manager layer. This
-backend is still Linux on Docker with finite resource and network limits. It
-does not promise Windows/macOS kernels, GPUs/devices, kernel modules, nested
-Docker daemons, VM workloads or every package's successful installation. Those
-capabilities need an appropriate backend and explicit authority, rather than
-language profiles or disabled host isolation.
+Technology choice is unrestricted at the language/package-manager layer. The
+backend is Linux on Docker. Host device access, native Windows/macOS kernels
+and process memory restoration are not part of storage layout 2.
 
 ## Verification
 

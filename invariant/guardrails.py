@@ -100,6 +100,10 @@ def kernel_issues(kernel, policy=None):
                 'policy_read_only': True, 'workspace_read_only': policy['workspace_access'] == 'read-only', 'network_sockets': {family: 'allowed' if policy['command_network'] == 'internet' else 'denied' for family in ('ipv4', 'ipv6')}}
     if general:
         expected['control_read_only'] = True
+    if policy['resource_mode']=='unlimited':
+        for key in (*limits,):expected.pop(key,None)
+    from .docker_storage import managed
+    if managed():expected['network_sockets']={'ipv4':'allowed','ipv6':'allowed'}
     return [f'Kernel {key}: observed {kernel.get(key)!r}; required {value!r}'
             for key, value in expected.items() if kernel.get(key) != value]
 
@@ -114,6 +118,7 @@ def inspect(project=None):
     result = {'schema': 1, 'project': str(project), 'profile': policy['profile'], 'status': 'inactive',
               'verified': False, 'configured': {**limits, 'default_duration_seconds': policy['duration_seconds'],
                 'workspace_access': policy['workspace_access'], 'resource_mode': policy['resource_mode'],
+                'restrictions_enabled':policy['restrictions_enabled'],'host_access':policy['host_access'],
                 'automatic_caps': AUTO_CAPS if policy['resource_mode'] == 'auto' else None,
                 'network': policy['command_network'], 'docker_network': docker_network(policy), 'writable_host_mount': str(project) if policy['workspace_access'] == 'read-write' else None, 'read_only_policy': str(project / '.invariant'),
                 'project_disk_quota_bytes': None, 'model_disclosure': 'allowed', 'local_execution_fallback': 'disabled',
@@ -180,7 +185,7 @@ def inspect(project=None):
             and len(entries) == 1 and entries[0].get('id') == 'invariant'
             and entries[0].get('args') == ['start', '--attach', '--interactive', name])
         duration = current.get('duration_seconds')
-        if type(duration) is not int or not 1 <= duration <= 86400:
+        if type(duration) is not int or not 0 <= duration <= 86400:
             duration = None
         dependency_environment = config.get('shell_environment_policy', {}).get('set', {})
         expected_environment = machine.ENVIRONMENT if machine.enabled(launched_policy) else packages.ENVIRONMENT
@@ -188,7 +193,8 @@ def inspect(project=None):
         result['runtime']['launcher'] = {'local_execution_fallback_configured': not fallback_disabled,
                                          'project_dependencies_configured': dependencies_configured,
                                          'web_search_configured': config.get('web_search'), 'duration_seconds': duration}
-        if not fallback_disabled or config.get('web_search') != 'disabled' or not dependencies_configured:
+        expected_search='disabled' if launched_policy['restrictions_enabled'] else 'live'
+        if not fallback_disabled or config.get('web_search') != expected_search or not dependencies_configured:
             result['issues'].append('Launcher configuration does not match the isolated profile')
         final = json.loads(docker('inspect', info['Id'], timeout=10))[0]
         if (not final.get('State', {}).get('Running') or final.get('Id') != info['Id']
@@ -263,9 +269,9 @@ def render(report):
         print('\nConfigured for the next launch (not live measurements):')
         print('  Command network:', policy['network'], '; .invariant policy: read-only')
         print('  Project mount:', inert(report['project']), '-> /workspace (' + policy['workspace_access'] + ')')
-        print('  Host home, authentication store and Docker socket: not mounted')
+        print('  Host access:', 'home at /host-home, local Docker socket and Docker-visible devices' if policy['host_access'] else 'disabled')
         if report['profile'] == machine.PROFILE:
-            print('  Environment: administrator inside isolated Linux; package-management capabilities only; no-new-privileges; filtered sockets')
+            print('  Restrictions:', 'enabled; package-management capabilities only; no-new-privileges; filtered sockets' if policy['restrictions_enabled'] else 'disabled; privileged Linux container')
             print('  Environment filesystem:', 'read-only' if policy['workspace_access'] == 'read-only' else 'writable and saved across sessions')
             print('  Protected executor and static guardrail inspector: read-only host-managed mount')
         else:
@@ -273,10 +279,12 @@ def render(report):
         if policy['resource_mode'] == 'auto':
             print('  Resources: managed automatically at launch; exact live limits are not selected yet.')
             print('  Automatic maximums:', json.dumps(policy['automatic_caps']))
+        elif policy['resource_mode']=='unlimited':
+            print('  Resources: no INVARIANT CPU, memory, swap, PID, nofile or scratch quotas; Docker/OS capacity still applies.')
         else:
             print('  CPU:', policy['cpus'], '; memory:', size(policy['memory_bytes']), '; extra swap:', size(policy['extra_swap_bytes']))
             print('  Processes:', policy['processes'], '; file descriptors:', policy['file_descriptors'], '; scratch:', size(policy['scratch_bytes']))
-        print('  Default session duration:', policy['default_duration_seconds'], 'seconds (override with --duration)')
+        print('  Default session duration:', str(policy['default_duration_seconds'])+' seconds' if policy['default_duration_seconds'] else 'unlimited', '(override with --duration)')
     if report['configuration_changed']:
         print('\nProject configuration changed. The running session keeps its recorded policy.')
         print('Next run/resume settings:', json.dumps(report['configured']))

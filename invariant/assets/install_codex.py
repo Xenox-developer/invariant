@@ -43,10 +43,11 @@ with tempfile.TemporaryFile() as package:
                 target = notices/'resources'/str(relative)
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(archive.extractfile(member).read())
-        name = f"package/vendor/{triple}-unknown-linux-musl/bin/codex"
-        binary = archive.extractfile(name)
-        if binary is None:
-            raise SystemExit("Codex binary missing")
-        path = pathlib.Path("/usr/local/bin/codex")
-        path.write_bytes(binary.read())
-        path.chmod(0o755)
+        for executable in ('codex','codex-code-mode-host'):
+            name = f"package/vendor/{triple}-unknown-linux-musl/bin/{executable}"
+            binary = archive.extractfile(name)
+            if binary is None:
+                raise SystemExit(executable + " binary missing")
+            path = pathlib.Path('/usr/local/bin') / executable
+            path.write_bytes(binary.read())
+            path.chmod(0o755)

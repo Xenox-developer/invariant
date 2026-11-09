@@ -104,6 +104,15 @@ def render(report, format):
 
 
 def export(engine, identifier, *, format='markdown', output=None, include_task=False, include_diff=False, include_logs=False):
+    from ..docker_storage import ContainerEngine
+    if isinstance(engine,ContainerEngine):
+        result=engine.manager.request('export_report',{'args':[identifier],'kwargs':{'format':format,'include_task':include_task,'include_diff':include_diff,'include_logs':include_logs}},raw=True)
+        if output:
+            path=Path(output).expanduser().absolute()
+            fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+            with os.fdopen(fd,'w') as stream:stream.write(result.pop('content'))
+            return {**result,'output':str(path)}
+        return result
     if format=='csv' and (include_task or include_diff or include_logs):
         raise ExperimentError('INVALID_ARGUMENTS','CSV contains comparison rows only. Use JSON or Markdown to include task/diff/log content.')
     report=document(engine,identifier,include_task=include_task,include_diff=include_diff,include_logs=include_logs)

@@ -1,8 +1,8 @@
 """Persistent Linux environment lifecycle, independent of language/package manager.
 
 The host owns checkpoint identities and immutable control executables. The agent
-owns the environment filesystem. Only stopped filesystems are checkpointed;
-processes, mounts, networking and runtime authority are never restored.
+owns the environment filesystem. Only stopped or confirmed frozen filesystems
+are checkpointed; processes, mounts, networking and authority are never restored.
 """
 import hashlib
 import json
@@ -29,6 +29,14 @@ def enabled(policy):
 
 def control_path(project):
     from .workspace import state_for
+    from .docker_storage import managed
+    reference=state_for(project)/'runtime-v1/control-ref.json'
+    if managed() and reference.exists():
+        record=read_record(reference)
+        from .shared_runtime import directory
+        expected=directory(record['base_image'])/'control'
+        if record.get('path')!=str(expected):raise RuntimeError('Invalid shared runtime reference')
+        return expected
     return state_for(project) / 'runtime-v1/control'
 
 
@@ -38,35 +46,56 @@ def project_key(project):
 
 def read_record(path):
     try:
-        with open(path, 'rb', opener=lambda p, flags: os.open(p, flags | os.O_NOFOLLOW | os.O_NONBLOCK)) as stream:
-            info = os.fstat(stream.fileno())
-            if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_uid != os.getuid() or info.st_size > 8192:
-                raise ValueError()
-            value = json.load(stream)
-        if not isinstance(value, dict):
-            raise ValueError()
-        return value
+        for _ in range(5):
+            with open(path, 'rb', opener=lambda p, flags: os.open(p, flags | os.O_NOFOLLOW | os.O_NONBLOCK)) as stream:
+                info = os.fstat(stream.fileno())
+                # A concurrent atomic replace can unlink the already-open old
+                # inode. Verify the current path before accepting that snapshot.
+                if not stat.S_ISREG(info.st_mode) or info.st_nlink > 1 or info.st_uid != os.getuid() or info.st_size > 8192:
+                    raise ValueError()
+                value = json.load(stream)
+            current=os.stat(path,follow_symlinks=False)
+            if info.st_nlink==0 or (info.st_dev,info.st_ino)!=(current.st_dev,current.st_ino):continue
+            if not isinstance(value, dict):raise ValueError()
+            return value
+        raise ValueError()
     except FileNotFoundError:
         return None
     except (OSError, ValueError):
         raise RuntimeError('The private environment record is unsafe or invalid. Project files and chats were kept.') from None
 
 
+_VERIFIED_CONTROL = {}
+
 def verify_control(project, *, path=None):
     path = Path(path) if path is not None else control_path(project)
     record = read_record(path.parent / 'control.json')
     if not record or path.is_symlink() or not path.is_dir() or set(p.name for p in path.iterdir()) != {'codex', 'inspect'}:
         raise RuntimeError('The protected environment runtime is unavailable')
+    from .docker_storage import managed
+    files=[path/name for name in ('codex','inspect')]
+    stamps=tuple((p.lstat().st_dev,p.lstat().st_ino,p.lstat().st_size,p.lstat().st_mtime_ns,p.lstat().st_ctime_ns) for p in files)
+    key=(str(path),str(record))
+    if managed() and _VERIFIED_CONTROL.get(key)==stamps:return record
     for name in ('codex', 'inspect'):
         file = path / name
         info = file.lstat()
         if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid() or info.st_nlink != 1
                 or hashlib.sha256(file.read_bytes()).hexdigest() != record.get(name)):
             raise RuntimeError('The protected environment runtime failed integrity verification')
+    if managed():_VERIFIED_CONTROL[key]=stamps
     return record
 
 
 def prepare_control(project, image, *, path=None):
+    from .docker_storage import managed
+    if managed():
+        from .shared_runtime import prepare
+        return prepare(project,image,path)
+    return _prepare_control(project,image,path=path)
+
+
+def _prepare_control(project, image, *, path=None):
     from .workspace import docker, private_write, remove_owned
     path = Path(path) if path is not None else control_path(project)
     if path.exists() or path.is_symlink():
@@ -122,9 +151,9 @@ def selected_image(state, project, base, *, owner=None):
     return record['image']
 
 
-def preserve(name, state, project, audit, *, owner=None):
-    """Stop, checkpoint atomically, then remove; failure keeps recovery authority."""
-    from .workspace import docker, private_write, remove_owned
+def checkpoint(name, state, project, audit, *, owner=None, frozen=False):
+    """Durably capture a stopped owned container while retaining its recovery lease."""
+    from .workspace import docker, private_write
     try:
         info = json.loads(docker('inspect', name))[0]
     except RuntimeError as error:
@@ -136,7 +165,9 @@ def preserve(name, state, project, audit, *, owner=None):
             or labels.get('io.invariant.environment') != PROFILE or labels.get('io.invariant.project') != project_key(project)
             or labels.get('io.invariant.owner') != owner):
         raise RuntimeError('Refusing to checkpoint an environment owned by another project/session')
-    if info.get('State', {}).get('Running'):
+    if frozen and not info.get('State',{}).get('Paused'):
+        raise RuntimeError('A frozen checkpoint requires a confirmed paused container')
+    if info.get('State', {}).get('Running') and not frozen:
         docker('stop', '--time=3', name, timeout=30)
     if not info['HostConfig'].get('ReadonlyRootfs'):
         changes = ['--change', 'LABEL io.invariant.checkpoint-project=' + project_key(project)]
@@ -150,6 +181,13 @@ def preserve(name, state, project, audit, *, owner=None):
             record['owner'] = owner
         private_write(state / 'environment.json', record)
         audit('environment_saved', image=image)
+        return record
+
+
+def preserve(name, state, project, audit, *, owner=None):
+    """Stop, checkpoint atomically, then remove; failure keeps recovery authority."""
+    from .workspace import remove_owned
+    checkpoint(name,state,project,audit,owner=owner)
     remove_owned(name)
 
 
@@ -176,4 +214,7 @@ def instructions(policy):
             'No package-manager-specific installation paths or runtime profiles are required. '
             + ('The project and environment filesystem are currently read-only; use /scratch for temporary work. '
                if policy['workspace_access'] == 'read-only' else '')
-            + 'Do not alter /__invariant or request host access, Docker control, credentials or additional privileges. ')
+            + ('Do not alter /__invariant or request host access, Docker control, credentials or additional privileges. '
+               if policy['restrictions_enabled'] else
+               'INVARIANT restrictions are disabled. Use available Linux privileges and tools as needed. '
+               + 'Host home, Docker socket and host devices are unavailable. All installations and settings remain in Docker. '))

@@ -18,7 +18,7 @@ def set_value(project, key, text):
     if marker.exists() or marker.is_symlink():
         with project_lock(state):
             return set_value(project, key, text)
-    if key not in ("profile", "workspace_access", "duration_seconds", "command_network", "resource_mode") and not key.startswith("limits."):
+    if key not in ("profile", "workspace_access", "duration_seconds", "command_network", "resource_mode", "restrictions_enabled", "host_access", "tool_profile") and not key.startswith("limits."):
         raise RuntimeError("Setting is not editable: " + inert(key) + ". Use invariant config to see supported settings")
     if len(text) > 128:
         raise RuntimeError("Configuration value is too long")
@@ -26,6 +26,8 @@ def set_value(project, key, text):
         value = json.loads(text, object_pairs_hook=unique_object)
     except ValueError:
         value = text
+    if key=='host_access' and value is not False:
+        raise RuntimeError('Host access is incompatible with Docker-owned storage')
     # Check the directory/config before creating a lock, then reload under lock.
     load_project(project)
     path = project / '.invariant' / 'config.lock'
@@ -44,6 +46,17 @@ def set_value(project, key, text):
             config['limits'][key.removeprefix('limits.')] = value
         else:
             config[key] = value
+        if key == 'restrictions_enabled' and type(value) is bool:
+            config['host_access'] = False
+            config['resource_mode'] = 'auto' if value else 'unlimited'
+            config['duration_seconds'] = 3600 if value else 0
+            config['command_network'] = 'none' if value else 'internet'
+            config['limits'] = dict(DEFAULT_CONFIG['limits'])
+            if not value:config['workspace_access']='read-write'
+        if key == 'profile' and value == 'codex-workspace-v1':
+            config.update(restrictions_enabled=True,host_access=False)
+            if config['resource_mode']=='unlimited':config['resource_mode']='manual'
+            if not config['duration_seconds']:config['duration_seconds']=DEFAULT_CONFIG['duration_seconds']
         if key == 'resource_mode' and value == 'auto':
             config['limits'] = dict(DEFAULT_CONFIG['limits'])
         config = normalize(config)
@@ -64,11 +77,17 @@ def main(action=None, key=None, value=None, *, machine=False):
     if machine:
         print(json.dumps(config))
     else:
-        print('Project configuration:', inert(str(project / '.invariant' / 'config.json')))
+        from .docker_storage import managed,volume_ref
+        path=project/'.invariant/config.json'
+        print('Project configuration in Docker:' if managed() else 'Project configuration:',volume_ref(path) if managed() else inert(str(path)))
         print(json.dumps(config, indent=2))
         print('Changes apply on the next run or resume. A running session keeps its launch settings.')
-        print('Resources: ' + ('managed automatically at each launch' if config['resource_mode'] == 'auto' else 'manual limits'))
+        print('Resources: ' + ('no INVARIANT quotas' if config['resource_mode']=='unlimited' else 'managed automatically at each launch' if config['resource_mode'] == 'auto' else 'manual limits'))
         print('Automatic resources: invariant config set resource_mode auto')
+        print('Restrictions preset: invariant config set restrictions_enabled true (disable with false)')
+        print('Agent installations, settings and caches remain in Docker.')
+        print('No resource quotas: invariant config set resource_mode unlimited')
+        print('No session deadline: invariant config set duration_seconds 0')
         print('General persistent Linux environment: invariant config set profile codex-environment-v2')
         print('Edit a setting: invariant config set limits.memory_mib 1024')
         print('Project access: invariant config set workspace_access read-only')

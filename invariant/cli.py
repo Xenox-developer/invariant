@@ -25,6 +25,18 @@ def docker(*args, capture=False):
 
 
 def main():
+    if len(sys.argv)>1 and sys.argv[1]=='context':
+        from .run_context import main as context_main
+        return context_main(sys.argv[2:])
+    if len(sys.argv)>1 and sys.argv[1]=='storage':
+        from .docker_storage import main as storage_main
+        return storage_main(sys.argv[2:])
+    if len(sys.argv)>1 and sys.argv[1]=='compare':
+        from .comparison_cli import main as compare_main
+        return compare_main(sys.argv[2:])
+    if len(sys.argv)>1 and sys.argv[1]=='task':
+        from .task_cli import main as task_main
+        return task_main(sys.argv[2:])
     if len(sys.argv)>1 and sys.argv[1]=='doctor':
         from .diagnostics import main as doctor_main
         return doctor_main(sys.argv[2:])
@@ -34,7 +46,7 @@ def main():
     if len(sys.argv) > 1 and sys.argv[1] == 'experiment':
         from .experiments.cli import main as experiment_main
         return experiment_main(sys.argv[2:])
-    parser = argparse.ArgumentParser(description="Compare coding-agent configurations in isolated workspaces. Use invariant experiment --help, invariant environment --help or invariant doctor --json.")
+    parser = argparse.ArgumentParser(description="Run coding tasks in isolated workspaces. Use invariant task --help, invariant experiment --help, invariant environment --help, invariant compare --help or invariant doctor --json.")
     parser.add_argument('--version', action='version', version='invariant '+__version__)
     parser.add_argument("command", choices=("setup", "login", "init", "prepare", "run", "resume", "chats", "guardrails", "config", "demo", "test", "acceptance", "evidence", "status", "grant", "revoke", "stop"))
     parser.add_argument("target", nargs="?", help="model for agent run; chat ID for resume (omit for latest); Python file or execution ID")
@@ -71,6 +83,12 @@ def main():
     if args.command=='login':
         if args.target or args.agent or args.effort or args.no_grant or args.step or args.auto or args.duration is not None:
             parser.error('login takes only --check and --json')
+        from .docker_storage import managed
+        if managed():
+            from .agent_runtime import account_command
+            result=account_command(['login','status'] if args.check or args.json else ['login','--device-auth'],capture=args.check or args.json)
+            if args.json:print(json.dumps({'ok':True,'data':{'signed_in':result.returncode==0,'storage_layout':2},'error':None}))
+            return result.returncode
         from .dependencies import find_codex, probe_codex
         status=probe_codex()
         if status['status']!='ready':raise RuntimeError('Run invariant setup before signing in.')
@@ -103,8 +121,8 @@ def main():
     if args.command == "resume":
         if args.no_grant or args.json or args.step or args.auto:
             parser.error("resume takes an optional chat ID, --effort and --duration")
-        if args.duration is not None and not 1 <= args.duration <= 86400:
-            parser.error("agent duration must be between 1 and 86400 seconds")
+        if args.duration is not None and not 0 <= args.duration <= 86400:
+            parser.error("agent duration must be between 0 and 86400 seconds; 0 disables the deadline")
         from .workspace import run
         return run(None, duration=args.duration, effort=args.effort, resume=args.target or True)
     if args.command == "init":
@@ -122,8 +140,8 @@ def main():
                 parser.error("prepare --agent codex takes no model argument")
             prepare(persistent=True)
         else:
-            if args.duration is not None and not 1 <= args.duration <= 86400:
-                parser.error("agent duration must be between 1 and 86400 seconds")
+            if args.duration is not None and not 0 <= args.duration <= 86400:
+                parser.error("agent duration must be between 0 and 86400 seconds; 0 disables the deadline")
             return run(args.model or args.target, duration=args.duration, effort=args.effort)
         return
     if args.command in ("status", "stop") and (
@@ -225,7 +243,9 @@ def main():
 
 def entrypoint():
     try:
-        sys.exit(main())
+        from .docker_storage import managed, forward
+        forwarded=None if managed() else forward(sys.argv[1:])
+        sys.exit(main() if forwarded is None else forwarded)
     except (subprocess.SubprocessError, OSError, RuntimeError) as error:
         if '--json' in sys.argv:
             record=error.record() if hasattr(error,'record') else {'code':'LAUNCHER_ERROR','message':str(error),'recovery':'Run invariant doctor for readiness checks.'}

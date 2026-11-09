@@ -2,6 +2,14 @@
 
 ## Inspect and clean up
 
+Docker maintenance is automatic: once an hour, while idle, INVARIANT removes
+disposable objects older than 30 days without expiring task history or continuation
+state. Use `invariant storage maintenance --json` for policy and the last run,
+or `invariant storage cleanup --json` to preview. See
+[Docker maintenance](DOCKER_STORAGE.md#automatic-maintenance) for scope and settings.
+The experiment cleanup below explicitly deletes saved history; it is not run by
+automatic maintenance.
+
 ```sh
 invariant experiment storage
 invariant experiment storage --json

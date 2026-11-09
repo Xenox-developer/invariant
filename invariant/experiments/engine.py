@@ -11,7 +11,7 @@ import uuid
 from ..execution import private_directory, project_lock
 from .. import workspace
 from .definitions import (LIMITS, MAX_DEFINITION, canonical, digest, expand,
-                          parse_json, source_path, text, validate)
+                          parse_json, source_path, text, validate, capture_limits)
 from .errors import ExperimentError
 from .patches import validate_inputs
 from .runtime import LocalRuntime, allocations, secret_files
@@ -33,6 +33,11 @@ def sync_tree(root):
 
 
 class ExperimentEngine:
+    def __new__(cls, project=None, *, runtime=None, state=None, **kwargs):
+        from ..docker_storage import managed, ContainerEngine
+        if runtime is None and state is None and not managed():return ContainerEngine(project)
+        return super().__new__(cls)
+
     def __init__(self, project=None, *, runtime=None, state=None, clock=time.time, allow_restore=False):
         self.project = Path(project or Path.cwd()).resolve()
         try:
@@ -74,7 +79,7 @@ class ExperimentEngine:
                               'definition_path': relative, 'definition': original})
         return relative, original, definition, fingerprint
 
-    def _capture(self, relative, original, definition, directory):
+    def _capture(self, relative, original, definition, directory, *, result_inputs=None):
         policy = workspace.load_project(self.project)
         if (self.state / 'current.json').exists():
             raise ExperimentError('WORKSPACE_RECOVERY_REQUIRED', 'An ordinary chat has a current/recovery record.',
@@ -82,8 +87,15 @@ class ExperimentEngine:
         secrets = secret_files(definition)
         prepared = self.runtime.resolve(self.project, self.state, definition, policy)
         execution = allocations(definition, prepared)
-        capture = SourceCapture(self.project, definition, secret_paths=secrets, extra_inputs=[relative])
+        limits = capture_limits(policy)
+        from .result_inputs import resolve as resolve_inputs
+        virtual=resolve_inputs(self,result_inputs) if result_inputs else {}
+        if relative in virtual:raise ExperimentError('INVALID_INPUT','Result inputs cannot replace the recipe')
+        capture = SourceCapture(self.project, definition, secret_paths=secrets, extra_inputs=[relative],limits=limits,virtual_files=virtual)
         manifest = capture.capture(directory)
+        from .delivery import DeliveryPolicy
+        delivery=DeliveryPolicy.freeze(definition['workspace'].get('apply',{}),directory/'workspace',manifest['entries'])
+        DeliveryPolicy({},None,{},frozen=delivery)  # Fail invalid ignore rules before dispatch.
         captured_recipe = parse_json((directory / 'inputs' / relative).read_bytes(), 'captured definition')
         if canonical(captured_recipe) != canonical(original):
             raise ExperimentError('SOURCE_CHANGED', 'The experiment definition changed during preparation.',
@@ -98,12 +110,16 @@ class ExperimentEngine:
                   'requested_definition': original, 'definition_path': relative,
                   'definition_digest': digest(effective), 'baseline_id': baseline_id,
                   'baseline_content_digest': manifest['content_digest'],
+                  'delivery':delivery,
                   'inputs': {name.removeprefix('@input/'): row['sha256'] for name, row in manifest['entries'].items() if name.startswith('@input/')},
                   'image': prepared['image'], 'runtime': prepared['runtime'],
                   'project_policy': policy, 'effective_policy': execution['trial_policy'],
                   'execution': execution, 'resource_sizing': prepared['resource_sizing'],
-                  'capacity_at_creation': prepared['capacity'], 'capture_limits': LIMITS,
+                  'capacity_at_creation': prepared['capacity'], 'capture_limits': limits,
                   'input_checks': input_checks, 'external_state_notice': bool(definition['external_dependencies'])}
+        from ..docker_storage import managed
+        if managed():frozen['storage_layout']=2
+        if result_inputs:frozen['result_inputs']=result_inputs
         workspace.private_write(directory / 'manifest.json', manifest)
         workspace.private_write(directory / 'baseline.json', baseline)
         sync_tree(directory)
@@ -139,10 +155,14 @@ class ExperimentEngine:
                 'dispatch_available': True,
                 'execution_notice': 'Command and native Codex studies support detached execution and explicit recovery.'}
 
-    def submit(self, path, *, request_id=None):
+    def submit(self, path, *, request_id=None, _evaluation_only=False,result_inputs=None):
         request_id = request_id or str(uuid.uuid4())
         text(request_id, 'request ID', maximum=128, pattern=r'[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}')
         relative, original, definition, fingerprint = self._definition(path)
+        from .result_inputs import normalize
+        result_inputs=normalize(result_inputs)
+        if result_inputs:fingerprint=digest({'submission':fingerprint,'result_inputs':result_inputs})
+        if _evaluation_only:fingerprint=digest({'operation':'baseline_evaluation','original':fingerprint})
         existing = self.store.lookup_request(request_id, fingerprint)
         if existing:
             return {**self.inspect(existing), 'idempotent_replay': True}
@@ -156,7 +176,8 @@ class ExperimentEngine:
             staging = private_directory(self.root / 'staging')
             capture_dir = staging / ('capture-' + uuid.uuid4().hex)
             capture_dir.mkdir(mode=0o700)
-            baseline_id, manifest, frozen = self._capture(relative, original, definition, capture_dir)
+            baseline_id, manifest, frozen = self._capture(relative, original, definition, capture_dir,**({'result_inputs':result_inputs} if result_inputs else {}))
+            if _evaluation_only:frozen['evaluation_only']=True
             baselines = private_directory(self.root / 'baselines')
             baseline_path = baselines / baseline_id
             if baseline_path.exists():
@@ -253,13 +274,13 @@ class ExperimentEngine:
                 'codex_execution_available': True,
                 'execution_notice': 'Command and native Codex execution support detached dispatch, stop, recovery, retry, resumable logs and selection.'}
 
-    def execute(self, identifier):
+    def execute(self, identifier, *, baseline_check=False):
         from .controller import Controller
-        return Controller(self).execute(identifier)
+        return Controller(self).execute(identifier,**({'baseline_check':True} if baseline_check else {}))
 
-    def continue_result(self, identifier, prompt_file, *, request_id=None):
+    def continue_result(self, identifier, prompt_file, *, request_id=None, evaluation=None):
         from .continuation import create
-        return create(self, identifier, prompt_file, request_id=request_id)
+        return create(self, identifier, prompt_file, request_id=request_id, evaluation=evaluation)
 
     def diff(self, identifier):
         from .results import describe

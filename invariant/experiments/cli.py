@@ -69,7 +69,7 @@ def main(arguments=None):
             command.add_argument('--variant',nargs=2,action='append',metavar=('MODEL','EFFORT'),help='explicit model/effort pair; repeat to compare different models')
             command.add_argument('--name',help='experiment name; default: comparison')
             command.add_argument('--max-parallel',type=int,help='requested parallelism; default: number of configurations')
-            command.add_argument('--test-timeout',type=int,default=120,help='shared test deadline in seconds; default: 120')
+            command.add_argument('--test-timeout',type=int,default=0,help='shared test deadline in seconds; 0 disables it (default)')
             command.add_argument('--run',action='store_true',help='run/reopen the generated study and wait for its comparison')
         if name == 'run':
             command.add_argument('--request-id', help='idempotency key for durable study creation')

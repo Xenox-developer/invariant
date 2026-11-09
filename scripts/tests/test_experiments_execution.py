@@ -181,6 +181,7 @@ class ExecutionTests(unittest.TestCase):
             return True
         timer = threading.Timer(.35, finish);timer.start()
         context = Mock();context.owner_token='owned';context.project=self.project;context.image=IMAGE
+        context.policy=workspace.DEFAULT_CONFIG
         context.workspace=self.project;context.output_directory=None
         cancel=threading.Event()
         info={'Image':IMAGE,'Mounts':[],'HostConfig':{'Memory':1,'NanoCpus':1,'PidsLimit':32,'NetworkMode':'none'},

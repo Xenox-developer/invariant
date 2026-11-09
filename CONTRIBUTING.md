@@ -30,6 +30,16 @@ the extracted archives. No Docker, Codex or model calls are needed. Add
 `--toolchain 1.90.0 --offline` to use the installed minimum toolchain and cached
 dependencies. See [the Rust libraries guide](docs/RUST_LIBRARY.md).
 
+For task/preparation changes, the deterministic acquisition gate requires the
+prepared environment image but no internet or model calls:
+
+```sh
+python3 -B scripts/test_task_automation.py --report .invariant/task-automation
+```
+
+It serves a small package locally, returns HTTP 503 twice, and verifies that
+download recovery installs the package with one maintainer-script invocation.
+
 Run Docker integration gates serially on a disposable test host, with no ordinary legacy
 broker session active. Fixtures scope cleanup to their own state. Never use a global
 Docker prune or daemon restart as test cleanup. Allow several GiB of free disk and
