@@ -1,0 +1,64 @@
+{
+  "model_calls": 0,
+  "rows": [
+    {
+      "kind": "rpc",
+      "operation": "auth_status",
+      "method": null,
+      "seconds": 0.16101904108654708
+    },
+    {
+      "kind": "rpc",
+      "operation": "run_status",
+      "method": null,
+      "seconds": 0.16404266702011228
+    },
+    {
+      "kind": "phase",
+      "name": "reopen",
+      "seconds": 0.604622625047341
+    },
+    {
+      "kind": "rpc",
+      "operation": "run_view",
+      "method": null,
+      "seconds": 0.02214908297173679
+    },
+    {
+      "kind": "phase",
+      "name": "status",
+      "seconds": 0.022154416074045002,
+      "result_bytes": 652
+    },
+    {
+      "kind": "rpc",
+      "operation": "collect_prepare",
+      "method": null,
+      "seconds": 0.09546725009568036
+    },
+    {
+      "kind": "rpc",
+      "operation": "export_cache",
+      "method": null,
+      "seconds": 0.01673691696487367
+    },
+    {
+      "kind": "phase",
+      "name": "collect1",
+      "seconds": 0.2159778750501573,
+      "result_bytes": 867
+    },
+    {
+      "kind": "rpc",
+      "operation": "collect_prepare",
+      "method": null,
+      "seconds": 0.049348291009664536
+    },
+    {
+      "kind": "phase",
+      "name": "collect2",
+      "seconds": 0.059482584008947015,
+      "result_bytes": 867
+    }
+  ]
+}

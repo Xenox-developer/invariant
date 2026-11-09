@@ -1,0 +1,1 @@
+Continue from the saved trapezoid workspace. Do not change solution.py or result.json. Verify that integrate(lambda x: x*x,0,1,80) matches result.json for power 2 and n 80. Write continuation-proof.json with passed=true, n=80, and the observed estimate. Call invariant_validate once and finish after it passes. Do not spawn agents.

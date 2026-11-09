@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "name": "integration-team-check",
+  "runner": {
+    "type": "codex",
+    "completion": "validated"
+  },
+  "variants": [
+    {
+      "id": "checker",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "instructions_file": "checker.md"
+    }
+  ],
+  "cases": [
+    {
+      "id": "quadrature",
+      "prompt_file": "TASK.md"
+    }
+  ],
+  "workspace": {
+    "include": [
+      "inputs/**",
+      "TASK.md",
+      "fixed_checks.py"
+    ],
+    "exclude": []
+  },
+  "execution": {
+    "max_parallel": 1
+  },
+  "evaluator": {
+    "argv": [
+      "python3",
+      "evaluate.py"
+    ],
+    "source_paths": [
+      "fixed_checks.py",
+      "evaluate.py",
+      "inputs/trapezoid/solution.py",
+      "inputs/trapezoid/result.json",
+      "inputs/simpson/solution.py",
+      "inputs/simpson/result.json"
+    ],
+    "timeout_seconds": 0
+  },
+  "artifacts": [
+    "solution.py",
+    "result.json",
+    "build_report.py",
+    "comparison.csv",
+    "report.md",
+    "errors.svg",
+    "verification.json"
+  ]
+}

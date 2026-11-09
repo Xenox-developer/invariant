@@ -1,0 +1,24 @@
+{
+  "study_id": "study-280091f32df14db3987b42cfa95bd338",
+  "completed": true,
+  "runs": [
+    {
+      "tool": "ast-grep",
+      "attempt_id": "attempt-47e26d0ff5f66d0b522a81db5e941a81",
+      "solution_sha256": "d12b75f9087e1e358a578072e99ddbd63147bff586067d956f9e2fa6e1a163e9",
+      "tests_passed": 34,
+      "usage_reconciled": true,
+      "actual_tool_used": true
+    },
+    {
+      "tool": "jscodeshift",
+      "attempt_id": "attempt-14bc50d8987d4f1e8ee41cd36c6ef110",
+      "solution_sha256": "2102a7478c70fd37182f7d9d632cb2af1c0d3a289e5b1a9cac4e34de30f22c50",
+      "tests_passed": 34,
+      "usage_reconciled": true,
+      "actual_tool_used": true
+    }
+  ],
+  "selected": false,
+  "applied": false
+}

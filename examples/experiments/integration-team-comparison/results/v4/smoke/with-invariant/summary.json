@@ -1,0 +1,186 @@
+{
+  "backend": "invariant",
+  "started_at": 1794056051.403291,
+  "finished_at": 1794056088.2002182,
+  "wall_seconds": 36.79692721366882,
+  "setup_seconds": 1.7713849544525146,
+  "parallel_stage_seconds": 34.845548152923584,
+  "checker_stage_seconds": 0,
+  "final_collect_seconds": 0.17998719215393066,
+  "agents": [
+    {
+      "role": "trapezoid",
+      "attempt_id": "attempt-c3ab33a7047feb89ffa87230c4e223ef",
+      "study_id": "study-0664be54f28941cdb074dd0ec66a0ad5",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "started_at": 1794056057.6797304,
+      "finished_at": 1794056087.6002216,
+      "duration_seconds": 29.920491933822632,
+      "provider_usage": {
+        "last": {
+          "cacheWriteInputTokens": 0,
+          "cachedInputTokens": 8448,
+          "inputTokens": 11163,
+          "outputTokens": 467,
+          "reasoningOutputTokens": 0,
+          "totalTokens": 11630
+        },
+        "modelContextWindow": 475000,
+        "total": {
+          "cacheWriteInputTokens": 0,
+          "cachedInputTokens": 8448,
+          "inputTokens": 19642,
+          "outputTokens": 557,
+          "reasoningOutputTokens": 0,
+          "totalTokens": 20199
+        }
+      },
+      "inference_usage": {
+        "complete": true,
+        "final": {
+          "cached_input_tokens": 8448,
+          "input_tokens": 19642,
+          "output_tokens": 557,
+          "reasoning_output_tokens": 0,
+          "total_tokens": 20199
+        },
+        "path": "docker-volume://invariant-state-v2/workspaces/7e275ef942850ee4c14c417a/experiments/attempts/attempt-c3ab33a7047feb89ffa87230c4e223ef/runner.usage.jsonl",
+        "problems": [],
+        "reconciled": true,
+        "response_count": 2
+      },
+      "tests": {
+        "tests_failed": 0,
+        "tests_passed": 35,
+        "tests_total": 35
+      },
+      "passed": true,
+      "runtime": {
+        "host_config": {
+          "Memory": 0,
+          "MemorySwap": 0,
+          "NanoCpus": 0
+        },
+        "image": "sha256:db21298b84d45d950442afa08ebd86a5e1f7deadb4a167d170b6dd9ba1262e01",
+        "memory_bytes": 0,
+        "mounts": [
+          {
+            "Destination": "/workspace",
+            "Mode": "",
+            "Propagation": "rslave",
+            "RW": true,
+            "Source": "docker-volume://invariant-state-v2/workspaces/7e275ef942850ee4c14c417a/experiments/attempts/attempt-c3ab33a7047feb89ffa87230c4e223ef/workspace",
+            "Type": "bind"
+          },
+          {
+            "Destination": "/workspace/.invariant",
+            "Mode": "",
+            "Propagation": "rslave",
+            "RW": false,
+            "Source": "docker-volume://invariant-state-v2/workspaces/7e275ef942850ee4c14c417a/experiments/attempts/attempt-c3ab33a7047feb89ffa87230c4e223ef/control/policy",
+            "Type": "bind"
+          },
+          {
+            "Destination": "/__invariant",
+            "Mode": "",
+            "Propagation": "rslave",
+            "RW": false,
+            "Source": "docker-volume://invariant-state-v2/shared-runtime/ce3e4f3e9dd63564669d4944b1b1ba988b50c3382b558496420c8e2834892c5d/control",
+            "Type": "bind"
+          },
+          {
+            "Destination": "/etc/codex/requirements.toml",
+            "Mode": "",
+            "Propagation": "rslave",
+            "RW": false,
+            "Source": "docker-volume://invariant-code-v2-8c7f64b29e8deaad/invariant/assets/environment-requirements-unrestricted.toml",
+            "Type": "bind"
+          },
+          {
+            "Destination": "/__invariant_inputs/run",
+            "Mode": "",
+            "Propagation": "rslave",
+            "RW": false,
+            "Source": "docker-volume://invariant-state-v2/workspaces/7e275ef942850ee4c14c417a/experiments/attempts/attempt-c3ab33a7047feb89ffa87230c4e223ef/input",
+            "Type": "bind"
+          },
+          {
+            "Destination": "/scratch",
+            "Driver": "local",
+            "Mode": "",
+            "Name": "6129ba7de4b3b602e4574248a894421d52486e17df3572d5ba798bec89b27540",
+            "Propagation": "",
+            "RW": true,
+            "Source": "/var/lib/docker/volumes/6129ba7de4b3b602e4574248a894421d52486e17df3572d5ba798bec89b27540/_data",
+            "Type": "volume"
+          }
+        ],
+        "nano_cpus": 0,
+        "network": "invariant-link-533c01b6cfcc111b9874170b",
+        "pids_limit": null,
+        "resource_contract": {
+          "docker_args": [
+            "--pids-limit=-1",
+            "--volume=/scratch"
+          ],
+          "host_config": {
+            "Memory": 0,
+            "MemorySwap": 0,
+            "NanoCpus": 0
+          },
+          "limits": {
+            "cpus": null,
+            "extra_swap_bytes": null,
+            "file_descriptors": null,
+            "memory_bytes": null,
+            "processes": null,
+            "scratch_bytes": null
+          },
+          "mode": "unlimited",
+          "profile": "codex-environment-v2",
+          "resolved": true,
+          "schema_version": 1
+        }
+      },
+      "reused_validation": true,
+      "image": "sha256:db21298b84d45d950442afa08ebd86a5e1f7deadb4a167d170b6dd9ba1262e01"
+    }
+  ],
+  "passed": true,
+  "starting_image": "sha256:db21298b84d45d950442afa08ebd86a5e1f7deadb4a167d170b6dd9ba1262e01",
+  "run_ref": "run-c0db6aa942d8240645a1aa67609651e1",
+  "project": "/Users/nikchin/Desktop/invariant/examples/experiments/integration-team-comparison/projects/v4-smoke",
+  "profile": {
+    "tool_profile": "coding",
+    "features": {
+      "features.apps": false,
+      "features.plugins": false,
+      "features.remote_plugin": false,
+      "features.hooks": false,
+      "features.multi_agent": false,
+      "features.multi_agent_v2": false,
+      "features.shell_snapshot": false,
+      "features.image_generation": false,
+      "features.computer_use": false,
+      "features.browser_use": false,
+      "features.browser_use_external": false,
+      "features.in_app_browser": false,
+      "features.in_app_local_automation": false,
+      "features.goals": false,
+      "features.tool_suggest": false,
+      "features.skill_mcp_dependency_install": false,
+      "features.workspace_dependencies": false,
+      "features.worktrees": false,
+      "features.sleep_tool": false,
+      "features.code_mode_host": true,
+      "features.skip_host_skill_discovery": true,
+      "features.skill_search": false,
+      "features.view_image": false,
+      "features.code_mode.default_exec_yield_time_ms": 1200000
+    }
+  },
+  "container_internal_handoff": true,
+  "source_digest": "8c7f64b29e8deaadedc8b91f2edc726874149772132302a70888fe3eba374854",
+  "smoke": true
+}

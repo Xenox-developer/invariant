@@ -1,0 +1,552 @@
+[
+  {
+    "stage": "methods",
+    "studies": [
+      {
+        "id": "study-502c2e292a8840bcaa128d435b8f9a8e",
+        "created_at": 1794048536.4024816,
+        "evaluation_only": false,
+        "attempts": [
+          {
+            "id": "attempt-b8c5621a73f9a11940a6645769814c6c",
+            "variant": "simpson",
+            "started_at": 1794048550.730218,
+            "finished_at": 1794048612.3230257,
+            "runner": {
+              "started_at": 1794048550.8304062,
+              "finished_at": 1794048611.4545107,
+              "duration_seconds": 60.624104499816895,
+              "evaluation_only": null
+            },
+            "evaluation": {
+              "started_at": 1794048604.4129398,
+              "finished_at": 1794048606.032006,
+              "duration_seconds": 1.6190662384033203,
+              "passed": true
+            },
+            "intents": {
+              "evaluation": {
+                "operation": "start",
+                "updated_at": 1794048604.4129703
+              },
+              "runner": {
+                "operation": "model_turn",
+                "updated_at": 1794048567.174605
+              }
+            }
+          },
+          {
+            "id": "attempt-b3e638d34b9698e93d99fc8ae1b94954",
+            "variant": "trapezoid",
+            "started_at": 1794048550.7229226,
+            "finished_at": 1794048612.035908,
+            "runner": {
+              "started_at": 1794048550.7752917,
+              "finished_at": 1794048611.0585172,
+              "duration_seconds": 60.283225774765015,
+              "evaluation_only": null
+            },
+            "evaluation": {
+              "started_at": 1794048604.4080923,
+              "finished_at": 1794048606.0965333,
+              "duration_seconds": 1.6884410381317139,
+              "passed": true
+            },
+            "intents": {
+              "evaluation": {
+                "operation": "start",
+                "updated_at": 1794048604.4081585
+              },
+              "runner": {
+                "operation": "model_turn",
+                "updated_at": 1794048566.3225434
+              }
+            }
+          }
+        ],
+        "events": [
+          {
+            "time": 1794048536.4024816,
+            "kind": "study_created",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048550.7078526,
+            "kind": "resources_reserved",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048550.7262554,
+            "kind": "resources_reserved",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048550.7686465,
+            "kind": "attempt_preparing",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048550.8252017,
+            "kind": "attempt_preparing",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048551.3675199,
+            "kind": "attempt_preparing",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048551.4252825,
+            "kind": "attempt_preparing",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048558.9334629,
+            "kind": "attempt_preparing",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048559.0190465,
+            "kind": "attempt_preparing",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048566.040443,
+            "kind": "attempt_running",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048566.3151155,
+            "kind": "attempt_running",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048566.323414,
+            "kind": "attempt_preparing",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048566.3712375,
+            "kind": "attempt_running",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048567.1082366,
+            "kind": "attempt_running",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048567.1693258,
+            "kind": "attempt_running",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048567.1755724,
+            "kind": "attempt_preparing",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048567.1964324,
+            "kind": "attempt_running",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048599.6510212,
+            "kind": "attempt_evaluating",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048599.6574576,
+            "kind": "attempt_evaluating",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048599.700229,
+            "kind": "attempt_evaluating",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048599.7031887,
+            "kind": "attempt_evaluating",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048604.4261565,
+            "kind": "attempt_evaluating",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048604.468863,
+            "kind": "attempt_evaluating",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048611.0654538,
+            "kind": "attempt_saving",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048611.4567428,
+            "kind": "attempt_saving",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048612.049682,
+            "kind": "attempt_succeeded",
+            "state": null,
+            "reason": "COMPLETED"
+          },
+          {
+            "time": 1794048612.0497746,
+            "kind": "resources_released",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048612.3438847,
+            "kind": "attempt_succeeded",
+            "state": null,
+            "reason": "COMPLETED"
+          },
+          {
+            "time": 1794048612.3440073,
+            "kind": "resources_released",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048612.36992,
+            "kind": "study_completed",
+            "state": null,
+            "reason": null
+          }
+        ]
+      },
+      {
+        "id": "study-d7cc7905e544415bb6f9961446ed10a2",
+        "created_at": 1794048536.6811655,
+        "evaluation_only": true,
+        "attempts": [
+          {
+            "id": "attempt-d4353f7d471c8ab613475be67b1888bb",
+            "variant": "baseline",
+            "started_at": 1794048545.1400547,
+            "finished_at": 1794048548.4000695,
+            "runner": {
+              "started_at": null,
+              "finished_at": null,
+              "duration_seconds": null,
+              "evaluation_only": true
+            },
+            "evaluation": {
+              "started_at": 1794048547.2957387,
+              "finished_at": 1794048548.1323984,
+              "duration_seconds": 0.8366599082946777,
+              "passed": false
+            },
+            "intents": {
+              "evaluation": {
+                "operation": "start",
+                "updated_at": 1794048547.2965903
+              }
+            }
+          }
+        ],
+        "events": [
+          {
+            "time": 1794048536.6811655,
+            "kind": "study_created",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048545.1264164,
+            "kind": "resources_reserved",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048545.220951,
+            "kind": "attempt_evaluating",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048545.2326524,
+            "kind": "attempt_evaluating",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048547.3101277,
+            "kind": "attempt_evaluating",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048548.4114757,
+            "kind": "attempt_succeeded",
+            "state": null,
+            "reason": "COMPLETED"
+          },
+          {
+            "time": 1794048548.4120827,
+            "kind": "resources_released",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048548.426659,
+            "kind": "study_completed",
+            "state": null,
+            "reason": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "stage": "checker",
+    "studies": [
+      {
+        "id": "study-10c435f410cb4fe7bfa7818ea0167962",
+        "created_at": 1794048632.8800418,
+        "evaluation_only": false,
+        "attempts": [
+          {
+            "id": "attempt-d85f1ff56f8d3e340aba0101f62b18f1",
+            "variant": "checker",
+            "started_at": 1794048655.1572323,
+            "finished_at": 1794048757.6632645,
+            "runner": {
+              "started_at": 1794048655.2068331,
+              "finished_at": 1794048757.1523895,
+              "duration_seconds": 101.94555759429932,
+              "evaluation_only": null
+            },
+            "evaluation": {
+              "started_at": 1794048752.3925214,
+              "finished_at": 1794048753.2058027,
+              "duration_seconds": 0.8132812976837158,
+              "passed": true
+            },
+            "intents": {
+              "evaluation": {
+                "operation": "start",
+                "updated_at": 1794048752.39312
+              },
+              "runner": {
+                "operation": "model_turn",
+                "updated_at": 1794048667.9605951
+              }
+            }
+          }
+        ],
+        "events": [
+          {
+            "time": 1794048632.8800418,
+            "kind": "study_created",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048655.1499264,
+            "kind": "resources_reserved",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048655.2000983,
+            "kind": "attempt_preparing",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048655.7937138,
+            "kind": "attempt_preparing",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048660.1308675,
+            "kind": "attempt_preparing",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048667.8574603,
+            "kind": "attempt_running",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048667.9536402,
+            "kind": "attempt_running",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048667.9616115,
+            "kind": "attempt_preparing",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048668.0072246,
+            "kind": "attempt_running",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048750.3962374,
+            "kind": "attempt_evaluating",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048750.4235122,
+            "kind": "attempt_evaluating",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048752.403987,
+            "kind": "attempt_evaluating",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048757.1573658,
+            "kind": "attempt_saving",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048757.6723907,
+            "kind": "attempt_succeeded",
+            "state": null,
+            "reason": "COMPLETED"
+          },
+          {
+            "time": 1794048757.6727386,
+            "kind": "resources_released",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048757.691985,
+            "kind": "study_completed",
+            "state": null,
+            "reason": null
+          }
+        ]
+      },
+      {
+        "id": "study-dcf7fa642f8549aeb13572219b78a98f",
+        "created_at": 1794048633.4788167,
+        "evaluation_only": true,
+        "attempts": [
+          {
+            "id": "attempt-a04ffe6dbc08f364c3ad6564bd698495",
+            "variant": "baseline",
+            "started_at": 1794048647.2626252,
+            "finished_at": 1794048651.7651606,
+            "runner": {
+              "started_at": null,
+              "finished_at": null,
+              "duration_seconds": null,
+              "evaluation_only": true
+            },
+            "evaluation": {
+              "started_at": 1794048650.2968874,
+              "finished_at": 1794048651.3748493,
+              "duration_seconds": 1.0779626369476318,
+              "passed": false
+            },
+            "intents": {
+              "evaluation": {
+                "operation": "start",
+                "updated_at": 1794048650.2969859
+              }
+            }
+          }
+        ],
+        "events": [
+          {
+            "time": 1794048633.4788167,
+            "kind": "study_created",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048647.2389202,
+            "kind": "resources_reserved",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048647.3580072,
+            "kind": "attempt_evaluating",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048647.3733122,
+            "kind": "attempt_evaluating",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048650.3152854,
+            "kind": "attempt_evaluating",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048651.7767284,
+            "kind": "attempt_succeeded",
+            "state": null,
+            "reason": "COMPLETED"
+          },
+          {
+            "time": 1794048651.7768488,
+            "kind": "resources_released",
+            "state": null,
+            "reason": null
+          },
+          {
+            "time": 1794048651.8122845,
+            "kind": "study_completed",
+            "state": null,
+            "reason": null
+          }
+        ]
+      }
+    ]
+  }
+]

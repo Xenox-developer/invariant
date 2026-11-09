@@ -1,0 +1,164 @@
+{
+  "wall_difference_seconds": 32.25290298461914,
+  "timeline_differences_seconds": {
+    "before_first_agent": 15.379761695861816,
+    "parallel_agents": 4.854620933532715,
+    "handoff_and_checker_preparation": 41.9396185874939,
+    "checker_agent": -31.06653380393982,
+    "after_checker": 1.1454355716705322
+  },
+  "outside_agent_window_difference_seconds": 58.464815855026245,
+  "inside_agent_window_difference_seconds": -26.211912870407104,
+  "token_differences": {
+    "input_tokens": 38943,
+    "output_tokens": -922,
+    "total_tokens": 38021
+  },
+  "roles": [
+    {
+      "role": "trapezoid",
+      "first_input_native": 15040,
+      "first_input_plain": 12030,
+      "first_input_difference": 3010,
+      "responses_native": 6,
+      "responses_plain": 5,
+      "total_token_difference": 35058,
+      "native_validation_call_seconds": [
+        12.91700005531311
+      ],
+      "native_output_chars": 10571,
+      "plain_output_chars": 12903
+    },
+    {
+      "role": "simpson",
+      "first_input_native": 15035,
+      "first_input_plain": 12025,
+      "first_input_difference": 3010,
+      "responses_native": 5,
+      "responses_plain": 6,
+      "total_token_difference": -5785,
+      "native_validation_call_seconds": [
+        13.53600001335144
+      ],
+      "native_output_chars": 2059,
+      "plain_output_chars": 13019
+    },
+    {
+      "role": "checker",
+      "first_input_native": 15305,
+      "first_input_plain": 12269,
+      "first_input_difference": 3036,
+      "responses_native": 5,
+      "responses_plain": 6,
+      "total_token_difference": 8748,
+      "native_validation_call_seconds": [
+        7.384999990463257
+      ],
+      "native_output_chars": 16482,
+      "plain_output_chars": 17889
+    }
+  ],
+  "common_base_instruction_sha256": "d12e6dbdfd4a4ddb26a1f6048b69a32b8b32f74e4add9791d1dff7f4cac0b032",
+  "base_instruction_identical": true,
+  "original_preflights": [
+    {
+      "stage": "methods",
+      "before_attempt_seconds": 8.458889245986938,
+      "total_created_to_finished_seconds": 11.7189040184021,
+      "actual_evaluator_seconds": 0.8366599082946777
+    },
+    {
+      "stage": "checker",
+      "before_attempt_seconds": 13.783808469772339,
+      "total_created_to_finished_seconds": 18.286343812942505,
+      "actual_evaluator_seconds": 1.0779626369476318
+    }
+  ],
+  "nonmodel_setup_profile": {
+    "model_turns": 0,
+    "control_bytes": 262575952,
+    "cold_control_seconds": 10.958762421971187,
+    "warm_control_seconds": 1.3442930420278572,
+    "cold_control_docker_calls": [
+      {
+        "operation": "create",
+        "seconds": 0.30995133402757347
+      },
+      {
+        "operation": "cp",
+        "seconds": 5.375703794998117
+      },
+      {
+        "operation": "ps",
+        "seconds": 0.05206229200121015
+      },
+      {
+        "operation": "rm",
+        "seconds": 0.39394704200094566
+      }
+    ],
+    "catalog_seconds": 16.084730339993257,
+    "catalog_same_instance_seconds": 0.010034084029030055,
+    "catalog_metadata_rpc_calls": [
+      {
+        "method": "initialize",
+        "seconds": 3.853901294001844
+      },
+      {
+        "method": "account/read",
+        "seconds": 7.31104087800486
+      },
+      {
+        "method": "model/list",
+        "seconds": 2.58239112701267
+      }
+    ],
+    "catalog_docker_calls": [
+      {
+        "operation": "network",
+        "seconds": 0.16079183301189914
+      },
+      {
+        "operation": "create",
+        "seconds": 0.3286237500142306
+      },
+      {
+        "operation": "network",
+        "seconds": 0.08923174999654293
+      },
+      {
+        "operation": "rm",
+        "seconds": 0.256839209003374
+      }
+    ],
+    "scope": "Diagnostic replay on disposable runtime copy; original run timings unchanged."
+  },
+  "native_home_profile": {
+    "web_search": "live",
+    "agents_enabled": true,
+    "shell_environment_inherit": "none",
+    "features": {},
+    "metadata_only": true
+  },
+  "plain_overrides": {
+    "web_search": "disabled",
+    "features.multi_agent": false
+  },
+  "model_turns_in_diagnostics": 0,
+  "source_findings": [
+    "The application creates two new INVARIANT projects; runtime preparation and baseline preflight repeat for the checker.",
+    "prepare_control copies and hashes the Codex/inspector binaries in each project-specific runtime cache.",
+    "LocalRuntime.models caches only within an instance; each new manager engine request constructs another LocalRuntime.",
+    "ContainerEngine initializes/syncs; submit syncs again. CLI init syncs and exports logs too.",
+    "ContainerEngine execute and results each export both logs and results; the benchmark calls both, discarding the first return.",
+    "Unrestricted codex_configuration enables live web search and agents; baseline overrides web search and multi_agent.",
+    "All three validations were reused; no duplicate post-run full evaluation or semantic reviewer explains the gap.",
+    "Baseline agents also spent calls discovering absent invariant_validate and trying unavailable rg, so it is not a minimal baseline."
+  ],
+  "limits": [
+    "Original logs do not time each Docker/RPC command; the disposable setup replay demonstrates current costs, not exact past per-command attribution.",
+    "Session logs do not expose the fully serialized tools/model request or component tokenizer counts; the exact split of the ~3K initial-token gap is unknown.",
+    "Cold-cache reasons are not visible in local logs. The measured cache rates affect price, not whether cached input is counted as input tokens.",
+    "One fixed-order pair cannot establish steady-state speed or causal cache effects."
+  ]
+}

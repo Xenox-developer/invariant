@@ -1,0 +1,67 @@
+{
+  "label": "live-b",
+  "excluded_from_paired_measurements": true,
+  "reason": "Missing Code Mode host in the initial shared CLI bundle; task not implemented",
+  "records": {
+    "with-invariant": [
+      {
+        "role": "simpson",
+        "usage": {
+          "input_tokens": 29768,
+          "cached_input_tokens": 19584,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 258,
+          "reasoning_output_tokens": 46,
+          "total_tokens": 30026
+        },
+        "provider_responses": 3
+      },
+      {
+        "role": "trapezoid",
+        "usage": {
+          "input_tokens": 29777,
+          "cached_input_tokens": 9856,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 248,
+          "reasoning_output_tokens": 60,
+          "total_tokens": 30025
+        },
+        "provider_responses": 3
+      }
+    ],
+    "without-invariant": [
+      {
+        "role": "trapezoid",
+        "usage": {
+          "input_tokens": 29831,
+          "cached_input_tokens": 9856,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 275,
+          "reasoning_output_tokens": 53,
+          "total_tokens": 30106
+        },
+        "provider_responses": 3
+      },
+      {
+        "role": "simpson",
+        "usage": {
+          "input_tokens": 29756,
+          "cached_input_tokens": 19584,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 251,
+          "reasoning_output_tokens": 67,
+          "total_tokens": 30007
+        },
+        "provider_responses": 3
+      }
+    ]
+  },
+  "usage": {
+    "input_tokens": 119132,
+    "cached_input_tokens": 58880,
+    "output_tokens": 1032,
+    "total_tokens": 120164
+  },
+  "credits_observed_cache_frozen_weights": 3.4178,
+  "actual_bill": null
+}

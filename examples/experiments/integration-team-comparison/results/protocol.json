@@ -1,0 +1,26 @@
+{
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "order": [
+    "invariant",
+    "plain"
+  ],
+  "roles": [
+    "trapezoid",
+    "simpson",
+    "checker"
+  ],
+  "checks": {
+    "trapezoid": 35,
+    "simpson": 36,
+    "checker": 14
+  },
+  "protocol_sha256": {
+    "specification.py": "bf9b859713fd41ce1e2954d0494c756fe469f56aa1ad258ff8d84bd498aaad2a",
+    "fixed_checks.py": "5f3b4aa18a46fb44de7bc1e8acbc0132214025d6c1c974c91be2c787406f1e76",
+    "evaluate.py": "6d9e3fb9aa9076ae168e8870ef620e290d9bb11acb40d3e92077eb16046ec407",
+    "plain_backend.py": "22c2acbec4640c1f06708bc3bc371fe77efa33146b49595bb7e6a08dc8c49ed8",
+    "run_experiment.py": "1f5069eacfc0b499c66d5f36025410a067b377c617b3f5135a93b71e0a622723"
+  },
+  "compute_image": "sha256:db21298b84d45d950442afa08ebd86a5e1f7deadb4a167d170b6dd9ba1262e01"
+}

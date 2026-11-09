@@ -1,0 +1,12 @@
+{
+  "run_ref": "run-5ecd8efbd216b58122a1d7e3615b9dd2",
+  "exported_results": [
+    "/Users/nikchin/Desktop/invariant/examples/experiments/integration-team-comparison/projects/v5-controlled/.invariant/results/attempt-af40070bdca1a8652960429d7b007667",
+    "/Users/nikchin/Desktop/invariant/examples/experiments/integration-team-comparison/projects/v5-controlled/.invariant/results/attempt-5cff1219a027a8ce2b35304f6ab1f67f",
+    "/Users/nikchin/Desktop/invariant/examples/experiments/integration-team-comparison/projects/v5-controlled/.invariant/results/attempt-85709cadd7381b45ec2054d482ecbe2c"
+  ],
+  "exported_logs": "/Users/nikchin/Desktop/invariant/examples/experiments/integration-team-comparison/projects/v5-controlled/.invariant/logs/export-053f8dd107e241e6803a3f86ea7323cb",
+  "log_cursor": "75fd556d11a7d6f2fa368e15a08adfb830eb8e8402e2b987431352740490f94b",
+  "logs_full": true,
+  "logs_deleted": []
+}

@@ -1,0 +1,193 @@
+{
+  "passed": true,
+  "rows_checked": 16,
+  "input_sha256": {
+    "trapezoid": "c0a438bf0b3ecef9af9541983599a532c02759ae0c839723d8311518fa29c24f",
+    "simpson": "ca4de565ddd4638fa8f49f7587beabe05d29372c21d8e676c2aff9727c17257d"
+  },
+  "observed_ratios": {
+    "trapezoid_x2": [
+      3.9999999999996003,
+      3.9999999999978684,
+      3.999999999989342
+    ],
+    "trapezoid_x4": [
+      3.9969992498122338,
+      3.9992499531220984,
+      3.9998124970675426
+    ],
+    "simpson_x4": [
+      15.99999999990008,
+      15.999999989341859,
+      15.999999914734872
+    ]
+  },
+  "conclusions": {
+    "trapezoid_order": 2,
+    "simpson_order": 4,
+    "simpson_x2_exact_within_roundoff": true
+  },
+  "verification_tolerance": "8 ulps of the floating-point exact reference",
+  "row_evidence": [
+    {
+      "method": "trapezoid",
+      "power": 2,
+      "n": 10,
+      "rational_estimate": "67/200",
+      "theoretical_error": "1/600",
+      "estimate_error_against_rational_integral": 0.0016666666666667422,
+      "roundoff_residual_from_exact_quadrature": 7.549516567451065e-17,
+      "executed_estimate": 0.3350000000000001
+    },
+    {
+      "method": "trapezoid",
+      "power": 2,
+      "n": 20,
+      "rational_estimate": "267/800",
+      "theoretical_error": "1/2400",
+      "estimate_error_against_rational_integral": 0.0004166666666667133,
+      "roundoff_residual_from_exact_quadrature": 4.662936703425657e-17,
+      "executed_estimate": 0.33375000000000005
+    },
+    {
+      "method": "trapezoid",
+      "power": 2,
+      "n": 40,
+      "rational_estimate": "1067/3200",
+      "theoretical_error": "1/9600",
+      "estimate_error_against_rational_integral": 0.00010416666666671996,
+      "roundoff_residual_from_exact_quadrature": 5.329070518200751e-17,
+      "executed_estimate": 0.33343750000000005
+    },
+    {
+      "method": "trapezoid",
+      "power": 2,
+      "n": 80,
+      "rational_estimate": "4267/12800",
+      "theoretical_error": "1/38400",
+      "estimate_error_against_rational_integral": 2.60416666667355e-05,
+      "roundoff_residual_from_exact_quadrature": 6.88338275267597e-17,
+      "executed_estimate": 0.33335937500000007
+    },
+    {
+      "method": "trapezoid",
+      "power": 4,
+      "n": 10,
+      "rational_estimate": "20333/100000",
+      "theoretical_error": "333/100000",
+      "estimate_error_against_rational_integral": 0.003330000000000011,
+      "roundoff_residual_from_exact_quadrature": 1.0729195309977513e-17,
+      "executed_estimate": 0.20333
+    },
+    {
+      "method": "trapezoid",
+      "power": 4,
+      "n": 20,
+      "rational_estimate": "321333/1600000",
+      "theoretical_error": "1333/1600000",
+      "estimate_error_against_rational_integral": 0.0008331250000000567,
+      "roundoff_residual_from_exact_quadrature": 5.6736837450444e-17,
+      "executed_estimate": 0.20083312500000006
+    },
+    {
+      "method": "trapezoid",
+      "power": 4,
+      "n": 40,
+      "rational_estimate": "5125333/25600000",
+      "theoretical_error": "5333/25600000",
+      "estimate_error_against_rational_integral": 0.00020832031250002104,
+      "roundoff_residual_from_exact_quadrature": 2.1032064978498965e-17,
+      "executed_estimate": 0.20020832031250002
+    },
+    {
+      "method": "trapezoid",
+      "power": 4,
+      "n": 80,
+      "rational_estimate": "81941333/409600000",
+      "theoretical_error": "21333/409600000",
+      "estimate_error_against_rational_integral": 5.208251953129905e-05,
+      "roundoff_residual_from_exact_quadrature": 4.905409412003792e-17,
+      "executed_estimate": 0.2000520825195313
+    },
+    {
+      "method": "simpson",
+      "power": 2,
+      "n": 10,
+      "rational_estimate": "1/3",
+      "theoretical_error": "0",
+      "estimate_error_against_rational_integral": 3.700743415417188e-17,
+      "roundoff_residual_from_exact_quadrature": 3.700743415417188e-17,
+      "executed_estimate": 0.33333333333333337
+    },
+    {
+      "method": "simpson",
+      "power": 2,
+      "n": 20,
+      "rational_estimate": "1/3",
+      "theoretical_error": "0",
+      "estimate_error_against_rational_integral": 3.700743415417188e-17,
+      "roundoff_residual_from_exact_quadrature": 3.700743415417188e-17,
+      "executed_estimate": 0.33333333333333337
+    },
+    {
+      "method": "simpson",
+      "power": 2,
+      "n": 40,
+      "rational_estimate": "1/3",
+      "theoretical_error": "0",
+      "estimate_error_against_rational_integral": 3.700743415417188e-17,
+      "roundoff_residual_from_exact_quadrature": 3.700743415417188e-17,
+      "executed_estimate": 0.33333333333333337
+    },
+    {
+      "method": "simpson",
+      "power": 2,
+      "n": 80,
+      "rational_estimate": "1/3",
+      "theoretical_error": "0",
+      "estimate_error_against_rational_integral": 3.700743415417188e-17,
+      "roundoff_residual_from_exact_quadrature": 3.700743415417188e-17,
+      "executed_estimate": 0.33333333333333337
+    },
+    {
+      "method": "simpson",
+      "power": 4,
+      "n": 10,
+      "rational_estimate": "15001/75000",
+      "theoretical_error": "1/75000",
+      "estimate_error_against_rational_integral": 1.3333333333348519e-05,
+      "roundoff_residual_from_exact_quadrature": 1.5184890382139807e-17,
+      "executed_estimate": 0.20001333333333335
+    },
+    {
+      "method": "simpson",
+      "power": 4,
+      "n": 20,
+      "rational_estimate": "240001/1200000",
+      "theoretical_error": "1/1200000",
+      "estimate_error_against_rational_integral": 8.333333333498949e-07,
+      "roundoff_residual_from_exact_quadrature": 1.6561566932675e-17,
+      "executed_estimate": 0.20000083333333335
+    },
+    {
+      "method": "simpson",
+      "power": 4,
+      "n": 40,
+      "rational_estimate": "3840001/19200000",
+      "theoretical_error": "1/19200000",
+      "estimate_error_against_rational_integral": 5.2083333379471244e-08,
+      "roundoff_residual_from_exact_quadrature": 4.6137908308689174e-17,
+      "executed_estimate": 0.20000005208333338
+    },
+    {
+      "method": "simpson",
+      "power": 4,
+      "n": 80,
+      "rational_estimate": "61440001/307200000",
+      "theoretical_error": "1/307200000",
+      "estimate_error_against_rational_integral": 3.2552083639725284e-09,
+      "roundoff_residual_from_exact_quadrature": 3.063919488492199e-17,
+      "executed_estimate": 0.20000000325520836
+    }
+  ]
+}

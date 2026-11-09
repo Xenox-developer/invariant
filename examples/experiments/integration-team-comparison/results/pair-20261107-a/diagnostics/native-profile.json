@@ -1,0 +1,7 @@
+{
+  "web_search": "live",
+  "agents_enabled": true,
+  "shell_environment_inherit": "none",
+  "features": {},
+  "metadata_only": true
+}

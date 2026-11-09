@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "prepared": true,
+  "session": "ws-aba6131d59a842b7ac8031a6d9b8ba60",
+  "exit_code": 0,
+  "reason": null,
+  "log": "/Users/nikchin/.invariant/workspaces/fdf488d0dc75d948dd1d92ad/ws-aba6131d59a842b7ac8031a6d9b8ba60-prepare.log",
+  "image": "sha256:845fc3854fe15416c34291e6705c4de1ffdfe85880d79cd1619d11bc5a8259c6",
+  "resources": {
+    "mode": "unlimited",
+    "limits": {
+      "cpus": null,
+      "memory_bytes": null,
+      "extra_swap_bytes": null,
+      "processes": null,
+      "file_descriptors": null,
+      "scratch_bytes": null
+    }
+  },
+  "model_turns": 0,
+  "network": "internet",
+  "binary_sha256": {
+    "codex": "8a96f66d059d653e68bfd5f3c79337e6f1d7d170d80bf705eb7d0249b34c0ece",
+    "codex-code-mode-host": "255eccc8a5c1d267dc0acbc815cc83aaa1f50955bd99943b29f00cafcdcab771"
+  }
+}

@@ -1,0 +1,177 @@
+{
+  "passed": true,
+  "rows_checked": 16,
+  "input_sha256": {
+    "trapezoid": "c0a438bf0b3ecef9af9541983599a532c02759ae0c839723d8311518fa29c24f",
+    "simpson": "aa0f7bbdf5d0560f83f21b374a7993afdaa92ecabd6a10c5bfe9fc02d5617813"
+  },
+  "observed_ratios": {
+    "trapezoid_x2": [
+      3.9999999999996003,
+      3.9999999999978684,
+      3.999999999989342
+    ],
+    "trapezoid_x4": [
+      3.9969992498122338,
+      3.9992499531220984,
+      3.9998124970675426
+    ],
+    "simpson_x4": [
+      15.99999999940048,
+      15.999999989874766,
+      15.99999977831067
+    ]
+  },
+  "conclusions": {
+    "trapezoid_order": 2,
+    "simpson_order": 4,
+    "simpson_x2_exact_within_roundoff": true
+  },
+  "verification_method": "Original integrate functions executed; independent Fraction sums and exact signed error formulas; eight ulps absolute tolerance for floating-point roundoff.",
+  "row_checks": [
+    {
+      "method": "trapezoid",
+      "power": 2,
+      "n": 10,
+      "rational_estimate": "67/200",
+      "formula_error": "1/600",
+      "estimate_roundoff": 7.549516567451065e-17,
+      "roundoff_budget": 4.440892098500626e-16
+    },
+    {
+      "method": "trapezoid",
+      "power": 2,
+      "n": 20,
+      "rational_estimate": "267/800",
+      "formula_error": "1/2400",
+      "estimate_roundoff": 4.662936703425657e-17,
+      "roundoff_budget": 4.440892098500626e-16
+    },
+    {
+      "method": "trapezoid",
+      "power": 2,
+      "n": 40,
+      "rational_estimate": "1067/3200",
+      "formula_error": "1/9600",
+      "estimate_roundoff": 5.329070518200751e-17,
+      "roundoff_budget": 4.440892098500626e-16
+    },
+    {
+      "method": "trapezoid",
+      "power": 2,
+      "n": 80,
+      "rational_estimate": "4267/12800",
+      "formula_error": "1/38400",
+      "estimate_roundoff": 6.88338275267597e-17,
+      "roundoff_budget": 4.440892098500626e-16
+    },
+    {
+      "method": "trapezoid",
+      "power": 4,
+      "n": 10,
+      "rational_estimate": "20333/100000",
+      "formula_error": "333/100000",
+      "estimate_roundoff": 1.0729195309977513e-17,
+      "roundoff_budget": 2.220446049250313e-16
+    },
+    {
+      "method": "trapezoid",
+      "power": 4,
+      "n": 20,
+      "rational_estimate": "321333/1600000",
+      "formula_error": "1333/1600000",
+      "estimate_roundoff": 5.6736837450444e-17,
+      "roundoff_budget": 2.220446049250313e-16
+    },
+    {
+      "method": "trapezoid",
+      "power": 4,
+      "n": 40,
+      "rational_estimate": "5125333/25600000",
+      "formula_error": "5333/25600000",
+      "estimate_roundoff": 2.1032064978498965e-17,
+      "roundoff_budget": 2.220446049250313e-16
+    },
+    {
+      "method": "trapezoid",
+      "power": 4,
+      "n": 80,
+      "rational_estimate": "81941333/409600000",
+      "formula_error": "21333/409600000",
+      "estimate_roundoff": 4.905409412003792e-17,
+      "roundoff_budget": 2.220446049250313e-16
+    },
+    {
+      "method": "simpson",
+      "power": 2,
+      "n": 10,
+      "rational_estimate": "1/3",
+      "formula_error": "0",
+      "estimate_roundoff": 9.251858538542972e-17,
+      "roundoff_budget": 4.440892098500626e-16
+    },
+    {
+      "method": "simpson",
+      "power": 2,
+      "n": 20,
+      "rational_estimate": "1/3",
+      "formula_error": "0",
+      "estimate_roundoff": 9.251858538542972e-17,
+      "roundoff_budget": 4.440892098500626e-16
+    },
+    {
+      "method": "simpson",
+      "power": 2,
+      "n": 40,
+      "rational_estimate": "1/3",
+      "formula_error": "0",
+      "estimate_roundoff": 9.251858538542972e-17,
+      "roundoff_budget": 4.440892098500626e-16
+    },
+    {
+      "method": "simpson",
+      "power": 2,
+      "n": 80,
+      "rational_estimate": "1/3",
+      "formula_error": "0",
+      "estimate_roundoff": 9.251858538542972e-17,
+      "roundoff_budget": 4.440892098500626e-16
+    },
+    {
+      "method": "simpson",
+      "power": 4,
+      "n": 10,
+      "rational_estimate": "15001/75000",
+      "formula_error": "1/75000",
+      "estimate_roundoff": 4.2940465997768724e-17,
+      "roundoff_budget": 2.220446049250313e-16
+    },
+    {
+      "method": "simpson",
+      "power": 4,
+      "n": 20,
+      "rational_estimate": "240001/1200000",
+      "formula_error": "1/1200000",
+      "estimate_roundoff": 4.4317142548303914e-17,
+      "roundoff_budget": 2.220446049250313e-16
+    },
+    {
+      "method": "simpson",
+      "power": 4,
+      "n": 40,
+      "rational_estimate": "3840001/19200000",
+      "formula_error": "1/19200000",
+      "estimate_roundoff": 4.6137908308689174e-17,
+      "roundoff_budget": 2.220446049250313e-16
+    },
+    {
+      "method": "simpson",
+      "power": 4,
+      "n": 80,
+      "rational_estimate": "61440001/307200000",
+      "formula_error": "1/307200000",
+      "estimate_roundoff": 5.83947705005509e-17,
+      "roundoff_budget": 2.220446049250313e-16
+    }
+  ]
+}

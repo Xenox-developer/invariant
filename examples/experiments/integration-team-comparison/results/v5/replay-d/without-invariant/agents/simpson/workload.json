@@ -1,0 +1,16 @@
+{
+  "role": "simpson",
+  "mode": "replay",
+  "prompt_sha256": "83067359a0a13b46135efe939e6b81d13f88ec0866046c4b6b44d20855577130",
+  "profile_sha256": "48a1feab8f2783877016a2293a68149b24347bc00e3ec0e04c7961e100f0efb3",
+  "driver_sha256": "ce6dce383a4d95f912d7ccfbf5a28fcc9a161293b75a03700aa24de824c0a7d4",
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "started_at": 1794184205.173357,
+  "model_turns": 0,
+  "provider_responses": 0,
+  "usage": null,
+  "workload_started_at": 1794184205.192955,
+  "workload_finished_at": 1794184205.4234717,
+  "finished_at": 1794184205.423488
+}

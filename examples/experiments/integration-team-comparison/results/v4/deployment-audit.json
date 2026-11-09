@@ -1,0 +1,24 @@
+{
+  "final_source_digest": "f0ceb265cd343028082c6d77523434b44302b9b6031271ac0adb21d15278c3da",
+  "benchmark_source_digests": {
+    "first": "8c7f64b29e8deaadedc8b91f2edc726874149772132302a70888fe3eba374854",
+    "warm1": "8c7f64b29e8deaadedc8b91f2edc726874149772132302a70888fe3eba374854",
+    "warm2": "8c7f64b29e8deaadedc8b91f2edc726874149772132302a70888fe3eba374854",
+    "warm3": "8c7f64b29e8deaadedc8b91f2edc726874149772132302a70888fe3eba374854",
+    "release": "8d4c9ee274872f1055d291ddb71583b2eecf900381ab420560baf8841f857436"
+  },
+  "post_benchmark_changes": [
+    "Serialize host artifact publication across concurrent collectors; agent/evaluator protocol unchanged"
+  ],
+  "post_benchmark_tests": {
+    "unit_tests": 436,
+    "concurrent_collectors": 2,
+    "model_calls_for_collection_tests": 0
+  },
+  "post_benchmark_profile": {
+    "reopen": 0.604622625047341,
+    "status": 0.022154416074045002,
+    "collect1": 0.2159778750501573,
+    "collect2": 0.059482584008947015
+  }
+}

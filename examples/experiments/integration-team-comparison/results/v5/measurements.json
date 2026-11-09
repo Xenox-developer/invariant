@@ -1,0 +1,507 @@
+{
+  "pairs": {
+    "live-c": {
+      "with-invariant": {
+        "seconds": 217.10574412345886,
+        "phase_seconds": [
+          83.89505577087402,
+          132.4213674068451
+        ],
+        "export_seconds": 0.7893209457397461,
+        "critical_workload_seconds": 156.1771035194397,
+        "outside_workload_seconds": 60.928640604019165,
+        "baseline_preflight_seconds": 31.904071807861328,
+        "protected_evaluation_window_seconds": 3.547908306121826,
+        "usage": {
+          "input_tokens": 161413,
+          "cached_input_tokens": 112768,
+          "output_tokens": 7374,
+          "total_tokens": 168787
+        },
+        "model_turns": 3,
+        "provider_responses": 14,
+        "cache_fraction": 0.6986302218532584,
+        "credits_observed_cache": 4.55767,
+        "credits_normalized_zero_cache": 9.91415,
+        "credits_normalized_75pct_cache": 4.163811875,
+        "first_requests": {
+          "trapezoid": {
+            "input": 9797,
+            "cached": 0
+          },
+          "simpson": {
+            "input": 9792,
+            "cached": 0
+          },
+          "checker": {
+            "input": 10036,
+            "cached": 0
+          }
+        },
+        "checks": 85
+      },
+      "without-invariant": {
+        "seconds": 146.53700160980225,
+        "phase_seconds": [
+          45.74926686286926,
+          99.88198781013489
+        ],
+        "export_seconds": 0.9057469367980957,
+        "critical_workload_seconds": 135.6457164287567,
+        "outside_workload_seconds": 10.891285181045532,
+        "baseline_preflight_seconds": 0,
+        "protected_evaluation_window_seconds": 0,
+        "usage": {
+          "input_tokens": 191352,
+          "cached_input_tokens": 130048,
+          "output_tokens": 5644,
+          "total_tokens": 196996
+        },
+        "model_turns": 3,
+        "provider_responses": 16,
+        "cache_fraction": 0.6796270747104812,
+        "credits_observed_cache": 4.80132,
+        "credits_normalized_zero_cache": 10.9786,
+        "credits_normalized_75pct_cache": 4.161685,
+        "first_requests": {
+          "trapezoid": {
+            "input": 9797,
+            "cached": 0
+          },
+          "simpson": {
+            "input": 9792,
+            "cached": 0
+          },
+          "checker": {
+            "input": 10036,
+            "cached": 0
+          }
+        },
+        "checks": 85
+      }
+    },
+    "live-d": {
+      "with-invariant": {
+        "seconds": 191.40810585021973,
+        "phase_seconds": [
+          79.54494309425354,
+          109.8716778755188
+        ],
+        "export_seconds": 1.9914848804473877,
+        "critical_workload_seconds": 138.8620765209198,
+        "outside_workload_seconds": 52.54602932929993,
+        "baseline_preflight_seconds": 15.946885585784912,
+        "protected_evaluation_window_seconds": 20.7888822555542,
+        "usage": {
+          "input_tokens": 193234,
+          "cached_input_tokens": 133504,
+          "output_tokens": 6157,
+          "total_tokens": 199391
+        },
+        "model_turns": 3,
+        "provider_responses": 16,
+        "cache_fraction": 0.690892907045344,
+        "credits_observed_cache": 4.85951,
+        "credits_normalized_zero_cache": 11.20095,
+        "credits_normalized_75pct_cache": 4.31698875,
+        "first_requests": {
+          "trapezoid": {
+            "input": 9794,
+            "cached": 0
+          },
+          "simpson": {
+            "input": 9789,
+            "cached": 0
+          },
+          "checker": {
+            "input": 10033,
+            "cached": 0
+          }
+        },
+        "checks": 85
+      },
+      "without-invariant": {
+        "seconds": 155.20929408073425,
+        "phase_seconds": [
+          52.174477100372314,
+          100.1815779209137
+        ],
+        "export_seconds": 2.853239059448242,
+        "critical_workload_seconds": 140.21295070648193,
+        "outside_workload_seconds": 14.99634337425232,
+        "baseline_preflight_seconds": 0,
+        "protected_evaluation_window_seconds": 0,
+        "usage": {
+          "input_tokens": 188997,
+          "cached_input_tokens": 121856,
+          "output_tokens": 6601,
+          "total_tokens": 195598
+        },
+        "model_turns": 3,
+        "provider_responses": 16,
+        "cache_fraction": 0.6447509748831992,
+        "credits_observed_cache": 5.31194,
+        "credits_normalized_zero_cache": 11.1001,
+        "credits_normalized_75pct_cache": 4.367081875,
+        "first_requests": {
+          "trapezoid": {
+            "input": 9794,
+            "cached": 0
+          },
+          "simpson": {
+            "input": 9789,
+            "cached": 0
+          },
+          "checker": {
+            "input": 10033,
+            "cached": 0
+          }
+        },
+        "checks": 85
+      }
+    },
+    "replay-b": {
+      "with-invariant": {
+        "seconds": 82.57264018058777,
+        "phase_seconds": [
+          46.41358709335327,
+          35.2795991897583
+        ],
+        "export_seconds": 0.8794538974761963,
+        "critical_workload_seconds": 0.6599628925323486,
+        "outside_workload_seconds": 81.91267728805542,
+        "baseline_preflight_seconds": 27.50233221054077,
+        "protected_evaluation_window_seconds": 4.773129224777222,
+        "usage": {
+          "input_tokens": 0,
+          "cached_input_tokens": 0,
+          "output_tokens": 0,
+          "total_tokens": 0
+        },
+        "model_turns": 0,
+        "provider_responses": 0,
+        "cache_fraction": null,
+        "credits_observed_cache": 0.0,
+        "credits_normalized_zero_cache": 0.0,
+        "credits_normalized_75pct_cache": 0.0,
+        "first_requests": {
+          "trapezoid": {
+            "input": null,
+            "cached": null
+          },
+          "simpson": {
+            "input": null,
+            "cached": null
+          },
+          "checker": {
+            "input": null,
+            "cached": null
+          }
+        },
+        "checks": 85
+      },
+      "without-invariant": {
+        "seconds": 23.30509114265442,
+        "phase_seconds": [
+          6.624704122543335,
+          13.503328084945679
+        ],
+        "export_seconds": 3.1770589351654053,
+        "critical_workload_seconds": 0.6379966735839844,
+        "outside_workload_seconds": 22.667094469070435,
+        "baseline_preflight_seconds": 0,
+        "protected_evaluation_window_seconds": 0,
+        "usage": {
+          "input_tokens": 0,
+          "cached_input_tokens": 0,
+          "output_tokens": 0,
+          "total_tokens": 0
+        },
+        "model_turns": 0,
+        "provider_responses": 0,
+        "cache_fraction": null,
+        "credits_observed_cache": 0.0,
+        "credits_normalized_zero_cache": 0.0,
+        "credits_normalized_75pct_cache": 0.0,
+        "first_requests": {
+          "trapezoid": {
+            "input": null,
+            "cached": null
+          },
+          "simpson": {
+            "input": null,
+            "cached": null
+          },
+          "checker": {
+            "input": null,
+            "cached": null
+          }
+        },
+        "checks": 85
+      }
+    },
+    "replay-c": {
+      "with-invariant": {
+        "seconds": 94.04724669456482,
+        "phase_seconds": [
+          45.862950563430786,
+          46.69752836227417
+        ],
+        "export_seconds": 1.4867677688598633,
+        "critical_workload_seconds": 0.3239288330078125,
+        "outside_workload_seconds": 93.723317861557,
+        "baseline_preflight_seconds": 34.1683828830719,
+        "protected_evaluation_window_seconds": 6.4405786991119385,
+        "usage": {
+          "input_tokens": 0,
+          "cached_input_tokens": 0,
+          "output_tokens": 0,
+          "total_tokens": 0
+        },
+        "model_turns": 0,
+        "provider_responses": 0,
+        "cache_fraction": null,
+        "credits_observed_cache": 0.0,
+        "credits_normalized_zero_cache": 0.0,
+        "credits_normalized_75pct_cache": 0.0,
+        "first_requests": {
+          "trapezoid": {
+            "input": null,
+            "cached": null
+          },
+          "simpson": {
+            "input": null,
+            "cached": null
+          },
+          "checker": {
+            "input": null,
+            "cached": null
+          }
+        },
+        "checks": 85
+      },
+      "without-invariant": {
+        "seconds": 19.760146141052246,
+        "phase_seconds": [
+          5.893106937408447,
+          5.837021350860596
+        ],
+        "export_seconds": 8.030017852783203,
+        "critical_workload_seconds": 0.665156364440918,
+        "outside_workload_seconds": 19.094989776611328,
+        "baseline_preflight_seconds": 0,
+        "protected_evaluation_window_seconds": 0,
+        "usage": {
+          "input_tokens": 0,
+          "cached_input_tokens": 0,
+          "output_tokens": 0,
+          "total_tokens": 0
+        },
+        "model_turns": 0,
+        "provider_responses": 0,
+        "cache_fraction": null,
+        "credits_observed_cache": 0.0,
+        "credits_normalized_zero_cache": 0.0,
+        "credits_normalized_75pct_cache": 0.0,
+        "first_requests": {
+          "trapezoid": {
+            "input": null,
+            "cached": null
+          },
+          "simpson": {
+            "input": null,
+            "cached": null
+          },
+          "checker": {
+            "input": null,
+            "cached": null
+          }
+        },
+        "checks": 85
+      }
+    },
+    "replay-d": {
+      "with-invariant": {
+        "seconds": 68.46975827217102,
+        "phase_seconds": [
+          39.27731537818909,
+          28.359629154205322
+        ],
+        "export_seconds": 0.8328137397766113,
+        "critical_workload_seconds": 0.37111854553222656,
+        "outside_workload_seconds": 68.0986397266388,
+        "baseline_preflight_seconds": 21.492841958999634,
+        "protected_evaluation_window_seconds": 5.086453437805176,
+        "usage": {
+          "input_tokens": 0,
+          "cached_input_tokens": 0,
+          "output_tokens": 0,
+          "total_tokens": 0
+        },
+        "model_turns": 0,
+        "provider_responses": 0,
+        "cache_fraction": null,
+        "credits_observed_cache": 0.0,
+        "credits_normalized_zero_cache": 0.0,
+        "credits_normalized_75pct_cache": 0.0,
+        "first_requests": {
+          "trapezoid": {
+            "input": null,
+            "cached": null
+          },
+          "simpson": {
+            "input": null,
+            "cached": null
+          },
+          "checker": {
+            "input": null,
+            "cached": null
+          }
+        },
+        "checks": 85
+      },
+      "without-invariant": {
+        "seconds": 18.653488397598267,
+        "phase_seconds": [
+          8.848826169967651,
+          8.04080319404602
+        ],
+        "export_seconds": 1.7638590335845947,
+        "critical_workload_seconds": 0.8637769222259521,
+        "outside_workload_seconds": 17.789711475372314,
+        "baseline_preflight_seconds": 0,
+        "protected_evaluation_window_seconds": 0,
+        "usage": {
+          "input_tokens": 0,
+          "cached_input_tokens": 0,
+          "output_tokens": 0,
+          "total_tokens": 0
+        },
+        "model_turns": 0,
+        "provider_responses": 0,
+        "cache_fraction": null,
+        "credits_observed_cache": 0.0,
+        "credits_normalized_zero_cache": 0.0,
+        "credits_normalized_75pct_cache": 0.0,
+        "first_requests": {
+          "trapezoid": {
+            "input": null,
+            "cached": null
+          },
+          "simpson": {
+            "input": null,
+            "cached": null
+          },
+          "checker": {
+            "input": null,
+            "cached": null
+          }
+        },
+        "checks": 85
+      }
+    }
+  },
+  "medians": {
+    "live": {
+      "with-invariant": {
+        "seconds": 204.2569249868393,
+        "outside_workload_seconds": 56.737334966659546,
+        "critical_workload_seconds": 147.51959002017975,
+        "baseline_preflight_seconds": 23.92547869682312,
+        "protected_evaluation_window_seconds": 12.168395280838013,
+        "credits_observed_cache": 4.70859,
+        "credits_normalized_zero_cache": 10.557549999999999,
+        "credits_normalized_75pct_cache": 4.2404003125,
+        "tokens": 184089.0,
+        "cached_fraction_total": 0.6944144459138242
+      },
+      "without-invariant": {
+        "seconds": 150.87314784526825,
+        "outside_workload_seconds": 12.943814277648926,
+        "critical_workload_seconds": 137.92933356761932,
+        "baseline_preflight_seconds": 0.0,
+        "protected_evaluation_window_seconds": 0.0,
+        "credits_observed_cache": 5.05663,
+        "credits_normalized_zero_cache": 11.039349999999999,
+        "credits_normalized_75pct_cache": 4.2643834375,
+        "tokens": 196297.0,
+        "cached_fraction_total": 0.6622969956539915
+      },
+      "paired_seconds_delta": [
+        70.56874251365662,
+        36.198811769485474
+      ],
+      "paired_delta_median": 53.383777141571045
+    },
+    "replay": {
+      "with-invariant": {
+        "seconds": 82.57264018058777,
+        "outside_workload_seconds": 81.91267728805542,
+        "critical_workload_seconds": 0.37111854553222656,
+        "baseline_preflight_seconds": 27.50233221054077,
+        "protected_evaluation_window_seconds": 5.086453437805176,
+        "credits_observed_cache": 0.0,
+        "credits_normalized_zero_cache": 0.0,
+        "credits_normalized_75pct_cache": 0.0,
+        "tokens": 0,
+        "cached_fraction_total": 0.0
+      },
+      "without-invariant": {
+        "seconds": 19.760146141052246,
+        "outside_workload_seconds": 19.094989776611328,
+        "critical_workload_seconds": 0.665156364440918,
+        "baseline_preflight_seconds": 0,
+        "protected_evaluation_window_seconds": 0,
+        "credits_observed_cache": 0.0,
+        "credits_normalized_zero_cache": 0.0,
+        "credits_normalized_75pct_cache": 0.0,
+        "tokens": 0,
+        "cached_fraction_total": 0.0
+      },
+      "paired_seconds_delta": [
+        59.26754903793335,
+        74.28710055351257,
+        49.816269874572754
+      ],
+      "paired_delta_median": 59.26754903793335
+    }
+  },
+  "replay_scientific_file_hashes": {
+    "replay-b": {
+      "trapezoid/solution.py": "8ec849e72c458197498099f4f28db166187b9f42999afc04afb04682ddcb4d76",
+      "trapezoid/result.json": "c0a438bf0b3ecef9af9541983599a532c02759ae0c839723d8311518fa29c24f",
+      "simpson/solution.py": "88b00840c84af8688f4ce7d1d12aa32f7ac9696c8bf07c2b5dd6de0e6c060c50",
+      "simpson/result.json": "ca4de565ddd4638fa8f49f7587beabe05d29372c21d8e676c2aff9727c17257d",
+      "checker/build_report.py": "1e1d63bad1ea88bd021d6e7a010dabfdc3c3e5a774e7d50f99ea3f2bbaa33344",
+      "checker/comparison.csv": "d2fb60f9ab159d80bb20b23028833d1b58b21d2acb14874906f711871451b792",
+      "checker/report.md": "b13cbf9e315c90fc5aca03c6956317bd87eb868460a52a1854e46cea4cfb52fa",
+      "checker/errors.svg": "41caf04a679c925b666ee879a9589dc88ef86200f19e0b85ab423a40bfe8fe81",
+      "checker/verification.json": "d3d874a9551527741b2a0455f17c608648188f3d1c68622d7746ab47abd9fac6"
+    },
+    "replay-c": {
+      "trapezoid/solution.py": "8ec849e72c458197498099f4f28db166187b9f42999afc04afb04682ddcb4d76",
+      "trapezoid/result.json": "c0a438bf0b3ecef9af9541983599a532c02759ae0c839723d8311518fa29c24f",
+      "simpson/solution.py": "88b00840c84af8688f4ce7d1d12aa32f7ac9696c8bf07c2b5dd6de0e6c060c50",
+      "simpson/result.json": "ca4de565ddd4638fa8f49f7587beabe05d29372c21d8e676c2aff9727c17257d",
+      "checker/build_report.py": "1e1d63bad1ea88bd021d6e7a010dabfdc3c3e5a774e7d50f99ea3f2bbaa33344",
+      "checker/comparison.csv": "d2fb60f9ab159d80bb20b23028833d1b58b21d2acb14874906f711871451b792",
+      "checker/report.md": "b13cbf9e315c90fc5aca03c6956317bd87eb868460a52a1854e46cea4cfb52fa",
+      "checker/errors.svg": "41caf04a679c925b666ee879a9589dc88ef86200f19e0b85ab423a40bfe8fe81",
+      "checker/verification.json": "d3d874a9551527741b2a0455f17c608648188f3d1c68622d7746ab47abd9fac6"
+    },
+    "replay-d": {
+      "trapezoid/solution.py": "8ec849e72c458197498099f4f28db166187b9f42999afc04afb04682ddcb4d76",
+      "trapezoid/result.json": "c0a438bf0b3ecef9af9541983599a532c02759ae0c839723d8311518fa29c24f",
+      "simpson/solution.py": "88b00840c84af8688f4ce7d1d12aa32f7ac9696c8bf07c2b5dd6de0e6c060c50",
+      "simpson/result.json": "ca4de565ddd4638fa8f49f7587beabe05d29372c21d8e676c2aff9727c17257d",
+      "checker/build_report.py": "1e1d63bad1ea88bd021d6e7a010dabfdc3c3e5a774e7d50f99ea3f2bbaa33344",
+      "checker/comparison.csv": "d2fb60f9ab159d80bb20b23028833d1b58b21d2acb14874906f711871451b792",
+      "checker/report.md": "b13cbf9e315c90fc5aca03c6956317bd87eb868460a52a1854e46cea4cfb52fa",
+      "checker/errors.svg": "41caf04a679c925b666ee879a9589dc88ef86200f19e0b85ab423a40bfe8fe81",
+      "checker/verification.json": "d3d874a9551527741b2a0455f17c608648188f3d1c68622d7746ab47abd9fac6"
+    }
+  },
+  "timing_definition": "Sum of methods critical-path stage + checker stage + export; image/SDK preparation, initial fixture upload, metadata reading and cleanup excluded in both arms.",
+  "credit_definition": "Historical frozen weights: uncached input 50, cached input 2.5, output 250 credits per million. Estimates, not a bill. Zero/75% cache are counterfactual normalizations.",
+  "scope": "Same stock CLI in direct Docker and generic INVARIANT command runner. Not a native CodexRunner benchmark."
+}

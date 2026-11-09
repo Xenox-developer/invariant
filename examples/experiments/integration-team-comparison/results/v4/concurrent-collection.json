@@ -1,0 +1,18 @@
+{
+  "model_calls": 0,
+  "independent_processes": 2,
+  "same_paths": true,
+  "no_new_log_exports": true,
+  "result": {
+    "run_ref": "run-e4240d141ecb4f2583e603a487adda51",
+    "exported_results": [
+      "/Users/nikchin/Desktop/invariant/examples/experiments/integration-team-comparison/projects/v4-context/.invariant/results/attempt-67a28a0601d919c1d932b98153e34a98",
+      "/Users/nikchin/Desktop/invariant/examples/experiments/integration-team-comparison/projects/v4-context/.invariant/results/attempt-858889a63207841bbf10e6d74b85d65b",
+      "/Users/nikchin/Desktop/invariant/examples/experiments/integration-team-comparison/projects/v4-context/.invariant/results/attempt-f2a46f7b15636e76da96c48972df8fe3"
+    ],
+    "exported_logs": "/Users/nikchin/Desktop/invariant/examples/experiments/integration-team-comparison/projects/v4-context/.invariant/logs/export-0d47f9a4427b48e8830a496598212350",
+    "log_cursor": "707f6366d3d78d81b791fdaa7317d760a8b5267e8c5238e4d07e82796d75706a",
+    "logs_full": true,
+    "logs_deleted": []
+  }
+}

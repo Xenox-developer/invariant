@@ -1,0 +1,50 @@
+[
+  {
+    "name": "@ast-grep/napi",
+    "version": "0.51.1",
+    "repository": {
+      "url": "git+https://github.com/ast-grep/ast-grep.git",
+      "type": "git"
+    },
+    "gitHead": "5a204b1ef3facef94de125d990dddc7cf90011c0",
+    "dist": {
+      "shasum": "2bebdf887a9f9f6f5a08754b73fc3532dfbbf6d0",
+      "tarball": "https://registry.npmjs.org/@ast-grep/napi/-/napi-0.51.1.tgz",
+      "fileCount": 18,
+      "integrity": "sha512-pdIyBOsQy9E46s8W9qcEH9ZDjx5nacxnn0cP+17qTuM6D1YoIvKlaz8n8yE1dkTAP59yjCp2t3cpMnacq2YJkw==",
+      "signatures": [
+        {
+          "sig": "MEQCIDLTruEUhjeViG1gWtUNMv8iwPbn4/NFHuhc5xzmdCVcAiAcxHPe0kuJCqwdf22UtE+O0uLTbesBZpKscHlpqqUGSA==",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEUCIAt7yVnblCBjfSdJaqJLOr7iNq1Oxowg/9uf7uIhFQrbAiEA986C52pR4OwjNN6fvc2sz2tqkuF0NcVbAIpB//+TA6c=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "unpackedSize": 365488
+    }
+  },
+  {
+    "name": "jscodeshift",
+    "version": "17.4.0",
+    "repository": {
+      "url": "git+https://github.com/facebook/jscodeshift.git",
+      "type": "git"
+    },
+    "gitHead": "e71f63dba4f60e39944f5ef1e74a36fbdd317e1e",
+    "dist": {
+      "shasum": "efa0619ddb1d994e85982ec37a7afe8e618ae324",
+      "tarball": "https://registry.npmjs.org/jscodeshift/-/jscodeshift-17.4.0.tgz",
+      "fileCount": 97,
+      "integrity": "sha512-i3ESKiiTsGynxzTg5BhsZViD0ai72/6SsI1efDZxG6/5KCoElsmquxtyhXK5lpEgoO7MTNpYkjFEdEL97SkBNg==",
+      "signatures": [
+        {
+          "sig": "MEQCIBwMUDhLKJ40J98x57dJqS9QQoS9mZ9YAfmRG3FMx9CWAiALAQ1NAG9udCsOXlxrwxGqLq3zi3EK3v/cHhd0n0Jypg==",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "unpackedSize": 404184
+    }
+  }
+]

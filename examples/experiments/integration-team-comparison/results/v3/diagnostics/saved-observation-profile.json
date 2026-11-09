@@ -1,0 +1,148 @@
+{
+  "model_calls": 0,
+  "rows": [
+    {
+      "kind": "rpc",
+      "operation": "auth_status",
+      "method": null,
+      "seconds": 0.16687425004784018
+    },
+    {
+      "kind": "rpc",
+      "operation": "run_status",
+      "method": null,
+      "seconds": 0.19225229194853455
+    },
+    {
+      "kind": "phase",
+      "name": "reopen",
+      "seconds": 0.751420084037818
+    },
+    {
+      "kind": "rpc",
+      "operation": "run_status",
+      "method": null,
+      "seconds": 0.15070054098032415
+    },
+    {
+      "kind": "rpc",
+      "operation": "engine",
+      "method": "inspect",
+      "seconds": 0.20551570795942098
+    },
+    {
+      "kind": "rpc",
+      "operation": "engine",
+      "method": "inspect",
+      "seconds": 0.16654266708064824
+    },
+    {
+      "kind": "phase",
+      "name": "status",
+      "seconds": 0.5228512920439243,
+      "result_bytes": 67256
+    },
+    {
+      "kind": "rpc",
+      "operation": "run_status",
+      "method": null,
+      "seconds": 0.15610508306417614
+    },
+    {
+      "kind": "rpc",
+      "operation": "result_bundles",
+      "method": null,
+      "seconds": 0.19575287494808435
+    },
+    {
+      "kind": "rpc",
+      "operation": "export_cache",
+      "method": null,
+      "seconds": 0.1616409580456093
+    },
+    {
+      "kind": "rpc",
+      "operation": "export_cache",
+      "method": null,
+      "seconds": 0.15105874999426305
+    },
+    {
+      "kind": "rpc",
+      "operation": "export_cache",
+      "method": null,
+      "seconds": 0.18912337499205023
+    },
+    {
+      "kind": "rpc",
+      "operation": "export_logs",
+      "method": null,
+      "seconds": 0.17736108298413455
+    },
+    {
+      "kind": "rpc",
+      "operation": "export_cache",
+      "method": null,
+      "seconds": 0.12353291606996208
+    },
+    {
+      "kind": "rpc",
+      "operation": "export_cache",
+      "method": null,
+      "seconds": 0.2475284170359373
+    },
+    {
+      "kind": "phase",
+      "name": "collect1",
+      "seconds": 1.4809903330169618,
+      "result_bytes": 746
+    },
+    {
+      "kind": "rpc",
+      "operation": "run_status",
+      "method": null,
+      "seconds": 0.16263441706541926
+    },
+    {
+      "kind": "rpc",
+      "operation": "result_bundles",
+      "method": null,
+      "seconds": 0.13900170801207423
+    },
+    {
+      "kind": "rpc",
+      "operation": "export_cache",
+      "method": null,
+      "seconds": 0.1359983750153333
+    },
+    {
+      "kind": "rpc",
+      "operation": "export_cache",
+      "method": null,
+      "seconds": 0.11853887501638383
+    },
+    {
+      "kind": "rpc",
+      "operation": "export_cache",
+      "method": null,
+      "seconds": 0.14604062493890524
+    },
+    {
+      "kind": "rpc",
+      "operation": "export_logs",
+      "method": null,
+      "seconds": 0.2731892499141395
+    },
+    {
+      "kind": "rpc",
+      "operation": "export_cache",
+      "method": null,
+      "seconds": 0.14972941693849862
+    },
+    {
+      "kind": "phase",
+      "name": "collect2",
+      "seconds": 1.1372714579338208,
+      "result_bytes": 746
+    }
+  ]
+}

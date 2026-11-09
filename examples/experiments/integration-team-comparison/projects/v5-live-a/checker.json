@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "name": "matched-checker",
+  "runner": {
+    "type": "command",
+    "argv": [
+      "python3",
+      "-B",
+      "agent_driver.py"
+    ]
+  },
+  "variants": [
+    {
+      "id": "checker",
+      "parameters": {}
+    }
+  ],
+  "cases": [
+    {
+      "id": "quadrature",
+      "input_file": "case.json"
+    }
+  ],
+  "workspace": {
+    "include": [
+      "TASK.md",
+      "fixed_checks.py",
+      "agent_driver.py",
+      "profile.json",
+      "inputs/**"
+    ],
+    "exclude": []
+  },
+  "execution": {
+    "max_parallel": 1
+  },
+  "evaluator": {
+    "argv": [
+      "python3",
+      "evaluate.py"
+    ],
+    "source_paths": [
+      "fixed_checks.py",
+      "evaluate.py",
+      "inputs/trapezoid/solution.py",
+      "inputs/trapezoid/result.json",
+      "inputs/simpson/solution.py",
+      "inputs/simpson/result.json"
+    ],
+    "timeout_seconds": 0
+  },
+  "artifacts": [
+    "solution.py",
+    "result.json",
+    "build_report.py",
+    "comparison.csv",
+    "report.md",
+    "errors.svg",
+    "verification.json",
+    "workload.json"
+  ],
+  "secret_refs": {
+    "login": "BENCH_AUTH"
+  }
+}

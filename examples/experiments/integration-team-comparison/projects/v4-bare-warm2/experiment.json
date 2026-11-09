@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "name": "integration-team-methods",
+  "runner": {
+    "type": "codex"
+  },
+  "variants": [
+    {
+      "id": "trapezoid",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "instructions_file": "trapezoid.md"
+    },
+    {
+      "id": "simpson",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "instructions_file": "simpson.md"
+    }
+  ],
+  "cases": [
+    {
+      "id": "quadrature",
+      "prompt_file": "TASK.md"
+    }
+  ],
+  "workspace": {
+    "include": [
+      "solution.py",
+      "result.json",
+      "TASK.md",
+      "fixed_checks.py"
+    ],
+    "exclude": []
+  },
+  "execution": {
+    "max_parallel": 2
+  },
+  "evaluator": {
+    "argv": [
+      "python3",
+      "evaluate.py"
+    ],
+    "source_paths": [
+      "fixed_checks.py",
+      "evaluate.py"
+    ],
+    "timeout_seconds": 0
+  },
+  "artifacts": [
+    "solution.py",
+    "result.json",
+    "build_report.py",
+    "comparison.csv",
+    "report.md",
+    "errors.svg",
+    "verification.json"
+  ]
+}

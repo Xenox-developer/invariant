@@ -1,0 +1,192 @@
+{
+  "live-c": {
+    "trapezoid": {
+      "equal": true,
+      "initial_messages": [
+        {
+          "role": "developer",
+          "content_sha256": "e35361e630e1fa4704277d6480976c4451ba9e2f5b8716e6a4094391b88933b1",
+          "chars": 1694
+        },
+        {
+          "role": "developer",
+          "content_sha256": "41071c0d6762f953f2e2c8b6c38adea9faa82454a39670f7cbc9b6071c5703dc",
+          "chars": 2400
+        },
+        {
+          "role": "developer",
+          "content_sha256": "8b68d0afeb389be99bbd062fd7b13666a088edf4a8efca106ca37ff9b182a4f0",
+          "chars": 271
+        },
+        {
+          "role": "user",
+          "content_sha256": "f94474e42bc9a1121540b3a85883c6556d062894039146cb3ed460c9ade82091",
+          "chars": 341
+        },
+        {
+          "role": "user",
+          "content_sha256": "77066f0aaefe8a399949570495436d272b03e672e44031a48c89cd1094f78423",
+          "chars": 1617
+        }
+      ],
+      "base_instructions_sha256": "09a2ca85e0b24b37c9dc01a03b236e8abee81a1e73321e78d05d4011b799070f"
+    },
+    "simpson": {
+      "equal": true,
+      "initial_messages": [
+        {
+          "role": "developer",
+          "content_sha256": "e35361e630e1fa4704277d6480976c4451ba9e2f5b8716e6a4094391b88933b1",
+          "chars": 1694
+        },
+        {
+          "role": "developer",
+          "content_sha256": "41071c0d6762f953f2e2c8b6c38adea9faa82454a39670f7cbc9b6071c5703dc",
+          "chars": 2400
+        },
+        {
+          "role": "developer",
+          "content_sha256": "8b68d0afeb389be99bbd062fd7b13666a088edf4a8efca106ca37ff9b182a4f0",
+          "chars": 271
+        },
+        {
+          "role": "user",
+          "content_sha256": "f94474e42bc9a1121540b3a85883c6556d062894039146cb3ed460c9ade82091",
+          "chars": 341
+        },
+        {
+          "role": "user",
+          "content_sha256": "a9fc08edf87170b11601ccc9fc81c759de7feebcf67286fbd025a72a21152b39",
+          "chars": 1611
+        }
+      ],
+      "base_instructions_sha256": "09a2ca85e0b24b37c9dc01a03b236e8abee81a1e73321e78d05d4011b799070f"
+    },
+    "checker": {
+      "equal": true,
+      "initial_messages": [
+        {
+          "role": "developer",
+          "content_sha256": "e35361e630e1fa4704277d6480976c4451ba9e2f5b8716e6a4094391b88933b1",
+          "chars": 1694
+        },
+        {
+          "role": "developer",
+          "content_sha256": "41071c0d6762f953f2e2c8b6c38adea9faa82454a39670f7cbc9b6071c5703dc",
+          "chars": 2400
+        },
+        {
+          "role": "developer",
+          "content_sha256": "8b68d0afeb389be99bbd062fd7b13666a088edf4a8efca106ca37ff9b182a4f0",
+          "chars": 271
+        },
+        {
+          "role": "user",
+          "content_sha256": "f94474e42bc9a1121540b3a85883c6556d062894039146cb3ed460c9ade82091",
+          "chars": 341
+        },
+        {
+          "role": "user",
+          "content_sha256": "ba43cf5b360d3fd12d0b3f25da195b332f0a82e61140af2a529222b1ef0f4e40",
+          "chars": 2764
+        }
+      ],
+      "base_instructions_sha256": "09a2ca85e0b24b37c9dc01a03b236e8abee81a1e73321e78d05d4011b799070f"
+    }
+  },
+  "live-d": {
+    "trapezoid": {
+      "equal": true,
+      "initial_messages": [
+        {
+          "role": "developer",
+          "content_sha256": "be4ddb8d15e195fed04822a423ca56f8b8a68f8ef9b520a9a8e5d795dbc8684c",
+          "chars": 1694
+        },
+        {
+          "role": "developer",
+          "content_sha256": "41071c0d6762f953f2e2c8b6c38adea9faa82454a39670f7cbc9b6071c5703dc",
+          "chars": 2400
+        },
+        {
+          "role": "developer",
+          "content_sha256": "8b68d0afeb389be99bbd062fd7b13666a088edf4a8efca106ca37ff9b182a4f0",
+          "chars": 271
+        },
+        {
+          "role": "user",
+          "content_sha256": "f94474e42bc9a1121540b3a85883c6556d062894039146cb3ed460c9ade82091",
+          "chars": 341
+        },
+        {
+          "role": "user",
+          "content_sha256": "77066f0aaefe8a399949570495436d272b03e672e44031a48c89cd1094f78423",
+          "chars": 1617
+        }
+      ],
+      "base_instructions_sha256": "09a2ca85e0b24b37c9dc01a03b236e8abee81a1e73321e78d05d4011b799070f"
+    },
+    "simpson": {
+      "equal": true,
+      "initial_messages": [
+        {
+          "role": "developer",
+          "content_sha256": "be4ddb8d15e195fed04822a423ca56f8b8a68f8ef9b520a9a8e5d795dbc8684c",
+          "chars": 1694
+        },
+        {
+          "role": "developer",
+          "content_sha256": "41071c0d6762f953f2e2c8b6c38adea9faa82454a39670f7cbc9b6071c5703dc",
+          "chars": 2400
+        },
+        {
+          "role": "developer",
+          "content_sha256": "8b68d0afeb389be99bbd062fd7b13666a088edf4a8efca106ca37ff9b182a4f0",
+          "chars": 271
+        },
+        {
+          "role": "user",
+          "content_sha256": "f94474e42bc9a1121540b3a85883c6556d062894039146cb3ed460c9ade82091",
+          "chars": 341
+        },
+        {
+          "role": "user",
+          "content_sha256": "a9fc08edf87170b11601ccc9fc81c759de7feebcf67286fbd025a72a21152b39",
+          "chars": 1611
+        }
+      ],
+      "base_instructions_sha256": "09a2ca85e0b24b37c9dc01a03b236e8abee81a1e73321e78d05d4011b799070f"
+    },
+    "checker": {
+      "equal": true,
+      "initial_messages": [
+        {
+          "role": "developer",
+          "content_sha256": "be4ddb8d15e195fed04822a423ca56f8b8a68f8ef9b520a9a8e5d795dbc8684c",
+          "chars": 1694
+        },
+        {
+          "role": "developer",
+          "content_sha256": "41071c0d6762f953f2e2c8b6c38adea9faa82454a39670f7cbc9b6071c5703dc",
+          "chars": 2400
+        },
+        {
+          "role": "developer",
+          "content_sha256": "8b68d0afeb389be99bbd062fd7b13666a088edf4a8efca106ca37ff9b182a4f0",
+          "chars": 271
+        },
+        {
+          "role": "user",
+          "content_sha256": "f94474e42bc9a1121540b3a85883c6556d062894039146cb3ed460c9ade82091",
+          "chars": 341
+        },
+        {
+          "role": "user",
+          "content_sha256": "ba43cf5b360d3fd12d0b3f25da195b332f0a82e61140af2a529222b1ef0f4e40",
+          "chars": 2764
+        }
+      ],
+      "base_instructions_sha256": "09a2ca85e0b24b37c9dc01a03b236e8abee81a1e73321e78d05d4011b799070f"
+    }
+  }
+}

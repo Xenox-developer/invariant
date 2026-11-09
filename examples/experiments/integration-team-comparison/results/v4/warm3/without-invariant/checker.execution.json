@@ -1,0 +1,295 @@
+{
+  "role": "checker",
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "container": "research-v4-warm3-checker",
+  "started_at": 1794057148.159561,
+  "finished_at": 1794057245.8479471,
+  "duration_seconds": 97.68838620185852,
+  "exit_code": 0,
+  "cli_usage": {
+    "input_tokens": 62399,
+    "cached_input_tokens": 46720,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 3978,
+    "reasoning_output_tokens": 98
+  },
+  "turn_started_at": 1794057151.0835688,
+  "turn_finished_at": 1794057241.1084921,
+  "host_config": {
+    "Binds": null,
+    "ContainerIDFile": "",
+    "LogConfig": {
+      "Type": "json-file",
+      "Config": {}
+    },
+    "NetworkMode": "bridge",
+    "PortBindings": {},
+    "RestartPolicy": {
+      "Name": "no",
+      "MaximumRetryCount": 0
+    },
+    "AutoRemove": false,
+    "VolumeDriver": "",
+    "VolumesFrom": null,
+    "ConsoleSize": [
+      0,
+      0
+    ],
+    "CapAdd": [
+      "CHOWN",
+      "DAC_OVERRIDE",
+      "FOWNER",
+      "FSETID",
+      "SETGID",
+      "SETUID",
+      "SYS_CHROOT",
+      "SETFCAP"
+    ],
+    "CapDrop": [
+      "ALL"
+    ],
+    "CgroupnsMode": "private",
+    "Dns": [],
+    "DnsOptions": [],
+    "DnsSearch": [],
+    "ExtraHosts": null,
+    "GroupAdd": null,
+    "IpcMode": "private",
+    "Cgroup": "",
+    "Links": null,
+    "OomScoreAdj": 0,
+    "PidMode": "",
+    "Privileged": false,
+    "PublishAllPorts": false,
+    "ReadonlyRootfs": false,
+    "SecurityOpt": [
+      "no-new-privileges"
+    ],
+    "Tmpfs": {
+      "/scratch": "rw,nosuid,nodev"
+    },
+    "UTSMode": "",
+    "UsernsMode": "",
+    "ShmSize": 67108864,
+    "Runtime": "runc",
+    "Isolation": "",
+    "CpuShares": 0,
+    "Memory": 0,
+    "NanoCpus": 0,
+    "CgroupParent": "",
+    "BlkioWeight": 0,
+    "BlkioWeightDevice": [],
+    "BlkioDeviceReadBps": [],
+    "BlkioDeviceWriteBps": [],
+    "BlkioDeviceReadIOps": [],
+    "BlkioDeviceWriteIOps": [],
+    "CpuPeriod": 0,
+    "CpuQuota": 0,
+    "CpuRealtimePeriod": 0,
+    "CpuRealtimeRuntime": 0,
+    "CpusetCpus": "",
+    "CpusetMems": "",
+    "Devices": [],
+    "DeviceCgroupRules": null,
+    "DeviceRequests": null,
+    "MemoryReservation": 0,
+    "MemorySwap": 0,
+    "MemorySwappiness": null,
+    "OomKillDisable": false,
+    "PidsLimit": null,
+    "Ulimits": [],
+    "CpuCount": 0,
+    "CpuPercent": 0,
+    "IOMaximumIOps": 0,
+    "IOMaximumBandwidth": 0,
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/var/lib/docker/volumes/research-v4-warm3-state/_data/work/checker",
+        "Target": "/workspace"
+      },
+      {
+        "Type": "bind",
+        "Source": "/var/lib/docker/volumes/research-v4-warm3-state/_data/homes/checker",
+        "Target": "/agent"
+      },
+      {
+        "Type": "volume",
+        "Source": "research-v4-common-tools",
+        "Target": "/tools",
+        "ReadOnly": true
+      }
+    ],
+    "MaskedPaths": [
+      "/proc/asound",
+      "/proc/acpi",
+      "/proc/kcore",
+      "/proc/keys",
+      "/proc/latency_stats",
+      "/proc/timer_list",
+      "/proc/timer_stats",
+      "/proc/sched_debug",
+      "/proc/scsi",
+      "/sys/firmware",
+      "/sys/devices/virtual/powercap"
+    ],
+    "ReadonlyPaths": [
+      "/proc/bus",
+      "/proc/fs",
+      "/proc/irq",
+      "/proc/sys",
+      "/proc/sysrq-trigger"
+    ],
+    "Init": true
+  },
+  "image": "sha256:db21298b84d45d950442afa08ebd86a5e1f7deadb4a167d170b6dd9ba1262e01",
+  "acceptance": {
+    "passed": true,
+    "tests": 14,
+    "failures": 0,
+    "errors": 0,
+    "checks": [
+      {
+        "name": "csv_matches_all_sixteen_received_rows",
+        "passed": true
+      },
+      {
+        "name": "report_has_substantive_text",
+        "passed": true
+      },
+      {
+        "name": "verification_passed",
+        "passed": true
+      },
+      {
+        "name": "verified_sixteen_rows",
+        "passed": true
+      },
+      {
+        "name": "input_provenance_trapezoid",
+        "passed": true
+      },
+      {
+        "name": "input_provenance_simpson",
+        "passed": true
+      },
+      {
+        "name": "trapezoid_order",
+        "passed": true
+      },
+      {
+        "name": "simpson_order",
+        "passed": true
+      },
+      {
+        "name": "simpson_quadratic_roundoff",
+        "passed": true
+      },
+      {
+        "name": "observed_ratios_trapezoid_x2",
+        "passed": true
+      },
+      {
+        "name": "observed_ratios_trapezoid_x4",
+        "passed": true
+      },
+      {
+        "name": "observed_ratios_simpson_x4",
+        "passed": true
+      },
+      {
+        "name": "svg_has_three_named_error_series",
+        "passed": true
+      },
+      {
+        "name": "report_generator_reproducible",
+        "passed": true
+      }
+    ],
+    "sessions": [
+      {
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "observations": [
+          {
+            "total": {
+              "input_tokens": 10176,
+              "cached_input_tokens": 0,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 136,
+              "reasoning_output_tokens": 0,
+              "total_tokens": 10312
+            },
+            "last": {
+              "input_tokens": 10176,
+              "cached_input_tokens": 0,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 136,
+              "reasoning_output_tokens": 0,
+              "total_tokens": 10312
+            },
+            "timestamp": "2026-11-07T13:12:37.968Z"
+          },
+          {
+            "total": {
+              "input_tokens": 24998,
+              "cached_input_tokens": 10112,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3716,
+              "reasoning_output_tokens": 83,
+              "total_tokens": 28714
+            },
+            "last": {
+              "input_tokens": 14822,
+              "cached_input_tokens": 10112,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3580,
+              "reasoning_output_tokens": 83,
+              "total_tokens": 18402
+            },
+            "timestamp": "2026-11-07T13:13:52.286Z"
+          },
+          {
+            "total": {
+              "input_tokens": 43424,
+              "cached_input_tokens": 28288,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3902,
+              "reasoning_output_tokens": 98,
+              "total_tokens": 47326
+            },
+            "last": {
+              "input_tokens": 18426,
+              "cached_input_tokens": 18176,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 186,
+              "reasoning_output_tokens": 15,
+              "total_tokens": 18612
+            },
+            "timestamp": "2026-11-07T13:13:57.497Z"
+          },
+          {
+            "total": {
+              "input_tokens": 62399,
+              "cached_input_tokens": 46720,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3978,
+              "reasoning_output_tokens": 98,
+              "total_tokens": 66377
+            },
+            "last": {
+              "input_tokens": 18975,
+              "cached_input_tokens": 18432,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 76,
+              "reasoning_output_tokens": 0,
+              "total_tokens": 19051
+            },
+            "timestamp": "2026-11-07T13:14:01.069Z"
+          }
+        ]
+      }
+    ]
+  }
+}

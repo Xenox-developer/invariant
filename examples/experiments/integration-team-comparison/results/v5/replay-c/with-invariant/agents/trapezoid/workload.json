@@ -1,0 +1,16 @@
+{
+  "role": "trapezoid",
+  "mode": "replay",
+  "prompt_sha256": "cf0da5b2dab7ee04f7a6db3ce5bda0c7895f99d9ce67dbdd695ed40fa75133d0",
+  "profile_sha256": "841212c17d8767a7088c7825c7db93813cdf49b1873680f60214374a78b49ece",
+  "driver_sha256": "ce6dce383a4d95f912d7ccfbf5a28fcc9a161293b75a03700aa24de824c0a7d4",
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "started_at": 1794184047.005927,
+  "model_turns": 0,
+  "provider_responses": 0,
+  "usage": null,
+  "workload_started_at": 1794184047.127962,
+  "workload_finished_at": 1794184047.254334,
+  "finished_at": 1794184047.254344
+}

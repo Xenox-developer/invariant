@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="510" viewBox="0 0 940 510">
+<title>Absolute quadrature errors on [0,1]</title>
+<desc>Logarithmic error axis. Simpson x^2 omitted because its residual is roundoff.</desc>
+<rect width="940" height="510" fill="white"/>
+<g font-family="sans-serif" font-size="14" fill="#222">
+<text x="95" y="30" font-size="20">Numerical integration: absolute error</text>
+<line x1="95" y1="410.000" x2="635" y2="410.000" stroke="#ddd"/>
+<text x="82" y="415.000" text-anchor="end">1e-9</text>
+<line x1="95" y1="360.000" x2="635" y2="360.000" stroke="#ddd"/>
+<text x="82" y="365.000" text-anchor="end">1e-8</text>
+<line x1="95" y1="310.000" x2="635" y2="310.000" stroke="#ddd"/>
+<text x="82" y="315.000" text-anchor="end">1e-7</text>
+<line x1="95" y1="260.000" x2="635" y2="260.000" stroke="#ddd"/>
+<text x="82" y="265.000" text-anchor="end">1e-6</text>
+<line x1="95" y1="210.000" x2="635" y2="210.000" stroke="#ddd"/>
+<text x="82" y="215.000" text-anchor="end">1e-5</text>
+<line x1="95" y1="160.000" x2="635" y2="160.000" stroke="#ddd"/>
+<text x="82" y="165.000" text-anchor="end">1e-4</text>
+<line x1="95" y1="110.000" x2="635" y2="110.000" stroke="#ddd"/>
+<text x="82" y="115.000" text-anchor="end">1e-3</text>
+<line x1="95" y1="60.000" x2="635" y2="60.000" stroke="#ddd"/>
+<text x="82" y="65.000" text-anchor="end">1e-2</text>
+<line x1="95.000" y1="60" x2="95.000" y2="410" stroke="#eee"/>
+<text x="95.000" y="435" text-anchor="middle">10</text>
+<line x1="275.000" y1="60" x2="275.000" y2="410" stroke="#eee"/>
+<text x="275.000" y="435" text-anchor="middle">20</text>
+<line x1="455.000" y1="60" x2="455.000" y2="410" stroke="#eee"/>
+<text x="455.000" y="435" text-anchor="middle">40</text>
+<line x1="635.000" y1="60" x2="635.000" y2="410" stroke="#eee"/>
+<text x="635.000" y="435" text-anchor="middle">80</text>
+<text x="360" y="468" text-anchor="middle">n (log2 scale)</text>
+<text transform="translate(22 235) rotate(-90)" text-anchor="middle">Absolute error (log10 scale)</text>
+<polyline points="95.000,98.908 275.000,129.011 455.000,159.114 635.000,189.217" fill="none" stroke="#1565c0" stroke-width="2.5"><title>trapezoid x^2</title></polyline>
+<circle cx="95.000" cy="98.908" r="4" fill="#1565c0"/>
+<circle cx="275.000" cy="129.011" r="4" fill="#1565c0"/>
+<circle cx="455.000" cy="159.114" r="4" fill="#1565c0"/>
+<circle cx="635.000" cy="189.217" r="4" fill="#1565c0"/>
+<line x1="675" y1="100" x2="710" y2="100" stroke="#1565c0" stroke-width="3"/>
+<text x="720" y="105">trapezoid x^2</text>
+<polyline points="95.000,83.878 275.000,113.964 455.000,144.063 635.000,174.165" fill="none" stroke="#c62828" stroke-width="2.5"><title>trapezoid x^4</title></polyline>
+<circle cx="95.000" cy="83.878" r="4" fill="#c62828"/>
+<circle cx="275.000" cy="113.964" r="4" fill="#c62828"/>
+<circle cx="455.000" cy="144.063" r="4" fill="#c62828"/>
+<circle cx="635.000" cy="174.165" r="4" fill="#c62828"/>
+<line x1="675" y1="135" x2="710" y2="135" stroke="#c62828" stroke-width="3"/>
+<text x="720" y="140">trapezoid x^4</text>
+<polyline points="95.000,203.753 275.000,263.959 455.000,324.165 635.000,384.371" fill="none" stroke="#2e7d32" stroke-width="2.5"><title>simpson x^4</title></polyline>
+<circle cx="95.000" cy="203.753" r="4" fill="#2e7d32"/>
+<circle cx="275.000" cy="263.959" r="4" fill="#2e7d32"/>
+<circle cx="455.000" cy="324.165" r="4" fill="#2e7d32"/>
+<circle cx="635.000" cy="384.371" r="4" fill="#2e7d32"/>
+<line x1="675" y1="170" x2="710" y2="170" stroke="#2e7d32" stroke-width="3"/>
+<text x="720" y="175">simpson x^4</text>
+<text x="95" y="498">Simpson x^2: roundoff residual; omitted from the error plot.</text>
+</g></svg>

@@ -1,0 +1,286 @@
+{
+  "study_id": "study-df43cc4d5b9a4ba395a237d0d9f13f4b",
+  "records": [
+    {
+      "role": "checker",
+      "attempt_id": "attempt-d8a2f6ccb9980b341946dddfc9ac6b15",
+      "study_id": "study-df43cc4d5b9a4ba395a237d0d9f13f4b",
+      "capture": {
+        "complete": true,
+        "content_digest": "6d3504870d29060d1a4a4e1c93dfc370920c85c33b947e6d320bb88fc0aa789c",
+        "manifest": "/Users/nikchin/.invariant/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-d8a2f6ccb9980b341946dddfc9ac6b15/snapshot/manifest.json",
+        "workspace": "/Users/nikchin/.invariant/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-d8a2f6ccb9980b341946dddfc9ac6b15/snapshot/workspace"
+      },
+      "checkpoint": {
+        "complete": true,
+        "image": "sha256:289f6ad1b3c53b82113fd42a83cba447a63d374a3c12d081b45f1d47d34915a3",
+        "owner": "attempt-d8a2f6ccb9980b341946dddfc9ac6b15-runner",
+        "record": "/Users/nikchin/.invariant/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-d8a2f6ccb9980b341946dddfc9ac6b15/control/environment.json"
+      },
+      "evaluation": {
+        "artifacts": {
+          "bytes": 1165,
+          "complete": true,
+          "files": [
+            {
+              "path": "checks.json",
+              "sha256": "f8438795bb1b69308ee6d3148fb4f7bbc9ad25f69ec24fdd7edea9d2c8129258",
+              "size": 1165
+            }
+          ],
+          "skipped": []
+        },
+        "cleanup_confirmed": true,
+        "container": "invariant-exp-d8a2f6ccb9980b341946dddfc9ac6b15-evaluation",
+        "duration_seconds": 2.6376378536224365,
+        "exit_code": 0,
+        "finished_at": 1794183982.712717,
+        "image": "sha256:289f6ad1b3c53b82113fd42a83cba447a63d374a3c12d081b45f1d47d34915a3",
+        "log": "/Users/nikchin/.invariant/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-d8a2f6ccb9980b341946dddfc9ac6b15/evaluation.log",
+        "log_bytes": 139,
+        "log_truncated": false,
+        "metrics": {
+          "tests_failed": 0,
+          "tests_passed": 14,
+          "tests_total": 14
+        },
+        "passed": true,
+        "reason": null,
+        "runtime": {
+          "host_config": {
+            "Memory": 0,
+            "MemorySwap": 0,
+            "NanoCpus": 0
+          },
+          "image": "sha256:289f6ad1b3c53b82113fd42a83cba447a63d374a3c12d081b45f1d47d34915a3",
+          "memory_bytes": 0,
+          "mounts": [
+            {
+              "Destination": "/__invariant_inputs/source",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/runtimes/baseline-ad1cad357a8d042dad374d64aa9d28697036c96933a7536f9435c59a0cf4d415/evaluator-source",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/__invariant_output",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": true,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-d8a2f6ccb9980b341946dddfc9ac6b15/evaluation/output",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/scratch",
+              "Driver": "local",
+              "Mode": "",
+              "Name": "3e33840e899aa53e4bc7b20d5944b7c4af602ee5fe8041c4b2a70233fa36b5a9",
+              "Propagation": "",
+              "RW": true,
+              "Source": "/var/lib/docker/volumes/3e33840e899aa53e4bc7b20d5944b7c4af602ee5fe8041c4b2a70233fa36b5a9/_data",
+              "Type": "volume"
+            },
+            {
+              "Destination": "/workspace",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": true,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-d8a2f6ccb9980b341946dddfc9ac6b15/evaluation/workspace",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/workspace/.invariant",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-d8a2f6ccb9980b341946dddfc9ac6b15/evaluation/control/policy",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/__invariant",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/shared-runtime/d9dbf658d48a8ffb6bf1d0077188b0088f1c41c6f1df718ec2638a1723b0cde2/control",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/etc/codex/requirements.toml",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-code-v2-f0ceb265cd343028/_data/invariant/assets/environment-requirements-unrestricted.toml",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/__invariant_inputs/run",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-d8a2f6ccb9980b341946dddfc9ac6b15/input",
+              "Type": "bind"
+            }
+          ],
+          "nano_cpus": 0,
+          "network": "bridge",
+          "pids_limit": null,
+          "resource_contract": {
+            "docker_args": [
+              "--pids-limit=-1",
+              "--volume=/scratch"
+            ],
+            "host_config": {
+              "Memory": 0,
+              "MemorySwap": 0,
+              "NanoCpus": 0
+            },
+            "limits": {
+              "cpus": null,
+              "extra_swap_bytes": null,
+              "file_descriptors": null,
+              "memory_bytes": null,
+              "processes": null,
+              "scratch_bytes": null
+            },
+            "mode": "unlimited",
+            "profile": "codex-environment-v2",
+            "resolved": true,
+            "schema_version": 1
+          }
+        },
+        "schema_version": 1,
+        "started_at": 1794183980.0750794,
+        "status": "completed"
+      },
+      "runner": {
+        "cleanup_confirmed": true,
+        "container": "invariant-exp-d8a2f6ccb9980b341946dddfc9ac6b15-runner",
+        "duration_seconds": 2.6913790702819824,
+        "exit_code": 0,
+        "finished_at": 1794183964.9654946,
+        "image": "sha256:845fc3854fe15416c34291e6705c4de1ffdfe85880d79cd1619d11bc5a8259c6",
+        "log": "/Users/nikchin/.invariant/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-d8a2f6ccb9980b341946dddfc9ac6b15/runner.log",
+        "log_bytes": 64,
+        "log_truncated": false,
+        "reason": null,
+        "runtime": {
+          "host_config": {
+            "Memory": 0,
+            "MemorySwap": 0,
+            "NanoCpus": 0
+          },
+          "image": "sha256:845fc3854fe15416c34291e6705c4de1ffdfe85880d79cd1619d11bc5a8259c6",
+          "memory_bytes": 0,
+          "mounts": [
+            {
+              "Destination": "/__invariant",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/shared-runtime/d9dbf658d48a8ffb6bf1d0077188b0088f1c41c6f1df718ec2638a1723b0cde2/control",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/etc/codex/requirements.toml",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-code-v2-f0ceb265cd343028/_data/invariant/assets/environment-requirements-unrestricted.toml",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/__invariant_inputs/run",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-d8a2f6ccb9980b341946dddfc9ac6b15/input",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/scratch",
+              "Driver": "local",
+              "Mode": "",
+              "Name": "dd750ac36cc1e983c6fd62b352f18fbde26cc06e4627b3e786945dd0f6fc9241",
+              "Propagation": "",
+              "RW": true,
+              "Source": "/var/lib/docker/volumes/dd750ac36cc1e983c6fd62b352f18fbde26cc06e4627b3e786945dd0f6fc9241/_data",
+              "Type": "volume"
+            },
+            {
+              "Destination": "/workspace",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": true,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-d8a2f6ccb9980b341946dddfc9ac6b15/workspace",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/workspace/.invariant",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-d8a2f6ccb9980b341946dddfc9ac6b15/control/policy",
+              "Type": "bind"
+            }
+          ],
+          "nano_cpus": 0,
+          "network": "bridge",
+          "pids_limit": null,
+          "resource_contract": {
+            "docker_args": [
+              "--pids-limit=-1",
+              "--volume=/scratch"
+            ],
+            "host_config": {
+              "Memory": 0,
+              "MemorySwap": 0,
+              "NanoCpus": 0
+            },
+            "limits": {
+              "cpus": null,
+              "extra_swap_bytes": null,
+              "file_descriptors": null,
+              "memory_bytes": null,
+              "processes": null,
+              "scratch_bytes": null
+            },
+            "mode": "unlimited",
+            "profile": "codex-environment-v2",
+            "resolved": true,
+            "schema_version": 1
+          }
+        },
+        "started_at": 1794183962.2741158,
+        "status": "completed"
+      },
+      "workload": {
+        "role": "checker",
+        "mode": "replay",
+        "prompt_sha256": "e327066dbddf6fca9ccb717b323cde68d57a53c06b0d466a6053100ef21f7434",
+        "profile_sha256": "6296ee8ea6e25ea5cbd74431f933a75e5adf931b8a984b2ce73c9b44c524a52b",
+        "driver_sha256": "ce6dce383a4d95f912d7ccfbf5a28fcc9a161293b75a03700aa24de824c0a7d4",
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "started_at": 1794183963.6013267,
+        "model_turns": 0,
+        "provider_responses": 0,
+        "usage": null,
+        "workload_started_at": 1794183963.6268976,
+        "workload_finished_at": 1794183963.9894524,
+        "finished_at": 1794183963.9894779
+      }
+    }
+  ],
+  "started_at": 1794183947.9963257,
+  "submitted_at": 1794183949.8374174,
+  "baseline_finished_at": 1794183961.135236,
+  "baseline": {
+    "ready": true,
+    "study_id": "study-d66189fd7ee448e99bfba2e0d6f50317",
+    "model_turns": 0,
+    "next": "Ready for child dispatch."
+  },
+  "finished_at": 1794183983.275925,
+  "seconds": 35.2795991897583
+}

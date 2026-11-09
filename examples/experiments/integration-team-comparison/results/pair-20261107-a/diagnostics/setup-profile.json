@@ -1,0 +1,59 @@
+{
+  "model_turns": 0,
+  "control_bytes": 262575952,
+  "cold_control_seconds": 10.958762421971187,
+  "warm_control_seconds": 1.3442930420278572,
+  "cold_control_docker_calls": [
+    {
+      "operation": "create",
+      "seconds": 0.30995133402757347
+    },
+    {
+      "operation": "cp",
+      "seconds": 5.375703794998117
+    },
+    {
+      "operation": "ps",
+      "seconds": 0.05206229200121015
+    },
+    {
+      "operation": "rm",
+      "seconds": 0.39394704200094566
+    }
+  ],
+  "catalog_seconds": 16.084730339993257,
+  "catalog_same_instance_seconds": 0.010034084029030055,
+  "catalog_metadata_rpc_calls": [
+    {
+      "method": "initialize",
+      "seconds": 3.853901294001844
+    },
+    {
+      "method": "account/read",
+      "seconds": 7.31104087800486
+    },
+    {
+      "method": "model/list",
+      "seconds": 2.58239112701267
+    }
+  ],
+  "catalog_docker_calls": [
+    {
+      "operation": "network",
+      "seconds": 0.16079183301189914
+    },
+    {
+      "operation": "create",
+      "seconds": 0.3286237500142306
+    },
+    {
+      "operation": "network",
+      "seconds": 0.08923174999654293
+    },
+    {
+      "operation": "rm",
+      "seconds": 0.256839209003374
+    }
+  ],
+  "scope": "Diagnostic replay on disposable runtime copy; original run timings unchanged."
+}

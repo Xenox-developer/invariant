@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="465" viewBox="0 0 860 465">
+<title>Integration absolute errors versus subinterval count</title>
+<desc>Logarithmic error axis; Simpson x squared omitted because its error is rounding only.</desc>
+<rect width="860" height="465" fill="white"/>
+<g font-family="sans-serif" font-size="14" fill="#222">
+<text x="95" y="28">Numerical integration on [0,1]</text>
+<path d="M 95 385.0 H 590" stroke="#ddd"/><text x="38" y="390.0">1e-9</text>
+<path d="M 95 339.2857142857143 H 590" stroke="#ddd"/><text x="38" y="344.2857142857143">1e-8</text>
+<path d="M 95 293.57142857142856 H 590" stroke="#ddd"/><text x="38" y="298.57142857142856">1e-7</text>
+<path d="M 95 247.85714285714286 H 590" stroke="#ddd"/><text x="38" y="252.85714285714286">1e-6</text>
+<path d="M 95 202.14285714285717 H 590" stroke="#ddd"/><text x="38" y="207.14285714285717">1e-5</text>
+<path d="M 95 156.42857142857142 H 590" stroke="#ddd"/><text x="38" y="161.42857142857142">1e-4</text>
+<path d="M 95 110.71428571428572 H 590" stroke="#ddd"/><text x="38" y="115.71428571428572">1e-3</text>
+<path d="M 95 65.0 H 590" stroke="#ddd"/><text x="38" y="70.0">1e-2</text>
+<text x="86.0" y="410">10</text>
+<text x="251.0" y="410">20</text>
+<text x="416.0" y="410">40</text>
+<text x="581.0" y="410">80</text>
+<path d="M 95 65 V 385 H 590" fill="none" stroke="black"/>
+<text x="275" y="445">Subintervals n (log2)</text>
+<text transform="translate(19 310) rotate(-90)">Absolute error (log10)</text>
+<polyline points="95.0000,100.5726 260.0000,128.0954 425.0000,155.6181 590.0000,183.1409" stroke="#1768ac" stroke-width="2" fill="none"/>
+<circle cx="95.0000" cy="100.5726" r="3" fill="#1768ac"/>
+<circle cx="260.0000" cy="128.0954" r="3" fill="#1768ac"/>
+<circle cx="425.0000" cy="155.6181" r="3" fill="#1768ac"/>
+<circle cx="590.0000" cy="183.1409" r="3" fill="#1768ac"/>
+<path d="M 615 100 h 25" stroke="#1768ac" stroke-width="2"/><text x="650" y="105">trapezoid x^2</text>
+<polyline points="95.0000,86.8311 260.0000,114.3390 425.0000,141.8580 590.0000,169.3798" stroke="#b14800" stroke-width="2" fill="none"/>
+<circle cx="95.0000" cy="86.8311" r="3" fill="#b14800"/>
+<circle cx="260.0000" cy="114.3390" r="3" fill="#b14800"/>
+<circle cx="425.0000" cy="141.8580" r="3" fill="#b14800"/>
+<circle cx="590.0000" cy="169.3798" r="3" fill="#b14800"/>
+<path d="M 615 132 h 25" stroke="#b14800" stroke-width="2"/><text x="650" y="137">trapezoid x^4</text>
+<polyline points="95.0000,196.4314 260.0000,251.4769 425.0000,306.5223 590.0000,361.5678" stroke="#217a38" stroke-width="2" fill="none"/>
+<circle cx="95.0000" cy="196.4314" r="3" fill="#217a38"/>
+<circle cx="260.0000" cy="251.4769" r="3" fill="#217a38"/>
+<circle cx="425.0000" cy="306.5223" r="3" fill="#217a38"/>
+<circle cx="590.0000" cy="361.5678" r="3" fill="#217a38"/>
+<path d="M 615 164 h 25" stroke="#217a38" stroke-width="2"/><text x="650" y="169">simpson x^4</text>
+</g>
+</svg>

@@ -1,0 +1,62 @@
+{
+  "version": 5,
+  "purpose": "Isolate INVARIANT orchestration from CLI/app-server context and provider cache differences",
+  "scope": "Same stock Codex CLI through INVARIANT generic command runner versus standalone Docker. Not the optimized native CodexRunner.",
+  "live_pairs": [
+    "live-c",
+    "live-d"
+  ],
+  "replay_pairs": [
+    "replay-b",
+    "replay-c",
+    "replay-d"
+  ],
+  "order": {
+    "live-c": "INVARIANT first per phase",
+    "live-d": "direct first per phase",
+    "replay-b": "direct first per phase",
+    "replay-c": "INVARIANT first per phase",
+    "replay-d": "direct first per phase"
+  },
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "cli_version": "0.163.0",
+  "checks": 85,
+  "fixed_checks_sha256": "5f3b4aa18a46fb44de7bc1e8acbc0132214025d6c1c974c91be2c787406f1e76",
+  "core_source_digest_before": "f0ceb265cd343028082c6d77523434b44302b9b6031271ac0adb21d15278c3da",
+  "initial_input_controls": [
+    "identical executable image/binary",
+    "prompt/profile/driver/argv/environment hashes",
+    "base-instruction hash",
+    "actual first-request input tokens equal per role"
+  ],
+  "cache_controls": [
+    "fresh CODEX_HOME per role/arm",
+    "same account/model/effort/image/config",
+    "opposite live pair order",
+    "pair-specific developer nonce in both arms",
+    "record actual cached input counters",
+    "standardize cost at 0% and 75% cache",
+    "no-model replay removes cache entirely"
+  ],
+  "cache_limit": "Provider prefix-cache placement and hits cannot be forced equal from this ChatGPT CLI configuration. A fresh CLI home does not imply a cold server cache.",
+  "timing": "Sum of methods critical-path stage + checker stage + export. Excludes initial fixture/image/SDK preparation, metadata collection and cleanup in both arms; native baseline checks/checkpoints/evaluation are included.",
+  "maintenance": "Shared global GC gate held throughout each pair; no concurrent benchmark pairs.",
+  "pricing_frozen_credits_per_million": {
+    "input": 50,
+    "cached_input": 2.5,
+    "output": 250
+  },
+  "pricing_limit": "Historical comparison weights, not actual account bill or current USD pricing. Outer author/debug work excluded from paired workload totals.",
+  "excluded_calibration": {
+    "replay1": "archive compatibility failure before workload; no model calls",
+    "replay-a": "completed warmup before maintenance gate and full environment matching",
+    "live-a": "configuration parser failed before inference",
+    "live-b": "missing Code Mode host caused both arms to stop without implementing task; four paid workers, retained separately"
+  },
+  "harness_sha256": {
+    "engine_phase.py": "227dd343689e60f7414303c9eccf1d7d448bff3790647954137f251491a02892",
+    "agent_driver.py": "ce6dce383a4d95f912d7ccfbf5a28fcc9a161293b75a03700aa24de824c0a7d4",
+    "run_v5.py": "966866abbce6c4179ccbb2151202fa24effd577c9b0f1282bc476dd9d2da52f3"
+  }
+}

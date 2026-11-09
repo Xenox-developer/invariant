@@ -1,0 +1,18 @@
+{
+  "core_unchanged": true,
+  "before": "f0ceb265cd343028082c6d77523434b44302b9b6031271ac0adb21d15278c3da",
+  "after": "f0ceb265cd343028082c6d77523434b44302b9b6031271ac0adb21d15278c3da",
+  "fixed_checks_unchanged": true,
+  "benchmark_helpers_parse": true,
+  "git_diff_check_passed": true,
+  "controlled_files_sha256": {
+    "verify_v5.py": "e8695bdb6530fbdb88a9bd83b62ecffaebb91cf75d1e578afd6557bb83791a7d",
+    "engine_phase.py": "227dd343689e60f7414303c9eccf1d7d448bff3790647954137f251491a02892",
+    "compare_old_context.py": "99dae95b0569a712a334467e21e2eb68640826fcf38f3e20909ccaefb28619b2",
+    "audit_context_v5.py": "ab600ebe48783e3fe64d1d9d8517e0a8a5c366a18f0eedad3b978fc269d5a802",
+    "agent_driver.py": "ce6dce383a4d95f912d7ccfbf5a28fcc9a161293b75a03700aa24de824c0a7d4",
+    "run_v5.py": "966866abbce6c4179ccbb2151202fa24effd577c9b0f1282bc476dd9d2da52f3",
+    "analyze_v5.py": "390fa9cde0334b461f783065f62bc9d41713ae98b3c3a76a649258b4ac257ac7",
+    "write_report.py": "295a2515428b487c8a28b914fd0b0afad770e082db612996394f58ec7c1f4b03"
+  }
+}

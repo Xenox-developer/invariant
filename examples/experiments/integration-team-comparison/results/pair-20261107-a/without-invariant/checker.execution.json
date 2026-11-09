@@ -1,0 +1,333 @@
+{
+  "role": "checker",
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "container": "research-pair-20261107-a-checker",
+  "started_at": 1794049007.955402,
+  "finished_at": 1794049140.967492,
+  "duration_seconds": 133.01209020614624,
+  "exit_code": 0,
+  "cli_usage": {
+    "input_tokens": 96718,
+    "cached_input_tokens": 88192,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 3900,
+    "reasoning_output_tokens": 76
+  },
+  "turn_started_at": 1794049012.9467578,
+  "turn_finished_at": 1794049139.4963572,
+  "host_config": {
+    "Binds": null,
+    "ContainerIDFile": "",
+    "LogConfig": {
+      "Type": "json-file",
+      "Config": {}
+    },
+    "NetworkMode": "bridge",
+    "PortBindings": {},
+    "RestartPolicy": {
+      "Name": "no",
+      "MaximumRetryCount": 0
+    },
+    "AutoRemove": false,
+    "VolumeDriver": "",
+    "VolumesFrom": null,
+    "ConsoleSize": [
+      0,
+      0
+    ],
+    "CapAdd": [
+      "CHOWN",
+      "DAC_OVERRIDE",
+      "FOWNER",
+      "FSETID",
+      "SETGID",
+      "SETUID",
+      "SYS_CHROOT",
+      "SETFCAP"
+    ],
+    "CapDrop": [
+      "ALL"
+    ],
+    "CgroupnsMode": "private",
+    "Dns": [],
+    "DnsOptions": [],
+    "DnsSearch": [],
+    "ExtraHosts": null,
+    "GroupAdd": null,
+    "IpcMode": "private",
+    "Cgroup": "",
+    "Links": null,
+    "OomScoreAdj": 0,
+    "PidMode": "",
+    "Privileged": false,
+    "PublishAllPorts": false,
+    "ReadonlyRootfs": false,
+    "SecurityOpt": [
+      "no-new-privileges"
+    ],
+    "Tmpfs": {
+      "/scratch": "rw,nosuid,nodev"
+    },
+    "UTSMode": "",
+    "UsernsMode": "",
+    "ShmSize": 67108864,
+    "Runtime": "runc",
+    "Isolation": "",
+    "CpuShares": 0,
+    "Memory": 0,
+    "NanoCpus": 0,
+    "CgroupParent": "",
+    "BlkioWeight": 0,
+    "BlkioWeightDevice": [],
+    "BlkioDeviceReadBps": [],
+    "BlkioDeviceWriteBps": [],
+    "BlkioDeviceReadIOps": [],
+    "BlkioDeviceWriteIOps": [],
+    "CpuPeriod": 0,
+    "CpuQuota": 0,
+    "CpuRealtimePeriod": 0,
+    "CpuRealtimeRuntime": 0,
+    "CpusetCpus": "",
+    "CpusetMems": "",
+    "Devices": [],
+    "DeviceCgroupRules": null,
+    "DeviceRequests": null,
+    "MemoryReservation": 0,
+    "MemorySwap": 0,
+    "MemorySwappiness": null,
+    "OomKillDisable": false,
+    "PidsLimit": null,
+    "Ulimits": [],
+    "CpuCount": 0,
+    "CpuPercent": 0,
+    "IOMaximumIOps": 0,
+    "IOMaximumBandwidth": 0,
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/var/lib/docker/volumes/research-pair-20261107-a-state/_data/work/checker",
+        "Target": "/workspace"
+      },
+      {
+        "Type": "bind",
+        "Source": "/var/lib/docker/volumes/research-pair-20261107-a-state/_data/homes/checker",
+        "Target": "/agent"
+      },
+      {
+        "Type": "volume",
+        "Source": "research-pair-20261107-a-tools",
+        "Target": "/tools",
+        "ReadOnly": true
+      }
+    ],
+    "MaskedPaths": [
+      "/proc/asound",
+      "/proc/acpi",
+      "/proc/kcore",
+      "/proc/keys",
+      "/proc/latency_stats",
+      "/proc/timer_list",
+      "/proc/timer_stats",
+      "/proc/sched_debug",
+      "/proc/scsi",
+      "/sys/firmware",
+      "/sys/devices/virtual/powercap"
+    ],
+    "ReadonlyPaths": [
+      "/proc/bus",
+      "/proc/fs",
+      "/proc/irq",
+      "/proc/sys",
+      "/proc/sysrq-trigger"
+    ],
+    "Init": true
+  },
+  "image": "sha256:db21298b84d45d950442afa08ebd86a5e1f7deadb4a167d170b6dd9ba1262e01",
+  "acceptance": {
+    "passed": true,
+    "tests": 14,
+    "failures": 0,
+    "errors": 0,
+    "checks": [
+      {
+        "name": "csv_matches_all_sixteen_received_rows",
+        "passed": true
+      },
+      {
+        "name": "report_has_substantive_text",
+        "passed": true
+      },
+      {
+        "name": "verification_passed",
+        "passed": true
+      },
+      {
+        "name": "verified_sixteen_rows",
+        "passed": true
+      },
+      {
+        "name": "input_provenance_trapezoid",
+        "passed": true
+      },
+      {
+        "name": "input_provenance_simpson",
+        "passed": true
+      },
+      {
+        "name": "trapezoid_order",
+        "passed": true
+      },
+      {
+        "name": "simpson_order",
+        "passed": true
+      },
+      {
+        "name": "simpson_quadratic_roundoff",
+        "passed": true
+      },
+      {
+        "name": "observed_ratios_trapezoid_x2",
+        "passed": true
+      },
+      {
+        "name": "observed_ratios_trapezoid_x4",
+        "passed": true
+      },
+      {
+        "name": "observed_ratios_simpson_x4",
+        "passed": true
+      },
+      {
+        "name": "svg_has_three_named_error_series",
+        "passed": true
+      },
+      {
+        "name": "report_generator_reproducible",
+        "passed": true
+      }
+    ],
+    "sessions": [
+      {
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "observations": [
+          {
+            "total": {
+              "input_tokens": 12269,
+              "cached_input_tokens": 9856,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 128,
+              "reasoning_output_tokens": 0,
+              "total_tokens": 12397
+            },
+            "last": {
+              "input_tokens": 12269,
+              "cached_input_tokens": 9856,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 128,
+              "reasoning_output_tokens": 0,
+              "total_tokens": 12397
+            },
+            "timestamp": "2026-11-07T10:57:34.854Z"
+          },
+          {
+            "total": {
+              "input_tokens": 24737,
+              "cached_input_tokens": 22016,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 173,
+              "reasoning_output_tokens": 0,
+              "total_tokens": 24910
+            },
+            "last": {
+              "input_tokens": 12468,
+              "cached_input_tokens": 12160,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 45,
+              "reasoning_output_tokens": 0,
+              "total_tokens": 12513
+            },
+            "timestamp": "2026-11-07T10:57:37.726Z"
+          },
+          {
+            "total": {
+              "input_tokens": 37492,
+              "cached_input_tokens": 34304,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 233,
+              "reasoning_output_tokens": 0,
+              "total_tokens": 37725
+            },
+            "last": {
+              "input_tokens": 12755,
+              "cached_input_tokens": 12288,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 60,
+              "reasoning_output_tokens": 0,
+              "total_tokens": 12815
+            },
+            "timestamp": "2026-11-07T10:57:40.167Z"
+          },
+          {
+            "total": {
+              "input_tokens": 54760,
+              "cached_input_tokens": 46976,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3639,
+              "reasoning_output_tokens": 60,
+              "total_tokens": 58399
+            },
+            "last": {
+              "input_tokens": 17268,
+              "cached_input_tokens": 12672,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3406,
+              "reasoning_output_tokens": 60,
+              "total_tokens": 20674
+            },
+            "timestamp": "2026-11-07T10:58:49.745Z"
+          },
+          {
+            "total": {
+              "input_tokens": 75490,
+              "cached_input_tokens": 67456,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3807,
+              "reasoning_output_tokens": 76,
+              "total_tokens": 79297
+            },
+            "last": {
+              "input_tokens": 20730,
+              "cached_input_tokens": 20480,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 168,
+              "reasoning_output_tokens": 16,
+              "total_tokens": 20898
+            },
+            "timestamp": "2026-11-07T10:58:56.122Z"
+          },
+          {
+            "total": {
+              "input_tokens": 96718,
+              "cached_input_tokens": 88192,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3900,
+              "reasoning_output_tokens": 76,
+              "total_tokens": 100618
+            },
+            "last": {
+              "input_tokens": 21228,
+              "cached_input_tokens": 20736,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 93,
+              "reasoning_output_tokens": 0,
+              "total_tokens": 21321
+            },
+            "timestamp": "2026-11-07T10:58:59.453Z"
+          }
+        ]
+      }
+    ]
+  }
+}

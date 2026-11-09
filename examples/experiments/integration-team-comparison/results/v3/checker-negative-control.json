@@ -1,0 +1,34 @@
+{
+  "cold": {
+    "with-invariant": {
+      "valid_inputs_accepted": true,
+      "corrupt_estimate_rejected": true,
+      "corrupt_exit_code": 1,
+      "corrupt_verdict": null,
+      "model_calls": 0
+    },
+    "without-invariant": {
+      "valid_inputs_accepted": true,
+      "corrupt_estimate_rejected": true,
+      "corrupt_exit_code": 1,
+      "corrupt_verdict": null,
+      "model_calls": 0
+    }
+  },
+  "warm": {
+    "with-invariant": {
+      "valid_inputs_accepted": true,
+      "corrupt_estimate_rejected": true,
+      "corrupt_exit_code": 1,
+      "corrupt_verdict": null,
+      "model_calls": 0
+    },
+    "without-invariant": {
+      "valid_inputs_accepted": true,
+      "corrupt_estimate_rejected": true,
+      "corrupt_exit_code": 1,
+      "corrupt_verdict": null,
+      "model_calls": 0
+    }
+  }
+}

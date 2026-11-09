@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
+<title>Absolute quadrature errors on [0,1]</title>
+<desc>Logarithmic error axis; quadratic Simpson roundoff series omitted.</desc>
+<rect width="900" height="540" fill="white"/>
+<g font-family="sans-serif" font-size="14" fill="#222">
+<text x="90" y="30" font-size="20">Numerical integration: absolute error</text>
+<path d="M95 420.000 H665" stroke="#ddd"/>
+<text x="80" y="425.000" text-anchor="end">10^-9</text>
+<path d="M95 370.000 H665" stroke="#ddd"/>
+<text x="80" y="375.000" text-anchor="end">10^-8</text>
+<path d="M95 320.000 H665" stroke="#ddd"/>
+<text x="80" y="325.000" text-anchor="end">10^-7</text>
+<path d="M95 270.000 H665" stroke="#ddd"/>
+<text x="80" y="275.000" text-anchor="end">10^-6</text>
+<path d="M95 220.000 H665" stroke="#ddd"/>
+<text x="80" y="225.000" text-anchor="end">10^-5</text>
+<path d="M95 170.000 H665" stroke="#ddd"/>
+<text x="80" y="175.000" text-anchor="end">10^-4</text>
+<path d="M95 120.000 H665" stroke="#ddd"/>
+<text x="80" y="125.000" text-anchor="end">10^-3</text>
+<path d="M95 70.000 H665" stroke="#ddd"/>
+<text x="80" y="75.000" text-anchor="end">10^-2</text>
+<path d="M95.000 70 V420" stroke="#eee"/>
+<text x="95.000" y="445" text-anchor="middle">10</text>
+<path d="M285.000 70 V420" stroke="#eee"/>
+<text x="285.000" y="445" text-anchor="middle">20</text>
+<path d="M475.000 70 V420" stroke="#eee"/>
+<text x="475.000" y="445" text-anchor="middle">40</text>
+<path d="M665.000 70 V420" stroke="#eee"/>
+<text x="665.000" y="445" text-anchor="middle">80</text>
+<path d="M95 70 V420 H665" fill="none" stroke="#222"/>
+<text x="380" y="482" text-anchor="middle">Subintervals n (log2 scale)</text>
+<text transform="translate(23 250) rotate(-90)" text-anchor="middle">Absolute error (log10 scale)</text>
+<polyline points="95.000,108.908 285.000,139.011 475.000,169.114 665.000,199.217" fill="none" stroke="#1763a6" stroke-width="2.5"/>
+<circle cx="95.000" cy="108.908" r="4" fill="#1763a6"/>
+<circle cx="285.000" cy="139.011" r="4" fill="#1763a6"/>
+<circle cx="475.000" cy="169.114" r="4" fill="#1763a6"/>
+<circle cx="665.000" cy="199.217" r="4" fill="#1763a6"/>
+<path d="M690 100 H720" stroke="#1763a6" stroke-width="3"/>
+<text x="730" y="105">trapezoid x^2</text>
+<polyline points="95.000,93.878 285.000,123.964 475.000,154.063 665.000,184.165" fill="none" stroke="#c65315" stroke-width="2.5"/>
+<circle cx="95.000" cy="93.878" r="4" fill="#c65315"/>
+<circle cx="285.000" cy="123.964" r="4" fill="#c65315"/>
+<circle cx="475.000" cy="154.063" r="4" fill="#c65315"/>
+<circle cx="665.000" cy="184.165" r="4" fill="#c65315"/>
+<path d="M690 132 H720" stroke="#c65315" stroke-width="3"/>
+<text x="730" y="137">trapezoid x^4</text>
+<polyline points="95.000,213.753 285.000,273.959 475.000,334.165 665.000,394.371" fill="none" stroke="#168348" stroke-width="2.5"/>
+<circle cx="95.000" cy="213.753" r="4" fill="#168348"/>
+<circle cx="285.000" cy="273.959" r="4" fill="#168348"/>
+<circle cx="475.000" cy="334.165" r="4" fill="#168348"/>
+<circle cx="665.000" cy="394.371" r="4" fill="#168348"/>
+<path d="M690 164 H720" stroke="#168348" stroke-width="3"/>
+<text x="730" y="169">simpson x^4</text>
+<text x="95" y="518">Simpson x^2: roundoff only; omitted from the error graph.</text>
+</g></svg>

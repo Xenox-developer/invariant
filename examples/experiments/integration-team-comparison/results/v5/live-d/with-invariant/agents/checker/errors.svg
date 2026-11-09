@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="520" viewBox="0 0 820 520">
+<title>Absolute integration error versus subinterval count</title>
+<desc>Logarithmic error axis; Simpson x^2 roundoff series omitted.</desc>
+<rect width="820" height="520" fill="white"/>
+<g font-family="sans-serif" font-size="14">
+<text x="100" y="30">Numerical integration on [0,1]</text>
+<line x1="100" y1="420.0" x2="780" y2="420.0" stroke="#ddd"/>
+<text x="30" y="425.0">10^-9</text>
+<line x1="100" y1="370.0" x2="780" y2="370.0" stroke="#ddd"/>
+<text x="30" y="375.0">10^-8</text>
+<line x1="100" y1="320.0" x2="780" y2="320.0" stroke="#ddd"/>
+<text x="30" y="325.0">10^-7</text>
+<line x1="100" y1="270.0" x2="780" y2="270.0" stroke="#ddd"/>
+<text x="30" y="275.0">10^-6</text>
+<line x1="100" y1="220.0" x2="780" y2="220.0" stroke="#ddd"/>
+<text x="30" y="225.0">10^-5</text>
+<line x1="100" y1="170.0" x2="780" y2="170.0" stroke="#ddd"/>
+<text x="30" y="175.0">10^-4</text>
+<line x1="100" y1="120.0" x2="780" y2="120.0" stroke="#ddd"/>
+<text x="30" y="125.0">10^-3</text>
+<line x1="100" y1="70.0" x2="780" y2="70.0" stroke="#ddd"/>
+<text x="30" y="75.0">10^-2</text>
+<path d="M100 70 V420 H780" fill="none" stroke="black"/>
+<text x="350" y="475">n (subintervals, linear scale)</text>
+<text transform="translate(18 350) rotate(-90)">Absolute error (log10 scale)</text>
+<text x="91.0" y="445">10</text>
+<text x="188.14285714285714" y="445">20</text>
+<text x="382.42857142857144" y="445">40</text>
+<text x="771.0" y="445">80</text>
+<polyline points="100.000000,108.907563 197.142857,139.010562 391.428571,169.113562 780.000000,199.216561" fill="none" stroke="#1565c0" stroke-width="2"/>
+<circle cx="100.000000" cy="108.907563" r="3" fill="#1565c0"/>
+<circle cx="197.142857" cy="139.010562" r="3" fill="#1565c0"/>
+<circle cx="391.428571" cy="169.113562" r="3" fill="#1565c0"/>
+<circle cx="780.000000" cy="199.216561" r="3" fill="#1565c0"/>
+<line x1="490" y1="90" x2="520" y2="90" stroke="#1565c0" stroke-width="2"/>
+<text x="530" y="95">trapezoid x^2</text>
+<polyline points="100.000000,93.877788 197.142857,123.964492 391.428571,154.063419 780.000000,184.165401" fill="none" stroke="#c62828" stroke-width="2"/>
+<circle cx="100.000000" cy="93.877788" r="3" fill="#c62828"/>
+<circle cx="197.142857" cy="123.964492" r="3" fill="#c62828"/>
+<circle cx="391.428571" cy="154.063419" r="3" fill="#c62828"/>
+<circle cx="780.000000" cy="184.165401" r="3" fill="#c62828"/>
+<line x1="490" y1="114" x2="520" y2="114" stroke="#c62828" stroke-width="2"/>
+<text x="530" y="119">trapezoid x^4</text>
+<polyline points="100.000000,213.753063 197.142857,273.959062 391.428571,334.165061 780.000000,394.371060" fill="none" stroke="#2e7d32" stroke-width="2"/>
+<circle cx="100.000000" cy="213.753063" r="3" fill="#2e7d32"/>
+<circle cx="197.142857" cy="273.959062" r="3" fill="#2e7d32"/>
+<circle cx="391.428571" cy="334.165061" r="3" fill="#2e7d32"/>
+<circle cx="780.000000" cy="394.371060" r="3" fill="#2e7d32"/>
+<line x1="490" y1="138" x2="520" y2="138" stroke="#2e7d32" stroke-width="2"/>
+<text x="530" y="143">simpson x^4</text>
+</g>
+</svg>

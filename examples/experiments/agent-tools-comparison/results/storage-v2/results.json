@@ -1,0 +1,163 @@
+{
+  "study_id": "study-61d92f28f2e64c91b452a669eecf1483",
+  "state": "completed",
+  "finished_at": "2026-11-07T03:12:32.019389+03:00",
+  "task": "Scope-aware JavaScript migration from legacy-log.warn to modern-log.warning",
+  "task_sha256": "b2788b7786dd5169fb9937e2ab67299c58e15809252417c6df045609c9a11268",
+  "tests_sha256": "a7790b277828109a7b7161571e3885d3aa67f9e931fbdadd2c9e5f18eace44c6",
+  "image": "sha256:b1a7fd8c539da978db4df9de25753d8b829922a60e94d175896cdd39f40deeae",
+  "baseline_content_digest": "bef049320c8cde576d31a09d9afdabd165029bd5268c4149049923c39ed4f16f",
+  "resources": {
+    "agent": "codex",
+    "command_network": "internet",
+    "duration_seconds": 0,
+    "host_access": false,
+    "limits": {
+      "cpus": 1,
+      "extra_swap_mib": 0,
+      "file_descriptors": 256,
+      "memory_mib": 512,
+      "processes": 128,
+      "scratch_mib": 128
+    },
+    "model_access": "openai",
+    "profile": "codex-environment-v2",
+    "resource_mode": "unlimited",
+    "restrictions_enabled": false,
+    "schema": 1,
+    "workspace_access": "read-write"
+  },
+  "runs": [
+    {
+      "tool": "ast-grep",
+      "attempt_id": "attempt-4ff0e2248b8b17a81952f3fbbae68729",
+      "state": "succeeded",
+      "passed": true,
+      "reason": "COMPLETED",
+      "tests": {
+        "tests_failed": 0,
+        "tests_passed": 34,
+        "tests_total": 34
+      },
+      "agent_seconds": 156.54752802848816,
+      "wall_seconds": 157.97114324569702,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "provider_usage": {
+        "cacheWriteInputTokens": 0,
+        "cachedInputTokens": 191232,
+        "inputTokens": 202116,
+        "outputTokens": 3661,
+        "reasoningOutputTokens": 637,
+        "totalTokens": 205777
+      },
+      "inference_usage": {
+        "complete": true,
+        "final": {
+          "cached_input_tokens": 191232,
+          "input_tokens": 202116,
+          "output_tokens": 3661,
+          "reasoning_output_tokens": 637,
+          "total_tokens": 205777
+        },
+        "path": "docker-volume://invariant-state-v2/workspaces/ee459a0cb9820dbcffb49e19/experiments/attempts/attempt-4ff0e2248b8b17a81952f3fbbae68729/runner.usage.jsonl",
+        "problems": [],
+        "reconciled": true,
+        "response_count": 9
+      },
+      "workspace_ref": {
+        "backend": "docker",
+        "volume": "invariant-state-v2",
+        "path": "workspaces/ee459a0cb9820dbcffb49e19/experiments/attempts/attempt-4ff0e2248b8b17a81952f3fbbae68729/snapshot/workspace"
+      },
+      "evaluation_artifacts": {
+        "bytes": 4312,
+        "complete": true,
+        "files": [
+          {
+            "path": "test-output.txt",
+            "sha256": "e712925fd0eaee5b3bfcae84ac6c4b8a1ccd2f5f4f5f80579bd51aa8ee6252bf",
+            "size": 1702
+          },
+          {
+            "path": "test-report.json",
+            "sha256": "f364448dca5e7fde1bcb59f46dffe09bed3c0900a8bc8c4aa709d2f1f7043cda",
+            "size": 2610
+          }
+        ],
+        "skipped": []
+      },
+      "runner_log": "docker-volume://invariant-state-v2/workspaces/ee459a0cb9820dbcffb49e19/experiments/attempts/attempt-4ff0e2248b8b17a81952f3fbbae68729/runner.log",
+      "validation_reused": true
+    },
+    {
+      "tool": "jscodeshift",
+      "attempt_id": "attempt-6c1cdd5585f63a1628de6c6397501756",
+      "state": "succeeded",
+      "passed": true,
+      "reason": "COMPLETED",
+      "tests": {
+        "tests_failed": 0,
+        "tests_passed": 34,
+        "tests_total": 34
+      },
+      "agent_seconds": 177.99371027946472,
+      "wall_seconds": 179.21857929229736,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "provider_usage": {
+        "cacheWriteInputTokens": 0,
+        "cachedInputTokens": 262528,
+        "inputTokens": 287142,
+        "outputTokens": 4102,
+        "reasoningOutputTokens": 1097,
+        "totalTokens": 291244
+      },
+      "inference_usage": {
+        "complete": true,
+        "final": {
+          "cached_input_tokens": 262528,
+          "input_tokens": 287142,
+          "output_tokens": 4102,
+          "reasoning_output_tokens": 1097,
+          "total_tokens": 291244
+        },
+        "path": "docker-volume://invariant-state-v2/workspaces/ee459a0cb9820dbcffb49e19/experiments/attempts/attempt-6c1cdd5585f63a1628de6c6397501756/runner.usage.jsonl",
+        "problems": [],
+        "reconciled": true,
+        "response_count": 12
+      },
+      "workspace_ref": {
+        "backend": "docker",
+        "volume": "invariant-state-v2",
+        "path": "workspaces/ee459a0cb9820dbcffb49e19/experiments/attempts/attempt-6c1cdd5585f63a1628de6c6397501756/snapshot/workspace"
+      },
+      "evaluation_artifacts": {
+        "bytes": 4312,
+        "complete": true,
+        "files": [
+          {
+            "path": "test-output.txt",
+            "sha256": "e712925fd0eaee5b3bfcae84ac6c4b8a1ccd2f5f4f5f80579bd51aa8ee6252bf",
+            "size": 1702
+          },
+          {
+            "path": "test-report.json",
+            "sha256": "f364448dca5e7fde1bcb59f46dffe09bed3c0900a8bc8c4aa709d2f1f7043cda",
+            "size": 2610
+          }
+        ],
+        "skipped": []
+      },
+      "runner_log": "docker-volume://invariant-state-v2/workspaces/ee459a0cb9820dbcffb49e19/experiments/attempts/attempt-6c1cdd5585f63a1628de6c6397501756/runner.log",
+      "validation_reused": true
+    }
+  ],
+  "application": false,
+  "caller_usage": "unknown; shared preparation has no model calls",
+  "limitations": [
+    "One attempt per tool; measurements are descriptive, not a statistical ranking.",
+    "Shared dependency preparation is excluded from per-agent timings.",
+    "Tests are frozen and identical; agent and executor have no host home or Docker socket."
+  ]
+}

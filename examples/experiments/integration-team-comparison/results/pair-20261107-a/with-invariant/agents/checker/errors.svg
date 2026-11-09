@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="450" viewBox="0 0 900 450">
+<title>Quadrature absolute errors on [0,1]</title>
+<desc>Logarithmic error axis; Simpson x^2 omitted because it is at roundoff.</desc>
+<rect width="900" height="450" fill="white"/>
+<g font-family="sans-serif" font-size="13" fill="#222">
+<text x="85" y="24">Absolute error versus subinterval count</text>
+<path d="M 85 45.000 h 520" stroke="#ddd"/>
+<text x="25" y="49.000">10^-2</text>
+<path d="M 85 92.143 h 520" stroke="#ddd"/>
+<text x="25" y="96.143">10^-3</text>
+<path d="M 85 139.286 h 520" stroke="#ddd"/>
+<text x="25" y="143.286">10^-4</text>
+<path d="M 85 186.429 h 520" stroke="#ddd"/>
+<text x="25" y="190.429">10^-5</text>
+<path d="M 85 233.571 h 520" stroke="#ddd"/>
+<text x="25" y="237.571">10^-6</text>
+<path d="M 85 280.714 h 520" stroke="#ddd"/>
+<text x="25" y="284.714">10^-7</text>
+<path d="M 85 327.857 h 520" stroke="#ddd"/>
+<text x="25" y="331.857">10^-8</text>
+<path d="M 85 375.000 h 520" stroke="#ddd"/>
+<text x="25" y="379.000">10^-9</text>
+<path d="M 85.000 45 v 330" stroke="#eee"/>
+<text x="76.000" y="398">10</text>
+<path d="M 258.333 45 v 330" stroke="#eee"/>
+<text x="249.333" y="398">20</text>
+<path d="M 431.667 45 v 330" stroke="#eee"/>
+<text x="422.667" y="398">40</text>
+<path d="M 605.000 45 v 330" stroke="#eee"/>
+<text x="596.000" y="398">80</text>
+<text x="240" y="431">n (log2 spacing)</text>
+<text transform="translate(15 285) rotate(-90)">abs_error (log10 scale)</text>
+<polyline points="85.000,81.684 258.333,110.067 431.667,138.450 605.000,166.833" fill="none" stroke="#1764ac" stroke-width="2"><title>trapezoid x**2</title></polyline>
+<path d="M 635 70 h 30" stroke="#1764ac" stroke-width="2"/>
+<text x="675" y="74">trapezoid x**2</text>
+<polyline points="85.000,67.513 258.333,95.881 431.667,124.260 605.000,152.642" fill="none" stroke="#bd5018" stroke-width="2"><title>trapezoid x**4</title></polyline>
+<path d="M 635 100 h 30" stroke="#bd5018" stroke-width="2"/>
+<text x="675" y="104">trapezoid x**4</text>
+<polyline points="85.000,180.539 258.333,237.304 431.667,294.070 605.000,350.836" fill="none" stroke="#25813d" stroke-width="2"><title>simpson x**4</title></polyline>
+<path d="M 635 130 h 30" stroke="#25813d" stroke-width="2"/>
+<text x="675" y="134">simpson x**4</text>
+</g></svg>

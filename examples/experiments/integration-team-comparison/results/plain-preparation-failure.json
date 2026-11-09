@@ -1,0 +1,9 @@
+{
+  "stage": "preparation",
+  "model_sessions": 0,
+  "model_calls": 0,
+  "reason": "Runtime Python TarFile.extractall has no filter keyword; fixed only the example harness.",
+  "log_capture_span_seconds_approx": 6.134207487106323,
+  "model_cost_credits": 0,
+  "note": "Separate failed setup, excluded from the subsequent successful paired-run wall times."
+}

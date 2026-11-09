@@ -1,0 +1,19 @@
+{
+  "checked_date": "2026-11-07",
+  "model": "gpt-6.1-sol",
+  "speed_basis": "Standard-equivalent",
+  "credits_per_million_tokens": {
+    "uncached_input": 50,
+    "cached_input": 2.5,
+    "output": 250
+  },
+  "source": "https://developers.openai.com/codex/pricing/#token-rates",
+  "actual_billed_usd": null,
+  "actual_subscription_allowance_debit": null,
+  "notes": [
+    "ChatGPT sign-in is used. API prices are not substituted for subscription cost.",
+    "Credit equivalent is a comparison of observed token usage at the published Standard rate, not a claim of actual credit deduction.",
+    "Cached input and reasoning output are subsets, not additional tokens. Codex credit billing has no separate cache-write fee.",
+    "Outer coordinating chat usage and shared experiment-development time are unavailable and excluded from both arm totals."
+  ]
+}

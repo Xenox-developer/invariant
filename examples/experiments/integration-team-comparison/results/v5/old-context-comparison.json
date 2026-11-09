@@ -1,0 +1,105 @@
+{
+  "native": [
+    {
+      "base": {
+        "chars": 21524,
+        "sha256": "d12e6dbdfd4a4ddb26a1f6048b69a32b8b32f74e4add9791d1dff7f4cac0b032"
+      },
+      "messages": [
+        {
+          "role": "developer",
+          "chars": 1883,
+          "sha256": "f9e045903bbc70d4674b0a6cc93dad40b18ed6f27466dc478cef8608901c1880",
+          "prefix": "Work only in /workspace. Docker is the external sandbox. Internet and package installation are available. Changes and tools persist in Docker. \n\nBatch related reads and short seque"
+        },
+        {
+          "role": "user",
+          "chars": 341,
+          "sha256": "5484c5d5a5f675ce2a7e43c3a9cfad12d1b38c49ff00c48508557d88ae163317",
+          "prefix": "<environment_context>\n  <cwd>/workspace</cwd>\n  <shell>bash</shell>\n  <current_date>2026-11-07</current_date>\n  <timezone>Etc/UTC</timezone>\n  <filesystem><workspace_roots><root>/w"
+        },
+        {
+          "role": "user",
+          "chars": 2215,
+          "sha256": "ab95906150620cd58339b5618a3c85051a89043386d09186c95cdfbf54a879c2",
+          "prefix": "Research the accuracy of numerical integration of x**2 and x**4 on [0,1], using n=10,20,40,80 subintervals.\nThe exact integrals are 1/3 and 1/5. Use only Python's standard library,"
+        }
+      ],
+      "turn_context_keys": [
+        "turn_id",
+        "root_turn_id",
+        "disabled_plugin_ids",
+        "cwd",
+        "approval_policy",
+        "approvals_reviewer",
+        "sandbox_policy",
+        "permission_profile",
+        "model",
+        "comp_hash",
+        "collaboration_mode",
+        "multi_agent_version",
+        "realtime_active",
+        "effort",
+        "summary"
+      ]
+    }
+  ],
+  "direct": [
+    {
+      "base": {
+        "chars": 21524,
+        "sha256": "d12e6dbdfd4a4ddb26a1f6048b69a32b8b32f74e4add9791d1dff7f4cac0b032"
+      },
+      "messages": [
+        {
+          "role": "developer",
+          "chars": 1419,
+          "sha256": "55d1e286aeccc037e252d225b9de594b55f93a81de1a100e97437f264bbad954",
+          "prefix": "<permissions instructions>\nFilesystem sandboxing defines which files can be read or written. `sandbox_mode` is `danger-full-access`: No filesystem sandboxing - all commands are per"
+        },
+        {
+          "role": "developer",
+          "chars": 2400,
+          "sha256": "3edd51083129388f52e881435e93e4b981e00c5ee3d62ab5d32e22c428fd504b",
+          "prefix": "<multi_agent_role>You are `/root`, the primary agent in a team of agents collaborating to fulfill the user's goals.\n\nAt the start of your turn, you are the active agent.\nYou can sp"
+        },
+        {
+          "role": "developer",
+          "chars": 271,
+          "sha256": "6ded806e3cdbb35599ecaf8742574bc5274908472b1729090010c404c2151e8e",
+          "prefix": "<multi_agent_mode>Any earlier instruction enabling proactive multi-agent delegation no longer applies. Do not spawn sub-agents unless the user or applicable AGENTS.md/skill instruc"
+        },
+        {
+          "role": "user",
+          "chars": 341,
+          "sha256": "5484c5d5a5f675ce2a7e43c3a9cfad12d1b38c49ff00c48508557d88ae163317",
+          "prefix": "<environment_context>\n  <cwd>/workspace</cwd>\n  <shell>bash</shell>\n  <current_date>2026-11-07</current_date>\n  <timezone>Etc/UTC</timezone>\n  <filesystem><workspace_roots><root>/w"
+        },
+        {
+          "role": "user",
+          "chars": 2507,
+          "sha256": "27e6a9b188b1388bfa0040149e5d0d3cf4a38039646b0d1e52cc223fdc5d757d",
+          "prefix": "Research the accuracy of numerical integration of x**2 and x**4 on [0,1], using n=10,20,40,80 subintervals.\nThe exact integrals are 1/3 and 1/5. Use only Python's standard library,"
+        }
+      ],
+      "turn_context_keys": [
+        "turn_id",
+        "root_turn_id",
+        "disabled_plugin_ids",
+        "cwd",
+        "approval_policy",
+        "approvals_reviewer",
+        "sandbox_policy",
+        "permission_profile",
+        "model",
+        "comp_hash",
+        "collaboration_mode",
+        "multi_agent_version",
+        "realtime_active",
+        "cyber_access_program",
+        "effort",
+        "summary"
+      ]
+    }
+  ]
+}

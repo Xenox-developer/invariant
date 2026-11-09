@@ -1,0 +1,29 @@
+{
+  "storage_layout": 2,
+  "issues": [],
+  "host_agent_state_present": false,
+  "host_managed_codex_present": false,
+  "host_local_runtime_directories": 0,
+  "host_local_project_configs": 0,
+  "verified": true,
+  "containers": [
+    {
+      "container": "invariant-agent-36e933bb2c9941a49f9b87e7daa47f23",
+      "role": "catalog-runtime",
+      "mounts": [
+        {
+          "destination": "/Users/nikchin/.invariant/workspaces/7e275ef942850ee4c14c417a/catalog-v3",
+          "volume": "invariant-state-v2",
+          "path": "workspaces/7e275ef942850ee4c14c417a/catalog-v3"
+        },
+        {
+          "destination": "/opt/invariant",
+          "volume": "invariant-code-v2-8c7f64b29e8deaad",
+          "path": ""
+        }
+      ],
+      "privileged": false,
+      "published_ports": false
+    }
+  ]
+}

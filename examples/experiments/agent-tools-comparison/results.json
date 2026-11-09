@@ -1,0 +1,155 @@
+{
+  "study_id": "study-280091f32df14db3987b42cfa95bd338",
+  "state": "completed",
+  "finished_at": "2026-11-07T02:02:00.646521+03:00",
+  "task": "Scope-aware JavaScript migration from legacy-log.warn to modern-log.warning",
+  "task_sha256": "b2788b7786dd5169fb9937e2ab67299c58e15809252417c6df045609c9a11268",
+  "tests_sha256": "a7790b277828109a7b7161571e3885d3aa67f9e931fbdadd2c9e5f18eace44c6",
+  "image": "sha256:b1a7fd8c539da978db4df9de25753d8b829922a60e94d175896cdd39f40deeae",
+  "baseline_content_digest": "bef049320c8cde576d31a09d9afdabd165029bd5268c4149049923c39ed4f16f",
+  "resources": {
+    "agent": "codex",
+    "command_network": "internet",
+    "duration_seconds": 0,
+    "host_access": true,
+    "limits": {
+      "cpus": 1,
+      "extra_swap_mib": 0,
+      "file_descriptors": 256,
+      "memory_mib": 512,
+      "processes": 128,
+      "scratch_mib": 128
+    },
+    "model_access": "openai",
+    "profile": "codex-environment-v2",
+    "resource_mode": "unlimited",
+    "restrictions_enabled": false,
+    "schema": 1,
+    "workspace_access": "read-write"
+  },
+  "runs": [
+    {
+      "tool": "ast-grep",
+      "attempt_id": "attempt-47e26d0ff5f66d0b522a81db5e941a81",
+      "state": "succeeded",
+      "passed": true,
+      "reason": "COMPLETED",
+      "tests": {
+        "tests_failed": 0,
+        "tests_passed": 34,
+        "tests_total": 34
+      },
+      "agent_seconds": 97.48029899597168,
+      "wall_seconds": 97.8579490184784,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "provider_usage": {
+        "cacheWriteInputTokens": 0,
+        "cachedInputTokens": 128512,
+        "inputTokens": 151437,
+        "outputTokens": 3308,
+        "reasoningOutputTokens": 575,
+        "totalTokens": 154745
+      },
+      "inference_usage": {
+        "complete": true,
+        "final": {
+          "cached_input_tokens": 128512,
+          "input_tokens": 151437,
+          "output_tokens": 3308,
+          "reasoning_output_tokens": 575,
+          "total_tokens": 154745
+        },
+        "path": "/Users/nikchin/.invariant/workspaces/ee459a0cb9820dbcffb49e19/experiments/attempts/attempt-47e26d0ff5f66d0b522a81db5e941a81/runner.usage.jsonl",
+        "problems": [],
+        "reconciled": true,
+        "response_count": 7
+      },
+      "workspace": "/Users/nikchin/.invariant/workspaces/ee459a0cb9820dbcffb49e19/experiments/attempts/attempt-47e26d0ff5f66d0b522a81db5e941a81/snapshot/workspace",
+      "evaluation_artifacts": {
+        "bytes": 4312,
+        "complete": true,
+        "files": [
+          {
+            "path": "test-output.txt",
+            "sha256": "e712925fd0eaee5b3bfcae84ac6c4b8a1ccd2f5f4f5f80579bd51aa8ee6252bf",
+            "size": 1702
+          },
+          {
+            "path": "test-report.json",
+            "sha256": "f364448dca5e7fde1bcb59f46dffe09bed3c0900a8bc8c4aa709d2f1f7043cda",
+            "size": 2610
+          }
+        ],
+        "skipped": []
+      },
+      "runner_log": "/Users/nikchin/.invariant/workspaces/ee459a0cb9820dbcffb49e19/experiments/attempts/attempt-47e26d0ff5f66d0b522a81db5e941a81/runner.log",
+      "validation_reused": true
+    },
+    {
+      "tool": "jscodeshift",
+      "attempt_id": "attempt-14bc50d8987d4f1e8ee41cd36c6ef110",
+      "state": "succeeded",
+      "passed": true,
+      "reason": "COMPLETED",
+      "tests": {
+        "tests_failed": 0,
+        "tests_passed": 34,
+        "tests_total": 34
+      },
+      "agent_seconds": 110.37528324127197,
+      "wall_seconds": 110.58942723274231,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "provider_usage": {
+        "cacheWriteInputTokens": 0,
+        "cachedInputTokens": 238592,
+        "inputTokens": 265881,
+        "outputTokens": 3215,
+        "reasoningOutputTokens": 860,
+        "totalTokens": 269096
+      },
+      "inference_usage": {
+        "complete": true,
+        "final": {
+          "cached_input_tokens": 238592,
+          "input_tokens": 265881,
+          "output_tokens": 3215,
+          "reasoning_output_tokens": 860,
+          "total_tokens": 269096
+        },
+        "path": "/Users/nikchin/.invariant/workspaces/ee459a0cb9820dbcffb49e19/experiments/attempts/attempt-14bc50d8987d4f1e8ee41cd36c6ef110/runner.usage.jsonl",
+        "problems": [],
+        "reconciled": true,
+        "response_count": 11
+      },
+      "workspace": "/Users/nikchin/.invariant/workspaces/ee459a0cb9820dbcffb49e19/experiments/attempts/attempt-14bc50d8987d4f1e8ee41cd36c6ef110/snapshot/workspace",
+      "evaluation_artifacts": {
+        "bytes": 4312,
+        "complete": true,
+        "files": [
+          {
+            "path": "test-output.txt",
+            "sha256": "e712925fd0eaee5b3bfcae84ac6c4b8a1ccd2f5f4f5f80579bd51aa8ee6252bf",
+            "size": 1702
+          },
+          {
+            "path": "test-report.json",
+            "sha256": "f364448dca5e7fde1bcb59f46dffe09bed3c0900a8bc8c4aa709d2f1f7043cda",
+            "size": 2610
+          }
+        ],
+        "skipped": []
+      },
+      "runner_log": "/Users/nikchin/.invariant/workspaces/ee459a0cb9820dbcffb49e19/experiments/attempts/attempt-14bc50d8987d4f1e8ee41cd36c6ef110/runner.log",
+      "validation_reused": true
+    }
+  ],
+  "application": false,
+  "caller_usage": "unknown; shared preparation has no model calls",
+  "limitations": [
+    "One attempt per tool; measurements are descriptive, not a statistical ranking.",
+    "Shared dependency preparation is excluded from per-agent timings.",
+    "Tests are frozen and identical; unrestricted host access is not adversarial isolation."
+  ]
+}

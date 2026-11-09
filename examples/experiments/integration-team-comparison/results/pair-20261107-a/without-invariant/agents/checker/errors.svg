@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="470" viewBox="0 0 840 470">
+<title>Quadrature absolute errors on [0,1]</title>
+<desc>Linear subinterval count n; logarithmic absolute error. Simpson x^2 omitted because it is at roundoff.</desc>
+<rect width="840" height="470" fill="white"/>
+<g font-family="sans-serif" font-size="13" fill="#222">
+<text x="90" y="25">Absolute error versus subinterval count</text>
+<path d="M 90 390.000 H 630" stroke="#ddd"/>
+<text x="78" y="394.000" text-anchor="end">10^-9</text>
+<path d="M 90 341.429 H 630" stroke="#ddd"/>
+<text x="78" y="345.429" text-anchor="end">10^-8</text>
+<path d="M 90 292.857 H 630" stroke="#ddd"/>
+<text x="78" y="296.857" text-anchor="end">10^-7</text>
+<path d="M 90 244.286 H 630" stroke="#ddd"/>
+<text x="78" y="248.286" text-anchor="end">10^-6</text>
+<path d="M 90 195.714 H 630" stroke="#ddd"/>
+<text x="78" y="199.714" text-anchor="end">10^-5</text>
+<path d="M 90 147.143 H 630" stroke="#ddd"/>
+<text x="78" y="151.143" text-anchor="end">10^-4</text>
+<path d="M 90 98.571 H 630" stroke="#ddd"/>
+<text x="78" y="102.571" text-anchor="end">10^-3</text>
+<path d="M 90 50.000 H 630" stroke="#ddd"/>
+<text x="78" y="54.000" text-anchor="end">10^-2</text>
+<path d="M 90.000 50 V 390" stroke="#eee"/>
+<text x="90.000" y="413" text-anchor="middle">10</text>
+<path d="M 167.143 50 V 390" stroke="#eee"/>
+<text x="167.143" y="413" text-anchor="middle">20</text>
+<path d="M 321.429 50 V 390" stroke="#eee"/>
+<text x="321.429" y="413" text-anchor="middle">40</text>
+<path d="M 630.000 50 V 390" stroke="#eee"/>
+<text x="630.000" y="413" text-anchor="middle">80</text>
+<text x="330" y="445">Subintervals n</text>
+<text transform="translate(22 260) rotate(-90)">Absolute error (log10 scale)</text>
+<polyline points="90.000,87.796 167.143,117.039 321.429,146.282 630.000,175.525" fill="none" stroke="#1769aa" stroke-width="2"><title>trapezoid x^2</title></polyline>
+<circle cx="90.000" cy="87.796" r="3" fill="#1769aa"/>
+<circle cx="167.143" cy="117.039" r="3" fill="#1769aa"/>
+<circle cx="321.429" cy="146.282" r="3" fill="#1769aa"/>
+<circle cx="630.000" cy="175.525" r="3" fill="#1769aa"/>
+<path d="M 650 95 h 20" stroke="#1769aa" stroke-width="2"/>
+<text x="680" y="99">trapezoid x^2</text>
+<polyline points="90.000,73.196 167.143,102.423 321.429,131.662 630.000,160.904" fill="none" stroke="#bb4c00" stroke-width="2"><title>trapezoid x^4</title></polyline>
+<circle cx="90.000" cy="73.196" r="3" fill="#bb4c00"/>
+<circle cx="167.143" cy="102.423" r="3" fill="#bb4c00"/>
+<circle cx="321.429" cy="131.662" r="3" fill="#bb4c00"/>
+<circle cx="630.000" cy="160.904" r="3" fill="#bb4c00"/>
+<path d="M 650 125 h 20" stroke="#bb4c00" stroke-width="2"/>
+<text x="680" y="129">trapezoid x^4</text>
+<polyline points="90.000,189.646 167.143,248.132 321.429,306.617 630.000,365.103" fill="none" stroke="#13824a" stroke-width="2"><title>simpson x^4</title></polyline>
+<circle cx="90.000" cy="189.646" r="3" fill="#13824a"/>
+<circle cx="167.143" cy="248.132" r="3" fill="#13824a"/>
+<circle cx="321.429" cy="306.617" r="3" fill="#13824a"/>
+<circle cx="630.000" cy="365.103" r="3" fill="#13824a"/>
+<path d="M 650 155 h 20" stroke="#13824a" stroke-width="2"/>
+<text x="680" y="159">simpson x^4</text>
+</g></svg>

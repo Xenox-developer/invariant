@@ -1,0 +1,69 @@
+{
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "config": {
+    "features.apps": false,
+    "features.plugins": false,
+    "features.remote_plugin": false,
+    "features.hooks": false,
+    "features.multi_agent": false,
+    "features.multi_agent_v2": false,
+    "features.shell_snapshot": false,
+    "features.image_generation": false,
+    "features.computer_use": false,
+    "features.browser_use": false,
+    "features.browser_use_external": false,
+    "features.in_app_browser": false,
+    "features.in_app_local_automation": false,
+    "features.goals": false,
+    "features.tool_suggest": false,
+    "features.skill_mcp_dependency_install": false,
+    "features.workspace_dependencies": false,
+    "features.worktrees": false,
+    "features.sleep_tool": false,
+    "features.code_mode_host": true,
+    "features.skip_host_skill_discovery": true,
+    "features.skill_search": false,
+    "features.view_image": false,
+    "features.code_mode.default_exec_yield_time_ms": 1200000,
+    "model_reasoning_effort": "medium",
+    "cli_auth_credentials_store": "file",
+    "web_search": "disabled",
+    "approval_policy": "never",
+    "sandbox_mode": "danger-full-access",
+    "check_for_update_on_startup": false,
+    "project_root_markers": [],
+    "project_doc_max_bytes": 0,
+    "skills.config": [
+      {
+        "name": "imagegen",
+        "enabled": false
+      },
+      {
+        "name": "openai-docs",
+        "enabled": false
+      },
+      {
+        "name": "skill-creator",
+        "enabled": false
+      },
+      {
+        "name": "skill-installer",
+        "enabled": false
+      }
+    ],
+    "shell_environment_policy.inherit": "none",
+    "shell_environment_policy.set": {
+      "HOME": "/root",
+      "TMPDIR": "/scratch",
+      "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    },
+    "developer_instructions": "Matched overhead experiment cohort a6b275919467497c8eebfaadeec6053f. Work in /workspace. Batch related reads and short sequential tool calls. Run local acceptance once. Do not inspect .codex, driver or profile files. No invariant_validate tool is present. Do not spawn agents."
+  },
+  "prompts": {
+    "trapezoid": "Research the accuracy of numerical integration of x**2 and x**4 on [0,1], using n=10,20,40,80 subintervals.\nThe exact integrals are 1/3 and 1/5. Use only Python's standard library, no external services or package installs.\nWork in /workspace. Do not spawn additional agents. Do not inspect authentication or unrelated settings.\nDo actual computations and preserve runnable source. Keep your final chat reply short; results belong in files.\nThe fixed acceptance checks are in fixed_checks.py; do not modify this file or evaluate.py or input artifacts.\n\nYour assigned method is trapezoid. Independently implement solution.py with integrate(f,a,b,n).\nThe function must actually sample f at the n+1 uniform grid points, work on other intervals/functions,\nand reject n<=0 with ValueError. Simpson additionally requires an even n (raise ValueError for odd n).\nRunning python3 -B solution.py must generate result.json with exactly this structure:\n{\"method\":\"trapezoid\",\"interval\":[0,1],\"rows\":[{\"power\":2,\"n\":10,\"estimate\":number,\"exact\":number,\"abs_error\":number}, ...]}\nInclude all eight (power,n) combinations, power in [2,4], n in [10,20,40,80]. Compute absolute errors from the estimates.\nDo not implement the other method or write the final combined report. Generate result.json now.\nFor local checks if no invariant_validate exists:\npython3 -B -c \"from fixed_checks import validate; import json; from pathlib import Path; r=validate('trapezoid',Path('.')); print(json.dumps(r)); assert r['passed']\"\n\nRun the visible local acceptance command once, then finish with a brief message. Do not look for invariant_validate.\n",
+    "simpson": "Research the accuracy of numerical integration of x**2 and x**4 on [0,1], using n=10,20,40,80 subintervals.\nThe exact integrals are 1/3 and 1/5. Use only Python's standard library, no external services or package installs.\nWork in /workspace. Do not spawn additional agents. Do not inspect authentication or unrelated settings.\nDo actual computations and preserve runnable source. Keep your final chat reply short; results belong in files.\nThe fixed acceptance checks are in fixed_checks.py; do not modify this file or evaluate.py or input artifacts.\n\nYour assigned method is simpson. Independently implement solution.py with integrate(f,a,b,n).\nThe function must actually sample f at the n+1 uniform grid points, work on other intervals/functions,\nand reject n<=0 with ValueError. Simpson additionally requires an even n (raise ValueError for odd n).\nRunning python3 -B solution.py must generate result.json with exactly this structure:\n{\"method\":\"simpson\",\"interval\":[0,1],\"rows\":[{\"power\":2,\"n\":10,\"estimate\":number,\"exact\":number,\"abs_error\":number}, ...]}\nInclude all eight (power,n) combinations, power in [2,4], n in [10,20,40,80]. Compute absolute errors from the estimates.\nDo not implement the other method or write the final combined report. Generate result.json now.\nFor local checks if no invariant_validate exists:\npython3 -B -c \"from fixed_checks import validate; import json; from pathlib import Path; r=validate('simpson',Path('.')); print(json.dumps(r)); assert r['passed']\"\n\nRun the visible local acceptance command once, then finish with a brief message. Do not look for invariant_validate.\n",
+    "checker": "Research the accuracy of numerical integration of x**2 and x**4 on [0,1], using n=10,20,40,80 subintervals.\nThe exact integrals are 1/3 and 1/5. Use only Python's standard library, no external services or package installs.\nWork in /workspace. Do not spawn additional agents. Do not inspect authentication or unrelated settings.\nDo actual computations and preserve runnable source. Keep your final chat reply short; results belong in files.\nThe fixed acceptance checks are in fixed_checks.py; do not modify this file or evaluate.py or input artifacts.\n\nYou are the third, independent checking/reporting agent. The two earlier agents have already finished.\nTheir unmodified solution.py and result.json files are in inputs/trapezoid/ and inputs/simpson/.\nVerify all 16 reported values independently against the exact integrals and mathematical error formulas;\nexecute or examine both implementations. Do not edit the received inputs or replace their calculations.\nImplement build_report.py using only the standard library, supporting --inputs DIR --output DIR.\nRun it with --inputs inputs --output . and produce these four files:\n1. comparison.csv: header method,power,n,estimate,exact,abs_error and all sixteen received numeric rows.\n2. report.md: a short Russian research report (at least 500 characters) explaining the methods, exact references,\n   measured convergence and rounding for Simpson on x**2. Mention this is a small deterministic numerical experiment.\n3. errors.svg: a valid labelled SVG graph with at least three polyline series for trapezoid x**2, trapezoid x**4,\n   Simpson x**4, with legends containing literal method names trapezoid and simpson. Use a log scale for error;\n   do not take log(0); explain the omitted near-zero Simpson x**2 series in the report.\n4. verification.json with exactly these required fields (additional fields allowed):\n{\"passed\":true,\"rows_checked\":16,\"input_sha256\":{\"trapezoid\":\"SHA256 of actual received result.json bytes\",\"simpson\":\"SHA256\"},\n \"observed_ratios\":{\"trapezoid_x2\":[three actual consecutive error ratios],\"trapezoid_x4\":[three ratios],\"simpson_x4\":[three ratios]},\n \"conclusions\":{\"trapezoid_order\":2,\"simpson_order\":4,\"simpson_x2_exact_within_roundoff\":true}}\nOnly mark passed if you actually verified the data. Expected error ratios upon doubling n are about 4 and 16.\nThe generator must reproduce the four outputs from the input artifacts in a fresh output directory.\nFor local checks if no invariant_validate exists:\npython3 -B -c \"from fixed_checks import validate; import json; from pathlib import Path; r=validate('checker',Path('.')); print(json.dumps(r)); assert r['passed']\"\n\nRun the visible local acceptance command once, then finish with a brief message. Do not look for invariant_validate.\n"
+  },
+  "path": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+}

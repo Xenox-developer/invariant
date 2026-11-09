@@ -1,0 +1,207 @@
+{
+  "model_turns": 0,
+  "rows": [
+    {
+      "kind": "phase",
+      "name": "prepare",
+      "seconds": 1.9445865839952603
+    },
+    {
+      "kind": "docker",
+      "operation": "network",
+      "subcommand": "inspect",
+      "seconds": 0.05891512497328222
+    },
+    {
+      "kind": "docker",
+      "operation": "network",
+      "subcommand": "create",
+      "seconds": 0.08772687503369525
+    },
+    {
+      "kind": "docker",
+      "operation": "create",
+      "subcommand": "--name",
+      "seconds": 0.28907025000080466
+    },
+    {
+      "kind": "docker",
+      "operation": "network",
+      "subcommand": "connect",
+      "seconds": 0.039852250018157065
+    },
+    {
+      "kind": "phase",
+      "name": "agent_configuration_and_create",
+      "seconds": 0.48697337502380833
+    },
+    {
+      "kind": "docker",
+      "operation": "network",
+      "subcommand": "inspect",
+      "seconds": 0.02866266597993672
+    },
+    {
+      "kind": "docker",
+      "operation": "network",
+      "subcommand": "inspect",
+      "seconds": 0.06071070802863687
+    },
+    {
+      "kind": "docker",
+      "operation": "network",
+      "subcommand": "inspect",
+      "seconds": 0.03938470798311755
+    },
+    {
+      "kind": "docker",
+      "operation": "network",
+      "subcommand": "inspect",
+      "seconds": 0.06402750103734434
+    },
+    {
+      "kind": "docker",
+      "operation": "create",
+      "subcommand": "--name",
+      "seconds": 0.7254640419851057
+    },
+    {
+      "kind": "phase",
+      "name": "executor_create",
+      "seconds": 0.9197340010432526
+    },
+    {
+      "kind": "docker",
+      "operation": "inspect",
+      "subcommand": "invariant-probe-cb0ee123254341688be495d32af8ff62",
+      "seconds": 0.06065291695995256
+    },
+    {
+      "kind": "docker",
+      "operation": "network",
+      "subcommand": "connect",
+      "seconds": 0.19857783295447007
+    },
+    {
+      "kind": "docker",
+      "operation": "inspect",
+      "subcommand": "invariant-probe-cb0ee123254341688be495d32af8ff62",
+      "seconds": 0.07107841700781137
+    },
+    {
+      "kind": "docker",
+      "operation": "network",
+      "subcommand": "inspect",
+      "seconds": 0.042405541986227036
+    },
+    {
+      "kind": "docker",
+      "operation": "network",
+      "subcommand": "inspect",
+      "seconds": 0.027681957988534123
+    },
+    {
+      "kind": "phase",
+      "name": "connect_internet_and_verify",
+      "seconds": 0.40855379099957645
+    },
+    {
+      "kind": "phase",
+      "name": "app_server_initialize",
+      "seconds": 1.089355667005293
+    },
+    {
+      "kind": "phase",
+      "name": "environment_info",
+      "seconds": 0.24600070802262053
+    },
+    {
+      "kind": "docker",
+      "operation": "exec",
+      "subcommand": "invariant-probe-cb0ee123254341688be495d32af8ff62",
+      "seconds": 0.16110887500690296
+    },
+    {
+      "kind": "docker",
+      "operation": "exec",
+      "subcommand": "invariant-probe-cb0ee123254341688be495d32af8ff62",
+      "seconds": 0.10771737497998402
+    },
+    {
+      "kind": "phase",
+      "name": "executor_startup_inspection",
+      "seconds": 0.2689612920512445
+    },
+    {
+      "kind": "docker",
+      "operation": "inspect",
+      "subcommand": "invariant-agent-9d8a8f83f66848559d2bcded3383583b",
+      "seconds": 0.041482750966679305
+    },
+    {
+      "kind": "docker",
+      "operation": "rm",
+      "subcommand": "--force",
+      "seconds": 3.820082583988551
+    },
+    {
+      "kind": "docker",
+      "operation": "network",
+      "subcommand": "inspect",
+      "seconds": 0.10592075000749901
+    },
+    {
+      "kind": "docker",
+      "operation": "inspect",
+      "subcommand": "invariant-probe-cb0ee123254341688be495d32af8ff62",
+      "seconds": 0.13207958301063627
+    },
+    {
+      "kind": "docker",
+      "operation": "stop",
+      "subcommand": "--time=3",
+      "seconds": 0.5402300840360112
+    },
+    {
+      "kind": "docker",
+      "operation": "inspect",
+      "subcommand": "invariant-probe-cb0ee123254341688be495d32af8ff62",
+      "seconds": 0.05891616700682789
+    },
+    {
+      "kind": "docker",
+      "operation": "ps",
+      "subcommand": "--all",
+      "seconds": 0.026141417038161308
+    },
+    {
+      "kind": "docker",
+      "operation": "rm",
+      "subcommand": "--force",
+      "seconds": 0.11908700002823025
+    },
+    {
+      "kind": "docker",
+      "operation": "network",
+      "subcommand": "inspect",
+      "seconds": 0.04156662500463426
+    },
+    {
+      "kind": "docker",
+      "operation": "network",
+      "subcommand": "rm",
+      "seconds": 0.1619328330270946
+    },
+    {
+      "kind": "docker",
+      "operation": "network",
+      "subcommand": "inspect",
+      "seconds": 0.048268624988850206
+    },
+    {
+      "kind": "phase",
+      "name": "cleanup",
+      "seconds": 5.218792459985707
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "same_codex_binary": true,
+  "codex_sha256": "8a96f66d059d653e68bfd5f3c79337e6f1d7d170d80bf705eb7d0249b34c0ece",
+  "version": "codex-cli 0.163.0",
+  "baseline_worker_image_has_invariant_python_package": false,
+  "native_session_inventory": [
+    {
+      "role": "trapezoid",
+      "sessions": [
+        {
+          "meta": {
+            "id": "01a1b5a0-a34d-7871-a350-9ddf2cd8168f",
+            "cli_version": "0.163.0",
+            "source": "vscode"
+          },
+          "contexts": [
+            {
+              "model": "gpt-6.1-sol",
+              "effort": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "role": "simpson",
+      "sessions": [
+        {
+          "meta": {
+            "id": "01a1b5a0-a75e-72d1-a9ea-0e26c3b249c7",
+            "cli_version": "0.163.0",
+            "source": "vscode"
+          },
+          "contexts": [
+            {
+              "model": "gpt-6.1-sol",
+              "effort": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "role": "checker",
+      "sessions": [
+        {
+          "meta": {
+            "id": "01a1b5a2-30f1-7152-9dff-7903fbf7daac",
+            "cli_version": "0.163.0",
+            "source": "vscode"
+          },
+          "contexts": [
+            {
+              "model": "gpt-6.1-sol",
+              "effort": "medium"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "plain_sessions_per_role": {
+    "trapezoid": 1,
+    "simpson": 1,
+    "checker": 1
+  }
+}

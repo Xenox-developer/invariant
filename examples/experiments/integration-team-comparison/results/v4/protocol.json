@@ -1,0 +1,64 @@
+{
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "features": {
+    "features.apps": false,
+    "features.plugins": false,
+    "features.remote_plugin": false,
+    "features.hooks": false,
+    "features.multi_agent": false,
+    "features.multi_agent_v2": false,
+    "features.shell_snapshot": false,
+    "features.image_generation": false,
+    "features.computer_use": false,
+    "features.browser_use": false,
+    "features.browser_use_external": false,
+    "features.in_app_browser": false,
+    "features.in_app_local_automation": false,
+    "features.goals": false,
+    "features.tool_suggest": false,
+    "features.skill_mcp_dependency_install": false,
+    "features.workspace_dependencies": false,
+    "features.worktrees": false,
+    "features.sleep_tool": false,
+    "features.code_mode_host": true,
+    "features.skip_host_skill_discovery": true,
+    "features.skill_search": false,
+    "features.view_image": false,
+    "features.code_mode.default_exec_yield_time_ms": 1200000
+  },
+  "image": "sha256:db21298b84d45d950442afa08ebd86a5e1f7deadb4a167d170b6dd9ba1262e01",
+  "checks_sha256": "5f3b4aa18a46fb44de7bc1e8acbc0132214025d6c1c974c91be2c787406f1e76",
+  "source_digest": "8c7f64b29e8deaadedc8b91f2edc726874149772132302a70888fe3eba374854",
+  "source_digests": {
+    "first": "8c7f64b29e8deaadedc8b91f2edc726874149772132302a70888fe3eba374854",
+    "warm1": "8c7f64b29e8deaadedc8b91f2edc726874149772132302a70888fe3eba374854",
+    "warm2": "8c7f64b29e8deaadedc8b91f2edc726874149772132302a70888fe3eba374854",
+    "warm3": "8c7f64b29e8deaadedc8b91f2edc726874149772132302a70888fe3eba374854",
+    "release": "8d4c9ee274872f1055d291ddb71583b2eecf900381ab420560baf8841f857436"
+  },
+  "order": {
+    "first": [
+      "native",
+      "bare"
+    ],
+    "warm1": [
+      "bare",
+      "native"
+    ],
+    "warm2": [
+      "native",
+      "bare"
+    ],
+    "warm3": [
+      "bare",
+      "native"
+    ],
+    "release": [
+      "native",
+      "bare"
+    ]
+  },
+  "first_run_notice": "New project/run; shared Docker runtime cache already exists. Runtime build excluded from measured arms.",
+  "baseline_retains_volumes_but_not_equivalent_rootfs_checkpoints": true
+}

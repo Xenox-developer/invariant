@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="460" viewBox="0 0 820 460">
+<title>Quadrature absolute error on [0,1]</title>
+<desc>Logarithmic error axis, logarithmic n axis. Simpson x squared is omitted because its error is roundoff.</desc>
+<rect width="820" height="460" fill="white"/>
+<g font-family="sans-serif" font-size="13" fill="#222">
+<text x="100" y="25">Absolute integration error on [0,1]</text>
+<path d="M 100 55.000 H 580" stroke="#ddd"/>
+<text x="45" y="59.000">1e-2</text>
+<path d="M 100 101.429 H 580" stroke="#ddd"/>
+<text x="45" y="105.429">1e-3</text>
+<path d="M 100 147.857 H 580" stroke="#ddd"/>
+<text x="45" y="151.857">1e-4</text>
+<path d="M 100 194.286 H 580" stroke="#ddd"/>
+<text x="45" y="198.286">1e-5</text>
+<path d="M 100 240.714 H 580" stroke="#ddd"/>
+<text x="45" y="244.714">1e-6</text>
+<path d="M 100 287.143 H 580" stroke="#ddd"/>
+<text x="45" y="291.143">1e-7</text>
+<path d="M 100 333.571 H 580" stroke="#ddd"/>
+<text x="45" y="337.571">1e-8</text>
+<path d="M 100 380.000 H 580" stroke="#ddd"/>
+<text x="45" y="384.000">1e-9</text>
+<path d="M 100.000 55 V 380" stroke="#ddd"/>
+<text x="92.000" y="405">10</text>
+<path d="M 260.000 55 V 380" stroke="#ddd"/>
+<text x="252.000" y="405">20</text>
+<path d="M 420.000 55 V 380" stroke="#ddd"/>
+<text x="412.000" y="405">40</text>
+<path d="M 580.000 55 V 380" stroke="#ddd"/>
+<text x="572.000" y="405">80</text>
+<text x="225" y="440">n subintervals (log2 scale)</text>
+<text transform="translate(20 290) rotate(-90)">absolute error (log10 scale)</text>
+<polyline points="100.000,91.128 260.000,119.081 420.000,147.034 580.000,174.987" fill="none" stroke="#1261a0" stroke-width="2"/>
+<path d="M 605 90 h 25" stroke="#1261a0" stroke-width="2"/>
+<text x="638" y="94">trapezoid x^2</text>
+<polyline points="100.000,77.172 260.000,105.110 420.000,133.059 580.000,161.011" fill="none" stroke="#b34700" stroke-width="2"/>
+<path d="M 605 120 h 25" stroke="#b34700" stroke-width="2"/>
+<text x="638" y="124">trapezoid x^4</text>
+<polyline points="100.000,188.485 260.000,244.391 420.000,300.296 580.000,356.202" fill="none" stroke="#16813b" stroke-width="2"/>
+<path d="M 605 150 h 25" stroke="#16813b" stroke-width="2"/>
+<text x="638" y="154">simpson x^4</text>
+</g>
+</svg>

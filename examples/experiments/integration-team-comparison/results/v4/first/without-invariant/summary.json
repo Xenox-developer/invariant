@@ -1,0 +1,1063 @@
+{
+  "backend": "plain_docker_codex",
+  "started_at": 1794056285.729256,
+  "finished_at": 1794056456.576826,
+  "wall_seconds": 170.84757018089294,
+  "setup_seconds": 15.883324146270752,
+  "parallel_stage_seconds": 43.408323764801025,
+  "checker_stage_seconds": 111.55592226982117,
+  "agents": [
+    {
+      "role": "trapezoid",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "container": "research-v4-first-trapezoid",
+      "started_at": 1794056301.8617961,
+      "finished_at": 1794056343.212259,
+      "duration_seconds": 41.350462913513184,
+      "exit_code": 0,
+      "cli_usage": {
+        "input_tokens": 36358,
+        "cached_input_tokens": 22784,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 693,
+        "reasoning_output_tokens": 0
+      },
+      "turn_started_at": 1794056313.445994,
+      "turn_finished_at": 1794056339.061255,
+      "host_config": {
+        "Binds": null,
+        "ContainerIDFile": "",
+        "LogConfig": {
+          "Type": "json-file",
+          "Config": {}
+        },
+        "NetworkMode": "bridge",
+        "PortBindings": {},
+        "RestartPolicy": {
+          "Name": "no",
+          "MaximumRetryCount": 0
+        },
+        "AutoRemove": false,
+        "VolumeDriver": "",
+        "VolumesFrom": null,
+        "ConsoleSize": [
+          0,
+          0
+        ],
+        "CapAdd": [
+          "CHOWN",
+          "DAC_OVERRIDE",
+          "FOWNER",
+          "FSETID",
+          "SETGID",
+          "SETUID",
+          "SYS_CHROOT",
+          "SETFCAP"
+        ],
+        "CapDrop": [
+          "ALL"
+        ],
+        "CgroupnsMode": "private",
+        "Dns": [],
+        "DnsOptions": [],
+        "DnsSearch": [],
+        "ExtraHosts": null,
+        "GroupAdd": null,
+        "IpcMode": "private",
+        "Cgroup": "",
+        "Links": null,
+        "OomScoreAdj": 0,
+        "PidMode": "",
+        "Privileged": false,
+        "PublishAllPorts": false,
+        "ReadonlyRootfs": false,
+        "SecurityOpt": [
+          "no-new-privileges"
+        ],
+        "Tmpfs": {
+          "/scratch": "rw,nosuid,nodev"
+        },
+        "UTSMode": "",
+        "UsernsMode": "",
+        "ShmSize": 67108864,
+        "Runtime": "runc",
+        "Isolation": "",
+        "CpuShares": 0,
+        "Memory": 0,
+        "NanoCpus": 0,
+        "CgroupParent": "",
+        "BlkioWeight": 0,
+        "BlkioWeightDevice": [],
+        "BlkioDeviceReadBps": [],
+        "BlkioDeviceWriteBps": [],
+        "BlkioDeviceReadIOps": [],
+        "BlkioDeviceWriteIOps": [],
+        "CpuPeriod": 0,
+        "CpuQuota": 0,
+        "CpuRealtimePeriod": 0,
+        "CpuRealtimeRuntime": 0,
+        "CpusetCpus": "",
+        "CpusetMems": "",
+        "Devices": [],
+        "DeviceCgroupRules": null,
+        "DeviceRequests": null,
+        "MemoryReservation": 0,
+        "MemorySwap": 0,
+        "MemorySwappiness": null,
+        "OomKillDisable": false,
+        "PidsLimit": null,
+        "Ulimits": [],
+        "CpuCount": 0,
+        "CpuPercent": 0,
+        "IOMaximumIOps": 0,
+        "IOMaximumBandwidth": 0,
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "/var/lib/docker/volumes/research-v4-first-state/_data/work/trapezoid",
+            "Target": "/workspace"
+          },
+          {
+            "Type": "bind",
+            "Source": "/var/lib/docker/volumes/research-v4-first-state/_data/homes/trapezoid",
+            "Target": "/agent"
+          },
+          {
+            "Type": "volume",
+            "Source": "research-v4-common-tools",
+            "Target": "/tools",
+            "ReadOnly": true
+          }
+        ],
+        "MaskedPaths": [
+          "/proc/asound",
+          "/proc/acpi",
+          "/proc/kcore",
+          "/proc/keys",
+          "/proc/latency_stats",
+          "/proc/timer_list",
+          "/proc/timer_stats",
+          "/proc/sched_debug",
+          "/proc/scsi",
+          "/sys/firmware",
+          "/sys/devices/virtual/powercap"
+        ],
+        "ReadonlyPaths": [
+          "/proc/bus",
+          "/proc/fs",
+          "/proc/irq",
+          "/proc/sys",
+          "/proc/sysrq-trigger"
+        ],
+        "Init": true
+      },
+      "image": "sha256:db21298b84d45d950442afa08ebd86a5e1f7deadb4a167d170b6dd9ba1262e01",
+      "acceptance": {
+        "passed": true,
+        "tests": 35,
+        "failures": 0,
+        "errors": 0,
+        "checks": [
+          {
+            "name": "callable_general_integrator",
+            "passed": true
+          },
+          {
+            "name": "assigned_method",
+            "passed": true
+          },
+          {
+            "name": "interval",
+            "passed": true
+          },
+          {
+            "name": "eight_unique_rows",
+            "passed": true
+          },
+          {
+            "name": "computed_estimate_x2_n10",
+            "passed": true
+          },
+          {
+            "name": "exact_reference_x2_n10",
+            "passed": true
+          },
+          {
+            "name": "correct_error_x2_n10",
+            "passed": true
+          },
+          {
+            "name": "computed_estimate_x2_n20",
+            "passed": true
+          },
+          {
+            "name": "exact_reference_x2_n20",
+            "passed": true
+          },
+          {
+            "name": "correct_error_x2_n20",
+            "passed": true
+          },
+          {
+            "name": "computed_estimate_x2_n40",
+            "passed": true
+          },
+          {
+            "name": "exact_reference_x2_n40",
+            "passed": true
+          },
+          {
+            "name": "correct_error_x2_n40",
+            "passed": true
+          },
+          {
+            "name": "computed_estimate_x2_n80",
+            "passed": true
+          },
+          {
+            "name": "exact_reference_x2_n80",
+            "passed": true
+          },
+          {
+            "name": "correct_error_x2_n80",
+            "passed": true
+          },
+          {
+            "name": "computed_estimate_x4_n10",
+            "passed": true
+          },
+          {
+            "name": "exact_reference_x4_n10",
+            "passed": true
+          },
+          {
+            "name": "correct_error_x4_n10",
+            "passed": true
+          },
+          {
+            "name": "computed_estimate_x4_n20",
+            "passed": true
+          },
+          {
+            "name": "exact_reference_x4_n20",
+            "passed": true
+          },
+          {
+            "name": "correct_error_x4_n20",
+            "passed": true
+          },
+          {
+            "name": "computed_estimate_x4_n40",
+            "passed": true
+          },
+          {
+            "name": "exact_reference_x4_n40",
+            "passed": true
+          },
+          {
+            "name": "correct_error_x4_n40",
+            "passed": true
+          },
+          {
+            "name": "computed_estimate_x4_n80",
+            "passed": true
+          },
+          {
+            "name": "exact_reference_x4_n80",
+            "passed": true
+          },
+          {
+            "name": "correct_error_x4_n80",
+            "passed": true
+          },
+          {
+            "name": "general_linear_-1_2",
+            "passed": true
+          },
+          {
+            "name": "general_linear_0.25_1.25",
+            "passed": true
+          },
+          {
+            "name": "general_linear_-2_0",
+            "passed": true
+          },
+          {
+            "name": "nonpolynomial_sine",
+            "passed": true
+          },
+          {
+            "name": "uses_function_samples",
+            "passed": true
+          },
+          {
+            "name": "invalid_n_0",
+            "passed": true
+          },
+          {
+            "name": "invalid_n_-2",
+            "passed": true
+          }
+        ],
+        "sessions": [
+          {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "observations": [
+              {
+                "total": {
+                  "input_tokens": 9911,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 82,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 9993
+                },
+                "last": {
+                  "input_tokens": 9911,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 82,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 9993
+                },
+                "timestamp": "2026-11-07T12:58:41.672Z"
+              },
+              {
+                "total": {
+                  "input_tokens": 22480,
+                  "cached_input_tokens": 9856,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 655,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 23135
+                },
+                "last": {
+                  "input_tokens": 12569,
+                  "cached_input_tokens": 9856,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 573,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 13142
+                },
+                "timestamp": "2026-11-07T12:58:56.182Z"
+              },
+              {
+                "total": {
+                  "input_tokens": 36358,
+                  "cached_input_tokens": 22784,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 693,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 37051
+                },
+                "last": {
+                  "input_tokens": 13878,
+                  "cached_input_tokens": 12928,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 38,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 13916
+                },
+                "timestamp": "2026-11-07T12:58:59.014Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "role": "simpson",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "container": "research-v4-first-simpson",
+      "started_at": 1794056301.854369,
+      "finished_at": 1794056345.013959,
+      "duration_seconds": 43.159590005874634,
+      "exit_code": 0,
+      "cli_usage": {
+        "input_tokens": 36333,
+        "cached_input_tokens": 22912,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 789,
+        "reasoning_output_tokens": 0
+      },
+      "turn_started_at": 1794056313.4859788,
+      "turn_finished_at": 1794056340.54788,
+      "host_config": {
+        "Binds": null,
+        "ContainerIDFile": "",
+        "LogConfig": {
+          "Type": "json-file",
+          "Config": {}
+        },
+        "NetworkMode": "bridge",
+        "PortBindings": {},
+        "RestartPolicy": {
+          "Name": "no",
+          "MaximumRetryCount": 0
+        },
+        "AutoRemove": false,
+        "VolumeDriver": "",
+        "VolumesFrom": null,
+        "ConsoleSize": [
+          0,
+          0
+        ],
+        "CapAdd": [
+          "CHOWN",
+          "DAC_OVERRIDE",
+          "FOWNER",
+          "FSETID",
+          "SETGID",
+          "SETUID",
+          "SYS_CHROOT",
+          "SETFCAP"
+        ],
+        "CapDrop": [
+          "ALL"
+        ],
+        "CgroupnsMode": "private",
+        "Dns": [],
+        "DnsOptions": [],
+        "DnsSearch": [],
+        "ExtraHosts": null,
+        "GroupAdd": null,
+        "IpcMode": "private",
+        "Cgroup": "",
+        "Links": null,
+        "OomScoreAdj": 0,
+        "PidMode": "",
+        "Privileged": false,
+        "PublishAllPorts": false,
+        "ReadonlyRootfs": false,
+        "SecurityOpt": [
+          "no-new-privileges"
+        ],
+        "Tmpfs": {
+          "/scratch": "rw,nosuid,nodev"
+        },
+        "UTSMode": "",
+        "UsernsMode": "",
+        "ShmSize": 67108864,
+        "Runtime": "runc",
+        "Isolation": "",
+        "CpuShares": 0,
+        "Memory": 0,
+        "NanoCpus": 0,
+        "CgroupParent": "",
+        "BlkioWeight": 0,
+        "BlkioWeightDevice": [],
+        "BlkioDeviceReadBps": [],
+        "BlkioDeviceWriteBps": [],
+        "BlkioDeviceReadIOps": [],
+        "BlkioDeviceWriteIOps": [],
+        "CpuPeriod": 0,
+        "CpuQuota": 0,
+        "CpuRealtimePeriod": 0,
+        "CpuRealtimeRuntime": 0,
+        "CpusetCpus": "",
+        "CpusetMems": "",
+        "Devices": [],
+        "DeviceCgroupRules": null,
+        "DeviceRequests": null,
+        "MemoryReservation": 0,
+        "MemorySwap": 0,
+        "MemorySwappiness": null,
+        "OomKillDisable": false,
+        "PidsLimit": null,
+        "Ulimits": [],
+        "CpuCount": 0,
+        "CpuPercent": 0,
+        "IOMaximumIOps": 0,
+        "IOMaximumBandwidth": 0,
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "/var/lib/docker/volumes/research-v4-first-state/_data/work/simpson",
+            "Target": "/workspace"
+          },
+          {
+            "Type": "bind",
+            "Source": "/var/lib/docker/volumes/research-v4-first-state/_data/homes/simpson",
+            "Target": "/agent"
+          },
+          {
+            "Type": "volume",
+            "Source": "research-v4-common-tools",
+            "Target": "/tools",
+            "ReadOnly": true
+          }
+        ],
+        "MaskedPaths": [
+          "/proc/asound",
+          "/proc/acpi",
+          "/proc/kcore",
+          "/proc/keys",
+          "/proc/latency_stats",
+          "/proc/timer_list",
+          "/proc/timer_stats",
+          "/proc/sched_debug",
+          "/proc/scsi",
+          "/sys/firmware",
+          "/sys/devices/virtual/powercap"
+        ],
+        "ReadonlyPaths": [
+          "/proc/bus",
+          "/proc/fs",
+          "/proc/irq",
+          "/proc/sys",
+          "/proc/sysrq-trigger"
+        ],
+        "Init": true
+      },
+      "image": "sha256:db21298b84d45d950442afa08ebd86a5e1f7deadb4a167d170b6dd9ba1262e01",
+      "acceptance": {
+        "passed": true,
+        "tests": 36,
+        "failures": 0,
+        "errors": 0,
+        "checks": [
+          {
+            "name": "callable_general_integrator",
+            "passed": true
+          },
+          {
+            "name": "assigned_method",
+            "passed": true
+          },
+          {
+            "name": "interval",
+            "passed": true
+          },
+          {
+            "name": "eight_unique_rows",
+            "passed": true
+          },
+          {
+            "name": "computed_estimate_x2_n10",
+            "passed": true
+          },
+          {
+            "name": "exact_reference_x2_n10",
+            "passed": true
+          },
+          {
+            "name": "correct_error_x2_n10",
+            "passed": true
+          },
+          {
+            "name": "computed_estimate_x2_n20",
+            "passed": true
+          },
+          {
+            "name": "exact_reference_x2_n20",
+            "passed": true
+          },
+          {
+            "name": "correct_error_x2_n20",
+            "passed": true
+          },
+          {
+            "name": "computed_estimate_x2_n40",
+            "passed": true
+          },
+          {
+            "name": "exact_reference_x2_n40",
+            "passed": true
+          },
+          {
+            "name": "correct_error_x2_n40",
+            "passed": true
+          },
+          {
+            "name": "computed_estimate_x2_n80",
+            "passed": true
+          },
+          {
+            "name": "exact_reference_x2_n80",
+            "passed": true
+          },
+          {
+            "name": "correct_error_x2_n80",
+            "passed": true
+          },
+          {
+            "name": "computed_estimate_x4_n10",
+            "passed": true
+          },
+          {
+            "name": "exact_reference_x4_n10",
+            "passed": true
+          },
+          {
+            "name": "correct_error_x4_n10",
+            "passed": true
+          },
+          {
+            "name": "computed_estimate_x4_n20",
+            "passed": true
+          },
+          {
+            "name": "exact_reference_x4_n20",
+            "passed": true
+          },
+          {
+            "name": "correct_error_x4_n20",
+            "passed": true
+          },
+          {
+            "name": "computed_estimate_x4_n40",
+            "passed": true
+          },
+          {
+            "name": "exact_reference_x4_n40",
+            "passed": true
+          },
+          {
+            "name": "correct_error_x4_n40",
+            "passed": true
+          },
+          {
+            "name": "computed_estimate_x4_n80",
+            "passed": true
+          },
+          {
+            "name": "exact_reference_x4_n80",
+            "passed": true
+          },
+          {
+            "name": "correct_error_x4_n80",
+            "passed": true
+          },
+          {
+            "name": "general_linear_-1_2",
+            "passed": true
+          },
+          {
+            "name": "general_linear_0.25_1.25",
+            "passed": true
+          },
+          {
+            "name": "general_linear_-2_0",
+            "passed": true
+          },
+          {
+            "name": "nonpolynomial_sine",
+            "passed": true
+          },
+          {
+            "name": "uses_function_samples",
+            "passed": true
+          },
+          {
+            "name": "invalid_n_0",
+            "passed": true
+          },
+          {
+            "name": "invalid_n_-2",
+            "passed": true
+          },
+          {
+            "name": "invalid_n_3",
+            "passed": true
+          }
+        ],
+        "sessions": [
+          {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "observations": [
+              {
+                "total": {
+                  "input_tokens": 9906,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 87,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 9993
+                },
+                "last": {
+                  "input_tokens": 9906,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 87,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 9993
+                },
+                "timestamp": "2026-11-07T12:58:41.501Z"
+              },
+              {
+                "total": {
+                  "input_tokens": 22428,
+                  "cached_input_tokens": 9856,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 751,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 23179
+                },
+                "last": {
+                  "input_tokens": 12522,
+                  "cached_input_tokens": 9856,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 664,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 13186
+                },
+                "timestamp": "2026-11-07T12:58:57.064Z"
+              },
+              {
+                "total": {
+                  "input_tokens": 36333,
+                  "cached_input_tokens": 22912,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 789,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 37122
+                },
+                "last": {
+                  "input_tokens": 13905,
+                  "cached_input_tokens": 13056,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 38,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 13943
+                },
+                "timestamp": "2026-11-07T12:59:00.456Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "role": "checker",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "container": "research-v4-first-checker",
+      "started_at": 1794056348.005161,
+      "finished_at": 1794056455.687937,
+      "duration_seconds": 107.68277597427368,
+      "exit_code": 0,
+      "cli_usage": {
+        "input_tokens": 63095,
+        "cached_input_tokens": 47360,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 4229,
+        "reasoning_output_tokens": 109
+      },
+      "turn_started_at": 1794056353.4186492,
+      "turn_finished_at": 1794056449.1867352,
+      "host_config": {
+        "Binds": null,
+        "ContainerIDFile": "",
+        "LogConfig": {
+          "Type": "json-file",
+          "Config": {}
+        },
+        "NetworkMode": "bridge",
+        "PortBindings": {},
+        "RestartPolicy": {
+          "Name": "no",
+          "MaximumRetryCount": 0
+        },
+        "AutoRemove": false,
+        "VolumeDriver": "",
+        "VolumesFrom": null,
+        "ConsoleSize": [
+          0,
+          0
+        ],
+        "CapAdd": [
+          "CHOWN",
+          "DAC_OVERRIDE",
+          "FOWNER",
+          "FSETID",
+          "SETGID",
+          "SETUID",
+          "SYS_CHROOT",
+          "SETFCAP"
+        ],
+        "CapDrop": [
+          "ALL"
+        ],
+        "CgroupnsMode": "private",
+        "Dns": [],
+        "DnsOptions": [],
+        "DnsSearch": [],
+        "ExtraHosts": null,
+        "GroupAdd": null,
+        "IpcMode": "private",
+        "Cgroup": "",
+        "Links": null,
+        "OomScoreAdj": 0,
+        "PidMode": "",
+        "Privileged": false,
+        "PublishAllPorts": false,
+        "ReadonlyRootfs": false,
+        "SecurityOpt": [
+          "no-new-privileges"
+        ],
+        "Tmpfs": {
+          "/scratch": "rw,nosuid,nodev"
+        },
+        "UTSMode": "",
+        "UsernsMode": "",
+        "ShmSize": 67108864,
+        "Runtime": "runc",
+        "Isolation": "",
+        "CpuShares": 0,
+        "Memory": 0,
+        "NanoCpus": 0,
+        "CgroupParent": "",
+        "BlkioWeight": 0,
+        "BlkioWeightDevice": [],
+        "BlkioDeviceReadBps": [],
+        "BlkioDeviceWriteBps": [],
+        "BlkioDeviceReadIOps": [],
+        "BlkioDeviceWriteIOps": [],
+        "CpuPeriod": 0,
+        "CpuQuota": 0,
+        "CpuRealtimePeriod": 0,
+        "CpuRealtimeRuntime": 0,
+        "CpusetCpus": "",
+        "CpusetMems": "",
+        "Devices": [],
+        "DeviceCgroupRules": null,
+        "DeviceRequests": null,
+        "MemoryReservation": 0,
+        "MemorySwap": 0,
+        "MemorySwappiness": null,
+        "OomKillDisable": false,
+        "PidsLimit": null,
+        "Ulimits": [],
+        "CpuCount": 0,
+        "CpuPercent": 0,
+        "IOMaximumIOps": 0,
+        "IOMaximumBandwidth": 0,
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "/var/lib/docker/volumes/research-v4-first-state/_data/work/checker",
+            "Target": "/workspace"
+          },
+          {
+            "Type": "bind",
+            "Source": "/var/lib/docker/volumes/research-v4-first-state/_data/homes/checker",
+            "Target": "/agent"
+          },
+          {
+            "Type": "volume",
+            "Source": "research-v4-common-tools",
+            "Target": "/tools",
+            "ReadOnly": true
+          }
+        ],
+        "MaskedPaths": [
+          "/proc/asound",
+          "/proc/acpi",
+          "/proc/kcore",
+          "/proc/keys",
+          "/proc/latency_stats",
+          "/proc/timer_list",
+          "/proc/timer_stats",
+          "/proc/sched_debug",
+          "/proc/scsi",
+          "/sys/firmware",
+          "/sys/devices/virtual/powercap"
+        ],
+        "ReadonlyPaths": [
+          "/proc/bus",
+          "/proc/fs",
+          "/proc/irq",
+          "/proc/sys",
+          "/proc/sysrq-trigger"
+        ],
+        "Init": true
+      },
+      "image": "sha256:db21298b84d45d950442afa08ebd86a5e1f7deadb4a167d170b6dd9ba1262e01",
+      "acceptance": {
+        "passed": true,
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "checks": [
+          {
+            "name": "csv_matches_all_sixteen_received_rows",
+            "passed": true
+          },
+          {
+            "name": "report_has_substantive_text",
+            "passed": true
+          },
+          {
+            "name": "verification_passed",
+            "passed": true
+          },
+          {
+            "name": "verified_sixteen_rows",
+            "passed": true
+          },
+          {
+            "name": "input_provenance_trapezoid",
+            "passed": true
+          },
+          {
+            "name": "input_provenance_simpson",
+            "passed": true
+          },
+          {
+            "name": "trapezoid_order",
+            "passed": true
+          },
+          {
+            "name": "simpson_order",
+            "passed": true
+          },
+          {
+            "name": "simpson_quadratic_roundoff",
+            "passed": true
+          },
+          {
+            "name": "observed_ratios_trapezoid_x2",
+            "passed": true
+          },
+          {
+            "name": "observed_ratios_trapezoid_x4",
+            "passed": true
+          },
+          {
+            "name": "observed_ratios_simpson_x4",
+            "passed": true
+          },
+          {
+            "name": "svg_has_three_named_error_series",
+            "passed": true
+          },
+          {
+            "name": "report_generator_reproducible",
+            "passed": true
+          }
+        ],
+        "sessions": [
+          {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "observations": [
+              {
+                "total": {
+                  "input_tokens": 10176,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 137,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 10313
+                },
+                "last": {
+                  "input_tokens": 10176,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 137,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 10313
+                },
+                "timestamp": "2026-11-07T12:59:21.122Z"
+              },
+              {
+                "total": {
+                  "input_tokens": 25069,
+                  "cached_input_tokens": 10112,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 3967,
+                  "reasoning_output_tokens": 95,
+                  "total_tokens": 29036
+                },
+                "last": {
+                  "input_tokens": 14893,
+                  "cached_input_tokens": 10112,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 3830,
+                  "reasoning_output_tokens": 95,
+                  "total_tokens": 18723
+                },
+                "timestamp": "2026-11-07T13:00:40.086Z"
+              },
+              {
+                "total": {
+                  "input_tokens": 43816,
+                  "cached_input_tokens": 28672,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 4136,
+                  "reasoning_output_tokens": 109,
+                  "total_tokens": 47952
+                },
+                "last": {
+                  "input_tokens": 18747,
+                  "cached_input_tokens": 18560,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 169,
+                  "reasoning_output_tokens": 14,
+                  "total_tokens": 18916
+                },
+                "timestamp": "2026-11-07T13:00:45.305Z"
+              },
+              {
+                "total": {
+                  "input_tokens": 63095,
+                  "cached_input_tokens": 47360,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 4229,
+                  "reasoning_output_tokens": 109,
+                  "total_tokens": 67324
+                },
+                "last": {
+                  "input_tokens": 19279,
+                  "cached_input_tokens": 18688,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 93,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 19372
+                },
+                "timestamp": "2026-11-07T13:00:49.147Z"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "passed": true,
+  "starting_image": "sha256:db21298b84d45d950442afa08ebd86a5e1f7deadb4a167d170b6dd9ba1262e01",
+  "state_volume": "research-v4-first-state",
+  "tools_volume": "research-v4-common-tools",
+  "profile": {
+    "tool_profile": "coding",
+    "features": {
+      "features.apps": false,
+      "features.plugins": false,
+      "features.remote_plugin": false,
+      "features.hooks": false,
+      "features.multi_agent": false,
+      "features.multi_agent_v2": false,
+      "features.shell_snapshot": false,
+      "features.image_generation": false,
+      "features.computer_use": false,
+      "features.browser_use": false,
+      "features.browser_use_external": false,
+      "features.in_app_browser": false,
+      "features.in_app_local_automation": false,
+      "features.goals": false,
+      "features.tool_suggest": false,
+      "features.skill_mcp_dependency_install": false,
+      "features.workspace_dependencies": false,
+      "features.worktrees": false,
+      "features.sleep_tool": false,
+      "features.code_mode_host": true,
+      "features.skip_host_skill_discovery": true,
+      "features.skill_search": false,
+      "features.view_image": false,
+      "features.code_mode.default_exec_yield_time_ms": 1200000
+    }
+  }
+}

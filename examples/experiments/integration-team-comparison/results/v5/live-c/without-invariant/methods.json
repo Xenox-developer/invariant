@@ -1,0 +1,309 @@
+{
+  "records": [
+    {
+      "role": "trapezoid",
+      "started_at": 1794183123.2076218,
+      "finished_at": 1794183165.798499,
+      "seconds": 42.590877294540405,
+      "workload": {
+        "role": "trapezoid",
+        "mode": "live",
+        "prompt_sha256": "cf0da5b2dab7ee04f7a6db3ce5bda0c7895f99d9ce67dbdd695ed40fa75133d0",
+        "profile_sha256": "c1195ffa2e4ab96fe6350c1fb704a8e84fba46064d47195f0a896beb63910210",
+        "driver_sha256": "ce6dce383a4d95f912d7ccfbf5a28fcc9a161293b75a03700aa24de824c0a7d4",
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "started_at": 1794183128.279375,
+        "argv_sha256": "2a357c60cc4a1452d788443917b719aa70a427c821b6a07e1bf7ba92d2201e6f",
+        "environment_sha256": "85e428836c15da5d4b72b40ad8b6b92d5986a9babae7def3c461ec3e8d2cf23b",
+        "cli_version": "codex-cli 0.163.0",
+        "workload_started_at": 1794183128.4197168,
+        "workload_finished_at": 1794183165.4838479,
+        "exit_code": 0,
+        "cli_usage": {
+          "input_tokens": 52625,
+          "cached_input_tokens": 30592,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 844,
+          "reasoning_output_tokens": 11
+        },
+        "turn_started_at": 1794183133.8481083,
+        "turn_finished_at": 1794183162.0020769,
+        "sessions": [
+          {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "base_instructions": {
+              "sha256": "d12e6dbdfd4a4ddb26a1f6048b69a32b8b32f74e4add9791d1dff7f4cac0b032",
+              "chars": 21524
+            },
+            "observations": [
+              {
+                "timestamp": "2026-11-09T00:12:20.948Z",
+                "total": {
+                  "input_tokens": 9797,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 120,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 9917
+                },
+                "last": {
+                  "input_tokens": 9797,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 120,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 9917
+                }
+              },
+              {
+                "timestamp": "2026-11-09T00:12:24.186Z",
+                "total": {
+                  "input_tokens": 19786,
+                  "cached_input_tokens": 9728,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 184,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 19970
+                },
+                "last": {
+                  "input_tokens": 9989,
+                  "cached_input_tokens": 9728,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 64,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 10053
+                }
+              },
+              {
+                "timestamp": "2026-11-09T00:12:26.210Z",
+                "total": {
+                  "input_tokens": 30135,
+                  "cached_input_tokens": 19584,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 234,
+                  "reasoning_output_tokens": 11,
+                  "total_tokens": 30369
+                },
+                "last": {
+                  "input_tokens": 10349,
+                  "cached_input_tokens": 9856,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 50,
+                  "reasoning_output_tokens": 11,
+                  "total_tokens": 10399
+                }
+              },
+              {
+                "timestamp": "2026-11-09T00:12:38.972Z",
+                "total": {
+                  "input_tokens": 40741,
+                  "cached_input_tokens": 19584,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 804,
+                  "reasoning_output_tokens": 11,
+                  "total_tokens": 41545
+                },
+                "last": {
+                  "input_tokens": 10606,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 570,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 11176
+                }
+              },
+              {
+                "timestamp": "2026-11-09T00:12:41.966Z",
+                "total": {
+                  "input_tokens": 52625,
+                  "cached_input_tokens": 30592,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 844,
+                  "reasoning_output_tokens": 11,
+                  "total_tokens": 53469
+                },
+                "last": {
+                  "input_tokens": 11884,
+                  "cached_input_tokens": 11008,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 40,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 11924
+                }
+              }
+            ]
+          }
+        ],
+        "model_turns": 1,
+        "provider_responses": 5,
+        "usage": {
+          "input_tokens": 52625,
+          "cached_input_tokens": 30592,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 844,
+          "reasoning_output_tokens": 11,
+          "total_tokens": 53469
+        },
+        "first_input_tokens": 9797,
+        "first_cached_input_tokens": 0,
+        "finished_at": 1794183165.489255
+      }
+    },
+    {
+      "role": "simpson",
+      "started_at": 1794183123.210785,
+      "finished_at": 1794183168.956013,
+      "seconds": 45.74522805213928,
+      "workload": {
+        "role": "simpson",
+        "mode": "live",
+        "prompt_sha256": "83067359a0a13b46135efe939e6b81d13f88ec0866046c4b6b44d20855577130",
+        "profile_sha256": "c1195ffa2e4ab96fe6350c1fb704a8e84fba46064d47195f0a896beb63910210",
+        "driver_sha256": "ce6dce383a4d95f912d7ccfbf5a28fcc9a161293b75a03700aa24de824c0a7d4",
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "started_at": 1794183127.6087391,
+        "argv_sha256": "2a357c60cc4a1452d788443917b719aa70a427c821b6a07e1bf7ba92d2201e6f",
+        "environment_sha256": "85e428836c15da5d4b72b40ad8b6b92d5986a9babae7def3c461ec3e8d2cf23b",
+        "cli_version": "codex-cli 0.163.0",
+        "workload_started_at": 1794183128.274247,
+        "workload_finished_at": 1794183168.7398257,
+        "exit_code": 0,
+        "cli_usage": {
+          "input_tokens": 56178,
+          "cached_input_tokens": 32768,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 929,
+          "reasoning_output_tokens": 21
+        },
+        "turn_started_at": 1794183134.8444035,
+        "turn_finished_at": 1794183164.6657932,
+        "sessions": [
+          {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "base_instructions": {
+              "sha256": "d12e6dbdfd4a4ddb26a1f6048b69a32b8b32f74e4add9791d1dff7f4cac0b032",
+              "chars": 21524
+            },
+            "observations": [
+              {
+                "timestamp": "2026-11-09T00:12:23.094Z",
+                "total": {
+                  "input_tokens": 9792,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 101,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 9893
+                },
+                "last": {
+                  "input_tokens": 9792,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 101,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 9893
+                }
+              },
+              {
+                "timestamp": "2026-11-09T00:12:26.015Z",
+                "total": {
+                  "input_tokens": 19757,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 185,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 19942
+                },
+                "last": {
+                  "input_tokens": 9965,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 84,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 10049
+                }
+              },
+              {
+                "timestamp": "2026-11-09T00:12:28.432Z",
+                "total": {
+                  "input_tokens": 29870,
+                  "cached_input_tokens": 9856,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 246,
+                  "reasoning_output_tokens": 21,
+                  "total_tokens": 30116
+                },
+                "last": {
+                  "input_tokens": 10113,
+                  "cached_input_tokens": 9856,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 61,
+                  "reasoning_output_tokens": 21,
+                  "total_tokens": 10174
+                }
+              },
+              {
+                "timestamp": "2026-11-09T00:12:42.609Z",
+                "total": {
+                  "input_tokens": 42343,
+                  "cached_input_tokens": 19840,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 887,
+                  "reasoning_output_tokens": 21,
+                  "total_tokens": 43230
+                },
+                "last": {
+                  "input_tokens": 12473,
+                  "cached_input_tokens": 9984,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 641,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 13114
+                }
+              },
+              {
+                "timestamp": "2026-11-09T00:12:44.644Z",
+                "total": {
+                  "input_tokens": 56178,
+                  "cached_input_tokens": 32768,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 929,
+                  "reasoning_output_tokens": 21,
+                  "total_tokens": 57107
+                },
+                "last": {
+                  "input_tokens": 13835,
+                  "cached_input_tokens": 12928,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 42,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 13877
+                }
+              }
+            ]
+          }
+        ],
+        "model_turns": 1,
+        "provider_responses": 5,
+        "usage": {
+          "input_tokens": 56178,
+          "cached_input_tokens": 32768,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 929,
+          "reasoning_output_tokens": 21,
+          "total_tokens": 57107
+        },
+        "first_input_tokens": 9792,
+        "first_cached_input_tokens": 0,
+        "finished_at": 1794183168.7462735
+      }
+    }
+  ],
+  "started_at": 1794183123.206746,
+  "finished_at": 1794183169.741098,
+  "seconds": 46.53435182571411
+}

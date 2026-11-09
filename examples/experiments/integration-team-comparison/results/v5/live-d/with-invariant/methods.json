@@ -1,0 +1,814 @@
+{
+  "study_id": "study-7cdecbe2bea64bafb4fda7773e5676fc",
+  "records": [
+    {
+      "role": "trapezoid",
+      "attempt_id": "attempt-af40070bdca1a8652960429d7b007667",
+      "study_id": "study-7cdecbe2bea64bafb4fda7773e5676fc",
+      "capture": {
+        "complete": true,
+        "content_digest": "bef11f55018976ed79fbceaee39254886246d9c01a8bc30920ac0b17446e6b65",
+        "manifest": "/Users/nikchin/.invariant/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-af40070bdca1a8652960429d7b007667/snapshot/manifest.json",
+        "workspace": "/Users/nikchin/.invariant/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-af40070bdca1a8652960429d7b007667/snapshot/workspace"
+      },
+      "checkpoint": {
+        "complete": true,
+        "image": "sha256:758ae5f8616d4d399feb5e74ea878d91ca1cfdbf3da44ff619be061c14530637",
+        "owner": "attempt-af40070bdca1a8652960429d7b007667-runner",
+        "record": "/Users/nikchin/.invariant/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-af40070bdca1a8652960429d7b007667/control/environment.json"
+      },
+      "evaluation": {
+        "artifacts": {
+          "bytes": 2625,
+          "complete": true,
+          "files": [
+            {
+              "path": "checks.json",
+              "sha256": "1fe0bfa884f20c01d9b0ab6f1cc8ae7c6a662b16ee8631668a363724a0b794a6",
+              "size": 2625
+            }
+          ],
+          "skipped": []
+        },
+        "cleanup_confirmed": true,
+        "container": "invariant-exp-af40070bdca1a8652960429d7b007667-evaluation",
+        "duration_seconds": 1.9678759574890137,
+        "exit_code": 0,
+        "finished_at": 1794183577.184938,
+        "image": "sha256:758ae5f8616d4d399feb5e74ea878d91ca1cfdbf3da44ff619be061c14530637",
+        "log": "/Users/nikchin/.invariant/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-af40070bdca1a8652960429d7b007667/evaluation.log",
+        "log_bytes": 139,
+        "log_truncated": false,
+        "metrics": {
+          "tests_failed": 0,
+          "tests_passed": 35,
+          "tests_total": 35
+        },
+        "passed": true,
+        "reason": null,
+        "runtime": {
+          "host_config": {
+            "Memory": 0,
+            "MemorySwap": 0,
+            "NanoCpus": 0
+          },
+          "image": "sha256:758ae5f8616d4d399feb5e74ea878d91ca1cfdbf3da44ff619be061c14530637",
+          "memory_bytes": 0,
+          "mounts": [
+            {
+              "Destination": "/__invariant_inputs/run",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-af40070bdca1a8652960429d7b007667/input",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/__invariant_inputs/source",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/runtimes/baseline-5e5af68dc8d3224a4c11b5d1ba2c792bddfc4e4025a042cacec0a4bf96a2ec57/evaluator-source",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/__invariant_output",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": true,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-af40070bdca1a8652960429d7b007667/evaluation/output",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/scratch",
+              "Driver": "local",
+              "Mode": "",
+              "Name": "85a27cfadbaa74e657c2655386ab8aa4a29cc05499260ff2fc39ea04abbf089f",
+              "Propagation": "",
+              "RW": true,
+              "Source": "/var/lib/docker/volumes/85a27cfadbaa74e657c2655386ab8aa4a29cc05499260ff2fc39ea04abbf089f/_data",
+              "Type": "volume"
+            },
+            {
+              "Destination": "/workspace",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": true,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-af40070bdca1a8652960429d7b007667/evaluation/workspace",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/workspace/.invariant",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-af40070bdca1a8652960429d7b007667/evaluation/control/policy",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/__invariant",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/shared-runtime/d9dbf658d48a8ffb6bf1d0077188b0088f1c41c6f1df718ec2638a1723b0cde2/control",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/etc/codex/requirements.toml",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-code-v2-f0ceb265cd343028/_data/invariant/assets/environment-requirements-unrestricted.toml",
+              "Type": "bind"
+            }
+          ],
+          "nano_cpus": 0,
+          "network": "bridge",
+          "pids_limit": null,
+          "resource_contract": {
+            "docker_args": [
+              "--pids-limit=-1",
+              "--volume=/scratch"
+            ],
+            "host_config": {
+              "Memory": 0,
+              "MemorySwap": 0,
+              "NanoCpus": 0
+            },
+            "limits": {
+              "cpus": null,
+              "extra_swap_bytes": null,
+              "file_descriptors": null,
+              "memory_bytes": null,
+              "processes": null,
+              "scratch_bytes": null
+            },
+            "mode": "unlimited",
+            "profile": "codex-environment-v2",
+            "resolved": true,
+            "schema_version": 1
+          }
+        },
+        "schema_version": 1,
+        "started_at": 1794183575.2170625,
+        "status": "completed"
+      },
+      "runner": {
+        "cleanup_confirmed": true,
+        "container": "invariant-exp-af40070bdca1a8652960429d7b007667-runner",
+        "duration_seconds": 39.94415783882141,
+        "exit_code": 0,
+        "finished_at": 1794183568.915826,
+        "image": "sha256:845fc3854fe15416c34291e6705c4de1ffdfe85880d79cd1619d11bc5a8259c6",
+        "log": "/Users/nikchin/.invariant/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-af40070bdca1a8652960429d7b007667/runner.log",
+        "log_bytes": 64,
+        "log_truncated": false,
+        "reason": null,
+        "runtime": {
+          "host_config": {
+            "Memory": 0,
+            "MemorySwap": 0,
+            "NanoCpus": 0
+          },
+          "image": "sha256:845fc3854fe15416c34291e6705c4de1ffdfe85880d79cd1619d11bc5a8259c6",
+          "memory_bytes": 0,
+          "mounts": [
+            {
+              "Destination": "/etc/codex/requirements.toml",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-code-v2-f0ceb265cd343028/_data/invariant/assets/environment-requirements-unrestricted.toml",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/__invariant_inputs/run",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-af40070bdca1a8652960429d7b007667/input",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/scratch",
+              "Driver": "local",
+              "Mode": "",
+              "Name": "d57e8ce99b6b708b2e9a2a76e3e8eed9c29282c5bf819f0eca217616a827aace",
+              "Propagation": "",
+              "RW": true,
+              "Source": "/var/lib/docker/volumes/d57e8ce99b6b708b2e9a2a76e3e8eed9c29282c5bf819f0eca217616a827aace/_data",
+              "Type": "volume"
+            },
+            {
+              "Destination": "/workspace",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": true,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-af40070bdca1a8652960429d7b007667/workspace",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/workspace/.invariant",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-af40070bdca1a8652960429d7b007667/control/policy",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/__invariant",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/shared-runtime/d9dbf658d48a8ffb6bf1d0077188b0088f1c41c6f1df718ec2638a1723b0cde2/control",
+              "Type": "bind"
+            }
+          ],
+          "nano_cpus": 0,
+          "network": "bridge",
+          "pids_limit": null,
+          "resource_contract": {
+            "docker_args": [
+              "--pids-limit=-1",
+              "--volume=/scratch"
+            ],
+            "host_config": {
+              "Memory": 0,
+              "MemorySwap": 0,
+              "NanoCpus": 0
+            },
+            "limits": {
+              "cpus": null,
+              "extra_swap_bytes": null,
+              "file_descriptors": null,
+              "memory_bytes": null,
+              "processes": null,
+              "scratch_bytes": null
+            },
+            "mode": "unlimited",
+            "profile": "codex-environment-v2",
+            "resolved": true,
+            "schema_version": 1
+          }
+        },
+        "started_at": 1794183528.9716682,
+        "status": "completed"
+      },
+      "workload": {
+        "role": "trapezoid",
+        "mode": "live",
+        "prompt_sha256": "cf0da5b2dab7ee04f7a6db3ce5bda0c7895f99d9ce67dbdd695ed40fa75133d0",
+        "profile_sha256": "7f96f8534fd9fee3e5b86c14774f3882402a65e9ca16fb59eafbad849205ba0f",
+        "driver_sha256": "ce6dce383a4d95f912d7ccfbf5a28fcc9a161293b75a03700aa24de824c0a7d4",
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "started_at": 1794183532.2631273,
+        "argv_sha256": "850620031b5bfe27a50b4898c72774c140a1f46a1d65d066efd44dc41695b357",
+        "environment_sha256": "85e428836c15da5d4b72b40ad8b6b92d5986a9babae7def3c461ec3e8d2cf23b",
+        "cli_version": "codex-cli 0.163.0",
+        "workload_started_at": 1794183532.4017408,
+        "workload_finished_at": 1794183568.515415,
+        "exit_code": 0,
+        "cli_usage": {
+          "input_tokens": 56992,
+          "cached_input_tokens": 43008,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 840,
+          "reasoning_output_tokens": 0
+        },
+        "turn_started_at": 1794183536.968296,
+        "turn_finished_at": 1794183565.0385947,
+        "sessions": [
+          {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "base_instructions": {
+              "sha256": "d12e6dbdfd4a4ddb26a1f6048b69a32b8b32f74e4add9791d1dff7f4cac0b032",
+              "chars": 21524
+            },
+            "observations": [
+              {
+                "timestamp": "2026-11-09T00:19:03.617Z",
+                "total": {
+                  "input_tokens": 9794,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 106,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 9900
+                },
+                "last": {
+                  "input_tokens": 9794,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 106,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 9900
+                }
+              },
+              {
+                "timestamp": "2026-11-09T00:19:06.878Z",
+                "total": {
+                  "input_tokens": 19766,
+                  "cached_input_tokens": 9728,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 176,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 19942
+                },
+                "last": {
+                  "input_tokens": 9972,
+                  "cached_input_tokens": 9728,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 70,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 10042
+                }
+              },
+              {
+                "timestamp": "2026-11-09T00:19:09.310Z",
+                "total": {
+                  "input_tokens": 30100,
+                  "cached_input_tokens": 19584,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 220,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 30320
+                },
+                "last": {
+                  "input_tokens": 10334,
+                  "cached_input_tokens": 9856,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 44,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 10378
+                }
+              },
+              {
+                "timestamp": "2026-11-09T00:19:22.537Z",
+                "total": {
+                  "input_tokens": 42904,
+                  "cached_input_tokens": 29824,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 798,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 43702
+                },
+                "last": {
+                  "input_tokens": 12804,
+                  "cached_input_tokens": 10240,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 578,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 13382
+                }
+              },
+              {
+                "timestamp": "2026-11-09T00:19:24.992Z",
+                "total": {
+                  "input_tokens": 56992,
+                  "cached_input_tokens": 43008,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 840,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 57832
+                },
+                "last": {
+                  "input_tokens": 14088,
+                  "cached_input_tokens": 13184,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 42,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 14130
+                }
+              }
+            ]
+          }
+        ],
+        "model_turns": 1,
+        "provider_responses": 5,
+        "usage": {
+          "input_tokens": 56992,
+          "cached_input_tokens": 43008,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 840,
+          "reasoning_output_tokens": 0,
+          "total_tokens": 57832
+        },
+        "first_input_tokens": 9794,
+        "first_cached_input_tokens": 0,
+        "finished_at": 1794183568.527839
+      }
+    },
+    {
+      "role": "simpson",
+      "attempt_id": "attempt-5cff1219a027a8ce2b35304f6ab1f67f",
+      "study_id": "study-7cdecbe2bea64bafb4fda7773e5676fc",
+      "capture": {
+        "complete": true,
+        "content_digest": "7e6b36361003428ca0e65839dbcad1c6881d1c291b7bee63f1708f6482406918",
+        "manifest": "/Users/nikchin/.invariant/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-5cff1219a027a8ce2b35304f6ab1f67f/snapshot/manifest.json",
+        "workspace": "/Users/nikchin/.invariant/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-5cff1219a027a8ce2b35304f6ab1f67f/snapshot/workspace"
+      },
+      "checkpoint": {
+        "complete": true,
+        "image": "sha256:a513b78f76cbefdabea2ad14d3a70543091b1f4f127183ec4f9347c8856d2c69",
+        "owner": "attempt-5cff1219a027a8ce2b35304f6ab1f67f-runner",
+        "record": "/Users/nikchin/.invariant/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-5cff1219a027a8ce2b35304f6ab1f67f/control/environment.json"
+      },
+      "evaluation": {
+        "artifacts": {
+          "bytes": 2688,
+          "complete": true,
+          "files": [
+            {
+              "path": "checks.json",
+              "sha256": "6cb175c93845d728a89bf5ad8431a454c2219e67382168a7acb56db66d551fa3",
+              "size": 2688
+            }
+          ],
+          "skipped": []
+        },
+        "cleanup_confirmed": true,
+        "container": "invariant-exp-5cff1219a027a8ce2b35304f6ab1f67f-evaluation",
+        "duration_seconds": 2.4791698455810547,
+        "exit_code": 0,
+        "finished_at": 1794183594.2921104,
+        "image": "sha256:a513b78f76cbefdabea2ad14d3a70543091b1f4f127183ec4f9347c8856d2c69",
+        "log": "/Users/nikchin/.invariant/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-5cff1219a027a8ce2b35304f6ab1f67f/evaluation.log",
+        "log_bytes": 139,
+        "log_truncated": false,
+        "metrics": {
+          "tests_failed": 0,
+          "tests_passed": 36,
+          "tests_total": 36
+        },
+        "passed": true,
+        "reason": null,
+        "runtime": {
+          "host_config": {
+            "Memory": 0,
+            "MemorySwap": 0,
+            "NanoCpus": 0
+          },
+          "image": "sha256:a513b78f76cbefdabea2ad14d3a70543091b1f4f127183ec4f9347c8856d2c69",
+          "memory_bytes": 0,
+          "mounts": [
+            {
+              "Destination": "/etc/codex/requirements.toml",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-code-v2-f0ceb265cd343028/_data/invariant/assets/environment-requirements-unrestricted.toml",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/__invariant_inputs/run",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-5cff1219a027a8ce2b35304f6ab1f67f/input",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/__invariant_inputs/source",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/runtimes/baseline-5e5af68dc8d3224a4c11b5d1ba2c792bddfc4e4025a042cacec0a4bf96a2ec57/evaluator-source",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/__invariant_output",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": true,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-5cff1219a027a8ce2b35304f6ab1f67f/evaluation/output",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/scratch",
+              "Driver": "local",
+              "Mode": "",
+              "Name": "afd1fdcd3dc2143625d8b72cfbbed420c59b1b4ce5938149caaad19cd8cb12c6",
+              "Propagation": "",
+              "RW": true,
+              "Source": "/var/lib/docker/volumes/afd1fdcd3dc2143625d8b72cfbbed420c59b1b4ce5938149caaad19cd8cb12c6/_data",
+              "Type": "volume"
+            },
+            {
+              "Destination": "/workspace",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": true,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-5cff1219a027a8ce2b35304f6ab1f67f/evaluation/workspace",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/workspace/.invariant",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-5cff1219a027a8ce2b35304f6ab1f67f/evaluation/control/policy",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/__invariant",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/shared-runtime/d9dbf658d48a8ffb6bf1d0077188b0088f1c41c6f1df718ec2638a1723b0cde2/control",
+              "Type": "bind"
+            }
+          ],
+          "nano_cpus": 0,
+          "network": "bridge",
+          "pids_limit": null,
+          "resource_contract": {
+            "docker_args": [
+              "--pids-limit=-1",
+              "--volume=/scratch"
+            ],
+            "host_config": {
+              "Memory": 0,
+              "MemorySwap": 0,
+              "NanoCpus": 0
+            },
+            "limits": {
+              "cpus": null,
+              "extra_swap_bytes": null,
+              "file_descriptors": null,
+              "memory_bytes": null,
+              "processes": null,
+              "scratch_bytes": null
+            },
+            "mode": "unlimited",
+            "profile": "codex-environment-v2",
+            "resolved": true,
+            "schema_version": 1
+          }
+        },
+        "schema_version": 1,
+        "started_at": 1794183591.812941,
+        "status": "completed"
+      },
+      "runner": {
+        "cleanup_confirmed": true,
+        "container": "invariant-exp-5cff1219a027a8ce2b35304f6ab1f67f-runner",
+        "duration_seconds": 50.50632309913635,
+        "exit_code": 0,
+        "finished_at": 1794183579.9078875,
+        "image": "sha256:845fc3854fe15416c34291e6705c4de1ffdfe85880d79cd1619d11bc5a8259c6",
+        "log": "/Users/nikchin/.invariant/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-5cff1219a027a8ce2b35304f6ab1f67f/runner.log",
+        "log_bytes": 62,
+        "log_truncated": false,
+        "reason": null,
+        "runtime": {
+          "host_config": {
+            "Memory": 0,
+            "MemorySwap": 0,
+            "NanoCpus": 0
+          },
+          "image": "sha256:845fc3854fe15416c34291e6705c4de1ffdfe85880d79cd1619d11bc5a8259c6",
+          "memory_bytes": 0,
+          "mounts": [
+            {
+              "Destination": "/workspace",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": true,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-5cff1219a027a8ce2b35304f6ab1f67f/workspace",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/workspace/.invariant",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-5cff1219a027a8ce2b35304f6ab1f67f/control/policy",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/__invariant",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/shared-runtime/d9dbf658d48a8ffb6bf1d0077188b0088f1c41c6f1df718ec2638a1723b0cde2/control",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/etc/codex/requirements.toml",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-code-v2-f0ceb265cd343028/_data/invariant/assets/environment-requirements-unrestricted.toml",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/__invariant_inputs/run",
+              "Mode": "",
+              "Propagation": "rslave",
+              "RW": false,
+              "Source": "/var/lib/docker/volumes/invariant-state-v2/_data/workspaces/fdf488d0dc75d948dd1d92ad/experiments/attempts/attempt-5cff1219a027a8ce2b35304f6ab1f67f/input",
+              "Type": "bind"
+            },
+            {
+              "Destination": "/scratch",
+              "Driver": "local",
+              "Mode": "",
+              "Name": "b76aa027429882103b7fd478ae38f9e6f17bc96cc7ba21c6289ff0758244db27",
+              "Propagation": "",
+              "RW": true,
+              "Source": "/var/lib/docker/volumes/b76aa027429882103b7fd478ae38f9e6f17bc96cc7ba21c6289ff0758244db27/_data",
+              "Type": "volume"
+            }
+          ],
+          "nano_cpus": 0,
+          "network": "bridge",
+          "pids_limit": null,
+          "resource_contract": {
+            "docker_args": [
+              "--pids-limit=-1",
+              "--volume=/scratch"
+            ],
+            "host_config": {
+              "Memory": 0,
+              "MemorySwap": 0,
+              "NanoCpus": 0
+            },
+            "limits": {
+              "cpus": null,
+              "extra_swap_bytes": null,
+              "file_descriptors": null,
+              "memory_bytes": null,
+              "processes": null,
+              "scratch_bytes": null
+            },
+            "mode": "unlimited",
+            "profile": "codex-environment-v2",
+            "resolved": true,
+            "schema_version": 1
+          }
+        },
+        "started_at": 1794183529.401565,
+        "status": "completed"
+      },
+      "workload": {
+        "role": "simpson",
+        "mode": "live",
+        "prompt_sha256": "83067359a0a13b46135efe939e6b81d13f88ec0866046c4b6b44d20855577130",
+        "profile_sha256": "7f96f8534fd9fee3e5b86c14774f3882402a65e9ca16fb59eafbad849205ba0f",
+        "driver_sha256": "ce6dce383a4d95f912d7ccfbf5a28fcc9a161293b75a03700aa24de824c0a7d4",
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "started_at": 1794183532.3258927,
+        "argv_sha256": "850620031b5bfe27a50b4898c72774c140a1f46a1d65d066efd44dc41695b357",
+        "environment_sha256": "85e428836c15da5d4b72b40ad8b6b92d5986a9babae7def3c461ec3e8d2cf23b",
+        "cli_version": "codex-cli 0.163.0",
+        "workload_started_at": 1794183532.4159987,
+        "workload_finished_at": 1794183579.18541,
+        "exit_code": 0,
+        "cli_usage": {
+          "input_tokens": 53349,
+          "cached_input_tokens": 41728,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1460,
+          "reasoning_output_tokens": 0
+        },
+        "turn_started_at": 1794183537.18449,
+        "turn_finished_at": 1794183575.6424663,
+        "sessions": [
+          {
+            "model": "gpt-6.1-sol",
+            "effort": "medium",
+            "base_instructions": {
+              "sha256": "d12e6dbdfd4a4ddb26a1f6048b69a32b8b32f74e4add9791d1dff7f4cac0b032",
+              "chars": 21524
+            },
+            "observations": [
+              {
+                "timestamp": "2026-11-09T00:19:04.438Z",
+                "total": {
+                  "input_tokens": 9789,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 180,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 9969
+                },
+                "last": {
+                  "input_tokens": 9789,
+                  "cached_input_tokens": 0,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 180,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 9969
+                }
+              },
+              {
+                "timestamp": "2026-11-09T00:19:06.867Z",
+                "total": {
+                  "input_tokens": 19865,
+                  "cached_input_tokens": 9728,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 227,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 20092
+                },
+                "last": {
+                  "input_tokens": 10076,
+                  "cached_input_tokens": 9728,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 47,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 10123
+                }
+              },
+              {
+                "timestamp": "2026-11-09T00:19:20.210Z",
+                "total": {
+                  "input_tokens": 30116,
+                  "cached_input_tokens": 19712,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 828,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 30944
+                },
+                "last": {
+                  "input_tokens": 10251,
+                  "cached_input_tokens": 9984,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 601,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 10852
+                }
+              },
+              {
+                "timestamp": "2026-11-09T00:19:33.492Z",
+                "total": {
+                  "input_tokens": 41077,
+                  "cached_input_tokens": 30336,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 1418,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 42495
+                },
+                "last": {
+                  "input_tokens": 10961,
+                  "cached_input_tokens": 10624,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 590,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 11551
+                }
+              },
+              {
+                "timestamp": "2026-11-09T00:19:35.569Z",
+                "total": {
+                  "input_tokens": 53349,
+                  "cached_input_tokens": 41728,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 1460,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 54809
+                },
+                "last": {
+                  "input_tokens": 12272,
+                  "cached_input_tokens": 11392,
+                  "cache_write_input_tokens": 0,
+                  "output_tokens": 42,
+                  "reasoning_output_tokens": 0,
+                  "total_tokens": 12314
+                }
+              }
+            ]
+          }
+        ],
+        "model_turns": 1,
+        "provider_responses": 5,
+        "usage": {
+          "input_tokens": 53349,
+          "cached_input_tokens": 41728,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1460,
+          "reasoning_output_tokens": 0,
+          "total_tokens": 54809
+        },
+        "first_input_tokens": 9789,
+        "first_cached_input_tokens": 0,
+        "finished_at": 1794183579.2084463
+      }
+    }
+  ],
+  "started_at": 1794183517.5886474,
+  "submitted_at": 1794183518.6386864,
+  "baseline_finished_at": 1794183527.4275713,
+  "baseline": {
+    "ready": true,
+    "study_id": "study-b296d1030a43467781d768345c4c69c2",
+    "model_turns": 0,
+    "next": "Ready for child dispatch."
+  },
+  "finished_at": 1794183597.1335905,
+  "seconds": 79.54494309425354
+}

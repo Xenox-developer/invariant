@@ -1,0 +1,209 @@
+{
+  "passed": true,
+  "rows_checked": 16,
+  "input_sha256": {
+    "trapezoid": "c0a438bf0b3ecef9af9541983599a532c02759ae0c839723d8311518fa29c24f",
+    "simpson": "ca4de565ddd4638fa8f49f7587beabe05d29372c21d8e676c2aff9727c17257d"
+  },
+  "observed_ratios": {
+    "trapezoid_x2": [
+      3.9999999999996003,
+      3.9999999999978684,
+      3.999999999989342
+    ],
+    "trapezoid_x4": [
+      3.9969992498122338,
+      3.9992499531220984,
+      3.9998124970675426
+    ],
+    "simpson_x4": [
+      15.99999999990008,
+      15.999999989341859,
+      15.999999914734872
+    ]
+  },
+  "conclusions": {
+    "trapezoid_order": 2,
+    "simpson_order": 4,
+    "simpson_x2_exact_within_roundoff": true
+  },
+  "verification_method": "Exact Fraction grid sum, exact error identities, eight-ULP bound, and execution of both received integrators",
+  "row_verification": [
+    {
+      "method": "trapezoid",
+      "power": 2,
+      "n": 10,
+      "exact_rational_quadrature": "67/200",
+      "exact_signed_error_formula": "1/600",
+      "estimate_minus_rational_quadrature": 7.549516567451065e-17,
+      "error_against_rational_integral": 0.0016666666666667422,
+      "roundoff_tolerance": 4.440892098500626e-16,
+      "implementation_matches_received": true
+    },
+    {
+      "method": "trapezoid",
+      "power": 2,
+      "n": 20,
+      "exact_rational_quadrature": "267/800",
+      "exact_signed_error_formula": "1/2400",
+      "estimate_minus_rational_quadrature": 4.662936703425657e-17,
+      "error_against_rational_integral": 0.0004166666666667133,
+      "roundoff_tolerance": 4.440892098500626e-16,
+      "implementation_matches_received": true
+    },
+    {
+      "method": "trapezoid",
+      "power": 2,
+      "n": 40,
+      "exact_rational_quadrature": "1067/3200",
+      "exact_signed_error_formula": "1/9600",
+      "estimate_minus_rational_quadrature": 5.329070518200751e-17,
+      "error_against_rational_integral": 0.00010416666666671996,
+      "roundoff_tolerance": 4.440892098500626e-16,
+      "implementation_matches_received": true
+    },
+    {
+      "method": "trapezoid",
+      "power": 2,
+      "n": 80,
+      "exact_rational_quadrature": "4267/12800",
+      "exact_signed_error_formula": "1/38400",
+      "estimate_minus_rational_quadrature": 6.88338275267597e-17,
+      "error_against_rational_integral": 2.60416666667355e-05,
+      "roundoff_tolerance": 4.440892098500626e-16,
+      "implementation_matches_received": true
+    },
+    {
+      "method": "trapezoid",
+      "power": 4,
+      "n": 10,
+      "exact_rational_quadrature": "20333/100000",
+      "exact_signed_error_formula": "333/100000",
+      "estimate_minus_rational_quadrature": 1.0729195309977513e-17,
+      "error_against_rational_integral": 0.003330000000000011,
+      "roundoff_tolerance": 2.220446049250313e-16,
+      "implementation_matches_received": true
+    },
+    {
+      "method": "trapezoid",
+      "power": 4,
+      "n": 20,
+      "exact_rational_quadrature": "321333/1600000",
+      "exact_signed_error_formula": "1333/1600000",
+      "estimate_minus_rational_quadrature": 5.6736837450444e-17,
+      "error_against_rational_integral": 0.0008331250000000567,
+      "roundoff_tolerance": 2.220446049250313e-16,
+      "implementation_matches_received": true
+    },
+    {
+      "method": "trapezoid",
+      "power": 4,
+      "n": 40,
+      "exact_rational_quadrature": "5125333/25600000",
+      "exact_signed_error_formula": "5333/25600000",
+      "estimate_minus_rational_quadrature": 2.1032064978498965e-17,
+      "error_against_rational_integral": 0.00020832031250002104,
+      "roundoff_tolerance": 2.220446049250313e-16,
+      "implementation_matches_received": true
+    },
+    {
+      "method": "trapezoid",
+      "power": 4,
+      "n": 80,
+      "exact_rational_quadrature": "81941333/409600000",
+      "exact_signed_error_formula": "21333/409600000",
+      "estimate_minus_rational_quadrature": 4.905409412003792e-17,
+      "error_against_rational_integral": 5.208251953129905e-05,
+      "roundoff_tolerance": 2.220446049250313e-16,
+      "implementation_matches_received": true
+    },
+    {
+      "method": "simpson",
+      "power": 2,
+      "n": 10,
+      "exact_rational_quadrature": "1/3",
+      "exact_signed_error_formula": "0",
+      "estimate_minus_rational_quadrature": 3.700743415417188e-17,
+      "error_against_rational_integral": 3.700743415417188e-17,
+      "roundoff_tolerance": 4.440892098500626e-16,
+      "implementation_matches_received": true
+    },
+    {
+      "method": "simpson",
+      "power": 2,
+      "n": 20,
+      "exact_rational_quadrature": "1/3",
+      "exact_signed_error_formula": "0",
+      "estimate_minus_rational_quadrature": 3.700743415417188e-17,
+      "error_against_rational_integral": 3.700743415417188e-17,
+      "roundoff_tolerance": 4.440892098500626e-16,
+      "implementation_matches_received": true
+    },
+    {
+      "method": "simpson",
+      "power": 2,
+      "n": 40,
+      "exact_rational_quadrature": "1/3",
+      "exact_signed_error_formula": "0",
+      "estimate_minus_rational_quadrature": 3.700743415417188e-17,
+      "error_against_rational_integral": 3.700743415417188e-17,
+      "roundoff_tolerance": 4.440892098500626e-16,
+      "implementation_matches_received": true
+    },
+    {
+      "method": "simpson",
+      "power": 2,
+      "n": 80,
+      "exact_rational_quadrature": "1/3",
+      "exact_signed_error_formula": "0",
+      "estimate_minus_rational_quadrature": 3.700743415417188e-17,
+      "error_against_rational_integral": 3.700743415417188e-17,
+      "roundoff_tolerance": 4.440892098500626e-16,
+      "implementation_matches_received": true
+    },
+    {
+      "method": "simpson",
+      "power": 4,
+      "n": 10,
+      "exact_rational_quadrature": "15001/75000",
+      "exact_signed_error_formula": "1/75000",
+      "estimate_minus_rational_quadrature": 1.5184890382139807e-17,
+      "error_against_rational_integral": 1.3333333333348519e-05,
+      "roundoff_tolerance": 2.220446049250313e-16,
+      "implementation_matches_received": true
+    },
+    {
+      "method": "simpson",
+      "power": 4,
+      "n": 20,
+      "exact_rational_quadrature": "240001/1200000",
+      "exact_signed_error_formula": "1/1200000",
+      "estimate_minus_rational_quadrature": 1.6561566932675e-17,
+      "error_against_rational_integral": 8.333333333498949e-07,
+      "roundoff_tolerance": 2.220446049250313e-16,
+      "implementation_matches_received": true
+    },
+    {
+      "method": "simpson",
+      "power": 4,
+      "n": 40,
+      "exact_rational_quadrature": "3840001/19200000",
+      "exact_signed_error_formula": "1/19200000",
+      "estimate_minus_rational_quadrature": 4.6137908308689174e-17,
+      "error_against_rational_integral": 5.2083333379471244e-08,
+      "roundoff_tolerance": 2.220446049250313e-16,
+      "implementation_matches_received": true
+    },
+    {
+      "method": "simpson",
+      "power": 4,
+      "n": 80,
+      "exact_rational_quadrature": "61440001/307200000",
+      "exact_signed_error_formula": "1/307200000",
+      "estimate_minus_rational_quadrature": 3.063919488492199e-17,
+      "error_against_rational_integral": 3.2552083639725284e-09,
+      "roundoff_tolerance": 2.220446049250313e-16,
+      "implementation_matches_received": true
+    }
+  ]
+}

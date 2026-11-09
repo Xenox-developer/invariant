@@ -1,0 +1,51 @@
+{
+  "records": [
+    {
+      "role": "trapezoid",
+      "started_at": 1794182302.974273,
+      "finished_at": 1794182313.0972009,
+      "seconds": 10.122927904129028,
+      "workload": {
+        "role": "trapezoid",
+        "mode": "replay",
+        "prompt_sha256": "cf0da5b2dab7ee04f7a6db3ce5bda0c7895f99d9ce67dbdd695ed40fa75133d0",
+        "profile_sha256": "07047847e091bba6ebaf296ed76da628aa3c68996ae0fe9c2bb70de439ad8a64",
+        "driver_sha256": "fcb84d67db91b0874dea0c6d059a8a1780dc1854f2b0a59d697b8b3bffda2594",
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "started_at": 1794182310.3648198,
+        "model_turns": 0,
+        "provider_responses": 0,
+        "usage": null,
+        "workload_started_at": 1794182310.3648212,
+        "workload_finished_at": 1794182311.4723713,
+        "finished_at": 1794182311.4724627
+      }
+    },
+    {
+      "role": "simpson",
+      "started_at": 1794182302.985095,
+      "finished_at": 1794182312.872919,
+      "seconds": 9.887824058532715,
+      "workload": {
+        "role": "simpson",
+        "mode": "replay",
+        "prompt_sha256": "83067359a0a13b46135efe939e6b81d13f88ec0866046c4b6b44d20855577130",
+        "profile_sha256": "07047847e091bba6ebaf296ed76da628aa3c68996ae0fe9c2bb70de439ad8a64",
+        "driver_sha256": "fcb84d67db91b0874dea0c6d059a8a1780dc1854f2b0a59d697b8b3bffda2594",
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "started_at": 1794182309.9512892,
+        "model_turns": 0,
+        "provider_responses": 0,
+        "usage": null,
+        "workload_started_at": 1794182309.951291,
+        "workload_finished_at": 1794182310.2951572,
+        "finished_at": 1794182310.2951705
+      }
+    }
+  ],
+  "started_at": 1794182302.9615612,
+  "finished_at": 1794182328.534063,
+  "seconds": 25.572502851486206
+}

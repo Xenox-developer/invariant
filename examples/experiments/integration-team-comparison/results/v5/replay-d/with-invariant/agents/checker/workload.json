@@ -1,0 +1,16 @@
+{
+  "role": "checker",
+  "mode": "replay",
+  "prompt_sha256": "e327066dbddf6fca9ccb717b323cde68d57a53c06b0d466a6053100ef21f7434",
+  "profile_sha256": "48a1feab8f2783877016a2293a68149b24347bc00e3ec0e04c7961e100f0efb3",
+  "driver_sha256": "ce6dce383a4d95f912d7ccfbf5a28fcc9a161293b75a03700aa24de824c0a7d4",
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "started_at": 1794184288.183886,
+  "model_turns": 0,
+  "provider_responses": 0,
+  "usage": null,
+  "workload_started_at": 1794184288.2023227,
+  "workload_finished_at": 1794184288.4317775,
+  "finished_at": 1794184288.4317822
+}

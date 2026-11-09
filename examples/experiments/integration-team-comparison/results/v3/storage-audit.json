@@ -1,0 +1,84 @@
+{
+  "storage_layout": 2,
+  "issues": [],
+  "host_agent_state_present": false,
+  "host_managed_codex_present": false,
+  "host_local_runtime_directories": 0,
+  "host_local_project_configs": 0,
+  "verified": true,
+  "containers": [
+    {
+      "container": "invariant-agent-c96e8bb14ee7489988ceaf46cc82801c",
+      "role": "catalog-runtime",
+      "mounts": [
+        {
+          "destination": "/Users/nikchin/.invariant/workspaces/b79a08a230ce0fb461f09363/catalog-v3",
+          "volume": "invariant-state-v2",
+          "path": "workspaces/b79a08a230ce0fb461f09363/catalog-v3"
+        },
+        {
+          "destination": "/opt/invariant",
+          "volume": "invariant-code-v2-6ef60829c44ddf7e",
+          "path": ""
+        }
+      ],
+      "privileged": false,
+      "published_ports": false
+    },
+    {
+      "container": "invariant-exp-bad2b96461569564595d2ae6ac6a9a53-runner",
+      "role": "codex-workspace",
+      "mounts": [
+        {
+          "destination": "/workspace",
+          "volume": "invariant-state-v2",
+          "path": "workspaces/b79a08a230ce0fb461f09363/experiments/attempts/attempt-bad2b96461569564595d2ae6ac6a9a53/workspace"
+        },
+        {
+          "destination": "/workspace/.invariant",
+          "volume": "invariant-state-v2",
+          "path": "workspaces/b79a08a230ce0fb461f09363/experiments/attempts/attempt-bad2b96461569564595d2ae6ac6a9a53/control/policy"
+        },
+        {
+          "destination": "/__invariant",
+          "volume": "invariant-state-v2",
+          "path": "shared-runtime/783ff1a4d1f60ebaeab7b585a9fa360ba35e76ad52cbcf6c74557a38cd64fec5/control"
+        },
+        {
+          "destination": "/etc/codex/requirements.toml",
+          "volume": "invariant-code-v2-6ef60829c44ddf7e",
+          "path": "invariant/assets/environment-requirements-unrestricted.toml"
+        },
+        {
+          "destination": "/__invariant_inputs/run",
+          "volume": "invariant-state-v2",
+          "path": "workspaces/b79a08a230ce0fb461f09363/experiments/attempts/attempt-bad2b96461569564595d2ae6ac6a9a53/input"
+        },
+        {
+          "destination": "/scratch",
+          "volume": "0565b7b20914edc7736646ef7fe76e35e2a30283208647e9060f2a6291414eb2"
+        }
+      ],
+      "privileged": false,
+      "published_ports": false
+    },
+    {
+      "container": "invariant-agent-c29df9e504854474a09eb5c12f78ee4f",
+      "role": "agent-runtime",
+      "mounts": [
+        {
+          "destination": "/Users/nikchin/.invariant/workspaces/b79a08a230ce0fb461f09363/experiments/attempts/attempt-bad2b96461569564595d2ae6ac6a9a53/native-home",
+          "volume": "invariant-state-v2",
+          "path": "workspaces/b79a08a230ce0fb461f09363/experiments/attempts/attempt-bad2b96461569564595d2ae6ac6a9a53/native-home"
+        },
+        {
+          "destination": "/opt/invariant",
+          "volume": "invariant-code-v2-6ef60829c44ddf7e",
+          "path": ""
+        }
+      ],
+      "privileged": false,
+      "published_ports": false
+    }
+  ]
+}

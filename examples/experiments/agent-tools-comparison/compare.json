@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "name": "agent-tools-logging-migration",
+  "runner": {"type": "codex"},
+  "variants": [
+    {"id": "ast-grep", "effort": "medium", "instructions_file": "instructions-ast-grep.md"},
+    {"id": "jscodeshift", "effort": "medium", "instructions_file": "instructions-jscodeshift.md"}
+  ],
+  "cases": [{"id": "logging-migration", "prompt_file": "TASK.md"}],
+  "workspace": {
+    "include": ["migrate.cjs", "TASK.md", "tests/**"],
+    "exclude": []
+  },
+  "execution": {"max_parallel": 2},
+  "evaluator": {"argv": ["python3", "evaluate.py"], "source_paths": ["evaluate.py", "tests/acceptance.cjs"], "timeout_seconds": 0},
+  "artifacts": ["**/*"]
+}

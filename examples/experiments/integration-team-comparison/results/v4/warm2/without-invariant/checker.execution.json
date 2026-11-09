@@ -1,0 +1,314 @@
+{
+  "role": "checker",
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "container": "research-v4-warm2-checker",
+  "started_at": 1794056984.4714491,
+  "finished_at": 1794057092.790134,
+  "duration_seconds": 108.31868481636047,
+  "exit_code": 0,
+  "cli_usage": {
+    "input_tokens": 81596,
+    "cached_input_tokens": 65920,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 4384,
+    "reasoning_output_tokens": 119
+  },
+  "turn_started_at": 1794056988.0556312,
+  "turn_finished_at": 1794057086.430474,
+  "host_config": {
+    "Binds": null,
+    "ContainerIDFile": "",
+    "LogConfig": {
+      "Type": "json-file",
+      "Config": {}
+    },
+    "NetworkMode": "bridge",
+    "PortBindings": {},
+    "RestartPolicy": {
+      "Name": "no",
+      "MaximumRetryCount": 0
+    },
+    "AutoRemove": false,
+    "VolumeDriver": "",
+    "VolumesFrom": null,
+    "ConsoleSize": [
+      0,
+      0
+    ],
+    "CapAdd": [
+      "CHOWN",
+      "DAC_OVERRIDE",
+      "FOWNER",
+      "FSETID",
+      "SETGID",
+      "SETUID",
+      "SYS_CHROOT",
+      "SETFCAP"
+    ],
+    "CapDrop": [
+      "ALL"
+    ],
+    "CgroupnsMode": "private",
+    "Dns": [],
+    "DnsOptions": [],
+    "DnsSearch": [],
+    "ExtraHosts": null,
+    "GroupAdd": null,
+    "IpcMode": "private",
+    "Cgroup": "",
+    "Links": null,
+    "OomScoreAdj": 0,
+    "PidMode": "",
+    "Privileged": false,
+    "PublishAllPorts": false,
+    "ReadonlyRootfs": false,
+    "SecurityOpt": [
+      "no-new-privileges"
+    ],
+    "Tmpfs": {
+      "/scratch": "rw,nosuid,nodev"
+    },
+    "UTSMode": "",
+    "UsernsMode": "",
+    "ShmSize": 67108864,
+    "Runtime": "runc",
+    "Isolation": "",
+    "CpuShares": 0,
+    "Memory": 0,
+    "NanoCpus": 0,
+    "CgroupParent": "",
+    "BlkioWeight": 0,
+    "BlkioWeightDevice": [],
+    "BlkioDeviceReadBps": [],
+    "BlkioDeviceWriteBps": [],
+    "BlkioDeviceReadIOps": [],
+    "BlkioDeviceWriteIOps": [],
+    "CpuPeriod": 0,
+    "CpuQuota": 0,
+    "CpuRealtimePeriod": 0,
+    "CpuRealtimeRuntime": 0,
+    "CpusetCpus": "",
+    "CpusetMems": "",
+    "Devices": [],
+    "DeviceCgroupRules": null,
+    "DeviceRequests": null,
+    "MemoryReservation": 0,
+    "MemorySwap": 0,
+    "MemorySwappiness": null,
+    "OomKillDisable": false,
+    "PidsLimit": null,
+    "Ulimits": [],
+    "CpuCount": 0,
+    "CpuPercent": 0,
+    "IOMaximumIOps": 0,
+    "IOMaximumBandwidth": 0,
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/var/lib/docker/volumes/research-v4-warm2-state/_data/work/checker",
+        "Target": "/workspace"
+      },
+      {
+        "Type": "bind",
+        "Source": "/var/lib/docker/volumes/research-v4-warm2-state/_data/homes/checker",
+        "Target": "/agent"
+      },
+      {
+        "Type": "volume",
+        "Source": "research-v4-common-tools",
+        "Target": "/tools",
+        "ReadOnly": true
+      }
+    ],
+    "MaskedPaths": [
+      "/proc/asound",
+      "/proc/acpi",
+      "/proc/kcore",
+      "/proc/keys",
+      "/proc/latency_stats",
+      "/proc/timer_list",
+      "/proc/timer_stats",
+      "/proc/sched_debug",
+      "/proc/scsi",
+      "/sys/firmware",
+      "/sys/devices/virtual/powercap"
+    ],
+    "ReadonlyPaths": [
+      "/proc/bus",
+      "/proc/fs",
+      "/proc/irq",
+      "/proc/sys",
+      "/proc/sysrq-trigger"
+    ],
+    "Init": true
+  },
+  "image": "sha256:db21298b84d45d950442afa08ebd86a5e1f7deadb4a167d170b6dd9ba1262e01",
+  "acceptance": {
+    "passed": true,
+    "tests": 14,
+    "failures": 0,
+    "errors": 0,
+    "checks": [
+      {
+        "name": "csv_matches_all_sixteen_received_rows",
+        "passed": true
+      },
+      {
+        "name": "report_has_substantive_text",
+        "passed": true
+      },
+      {
+        "name": "verification_passed",
+        "passed": true
+      },
+      {
+        "name": "verified_sixteen_rows",
+        "passed": true
+      },
+      {
+        "name": "input_provenance_trapezoid",
+        "passed": true
+      },
+      {
+        "name": "input_provenance_simpson",
+        "passed": true
+      },
+      {
+        "name": "trapezoid_order",
+        "passed": true
+      },
+      {
+        "name": "simpson_order",
+        "passed": true
+      },
+      {
+        "name": "simpson_quadratic_roundoff",
+        "passed": true
+      },
+      {
+        "name": "observed_ratios_trapezoid_x2",
+        "passed": true
+      },
+      {
+        "name": "observed_ratios_trapezoid_x4",
+        "passed": true
+      },
+      {
+        "name": "observed_ratios_simpson_x4",
+        "passed": true
+      },
+      {
+        "name": "svg_has_three_named_error_series",
+        "passed": true
+      },
+      {
+        "name": "report_generator_reproducible",
+        "passed": true
+      }
+    ],
+    "sessions": [
+      {
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "observations": [
+          {
+            "total": {
+              "input_tokens": 10176,
+              "cached_input_tokens": 0,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 107,
+              "reasoning_output_tokens": 0,
+              "total_tokens": 10283
+            },
+            "last": {
+              "input_tokens": 10176,
+              "cached_input_tokens": 0,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 107,
+              "reasoning_output_tokens": 0,
+              "total_tokens": 10283
+            },
+            "timestamp": "2026-11-07T13:09:54.799Z"
+          },
+          {
+            "total": {
+              "input_tokens": 24876,
+              "cached_input_tokens": 10112,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3909,
+              "reasoning_output_tokens": 87,
+              "total_tokens": 28785
+            },
+            "last": {
+              "input_tokens": 14700,
+              "cached_input_tokens": 10112,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3802,
+              "reasoning_output_tokens": 87,
+              "total_tokens": 18502
+            },
+            "timestamp": "2026-11-07T13:11:12.172Z"
+          },
+          {
+            "total": {
+              "input_tokens": 43402,
+              "cached_input_tokens": 28416,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 4226,
+              "reasoning_output_tokens": 119,
+              "total_tokens": 47628
+            },
+            "last": {
+              "input_tokens": 18526,
+              "cached_input_tokens": 18304,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 317,
+              "reasoning_output_tokens": 32,
+              "total_tokens": 18843
+            },
+            "timestamp": "2026-11-07T13:11:19.862Z"
+          },
+          {
+            "total": {
+              "input_tokens": 62301,
+              "cached_input_tokens": 47104,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 4293,
+              "reasoning_output_tokens": 119,
+              "total_tokens": 66594
+            },
+            "last": {
+              "input_tokens": 18899,
+              "cached_input_tokens": 18688,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 67,
+              "reasoning_output_tokens": 0,
+              "total_tokens": 18966
+            },
+            "timestamp": "2026-11-07T13:11:22.799Z"
+          },
+          {
+            "total": {
+              "input_tokens": 81596,
+              "cached_input_tokens": 65920,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 4384,
+              "reasoning_output_tokens": 119,
+              "total_tokens": 85980
+            },
+            "last": {
+              "input_tokens": 19295,
+              "cached_input_tokens": 18816,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 91,
+              "reasoning_output_tokens": 0,
+              "total_tokens": 19386
+            },
+            "timestamp": "2026-11-07T13:11:26.384Z"
+          }
+        ]
+      }
+    ]
+  }
+}

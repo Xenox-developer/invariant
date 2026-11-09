@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "kind": "invariant-comparison",
+  "invariant_version": "0.3.1",
+  "study_id": "study-280091f32df14db3987b42cfa95bd338",
+  "state": "completed",
+  "runner": "codex",
+  "attempt_policy": "first_attempt",
+  "repetitions": 1,
+  "selection": {
+    "attempt_id": null,
+    "revision": 0
+  },
+  "baseline_digest": "bef049320c8cde576d31a09d9afdabd165029bd5268c4149049923c39ed4f16f",
+  "image_id": "sha256:b1a7fd8c539da978db4df9de25753d8b829922a60e94d175896cdd39f40deeae",
+  "attempts": [
+    {
+      "trial_id": "trial-f52d4246815bfc9e4d15193c1675084c",
+      "attempt_id": "attempt-47e26d0ff5f66d0b522a81db5e941a81",
+      "attempt_number": 1,
+      "comparison_attempt": true,
+      "variant": "ast-grep",
+      "case": "logging-migration",
+      "repetition": 1,
+      "state": "succeeded",
+      "error_code": "COMPLETED",
+      "requested_model": "gpt-6.1-sol",
+      "requested_effort": "medium",
+      "observed_model": "gpt-6.1-sol",
+      "observed_effort": "medium",
+      "runner_status": "completed",
+      "evaluation_status": "completed",
+      "passed": true,
+      "agent_seconds": 97.48029899597168,
+      "total_tokens": 154745,
+      "metrics": {
+        "tests_failed": 0,
+        "tests_passed": 34,
+        "tests_total": 34
+      }
+    },
+    {
+      "trial_id": "trial-5788636d774b8df1302c6bdd1431770a",
+      "attempt_id": "attempt-14bc50d8987d4f1e8ee41cd36c6ef110",
+      "attempt_number": 1,
+      "comparison_attempt": true,
+      "variant": "jscodeshift",
+      "case": "logging-migration",
+      "repetition": 1,
+      "state": "succeeded",
+      "error_code": "COMPLETED",
+      "requested_model": "gpt-6.1-sol",
+      "requested_effort": "medium",
+      "observed_model": "gpt-6.1-sol",
+      "observed_effort": "medium",
+      "runner_status": "completed",
+      "evaluation_status": "completed",
+      "passed": true,
+      "agent_seconds": 110.37528324127197,
+      "total_tokens": 269096,
+      "metrics": {
+        "tests_failed": 0,
+        "tests_passed": 34,
+        "tests_total": 34
+      }
+    }
+  ],
+  "summary": {
+    "scheduled": 2,
+    "runner_successes": 2,
+    "failed": 0,
+    "cancelled": 0,
+    "pending": 0,
+    "evaluated": 2,
+    "missing_evaluations": 0,
+    "quality_passes": 2,
+    "quality_failures": 0,
+    "quality_judged": 2,
+    "missing_quality": 0,
+    "quality_pass_rate_over_scheduled": 1.0,
+    "metrics": {
+      "tests_failed": {
+        "count": 2,
+        "missing": 0,
+        "mean": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "tests_passed": {
+        "count": 2,
+        "missing": 0,
+        "mean": 34,
+        "min": 34,
+        "max": 34,
+        "stdev": 0.0
+      },
+      "tests_total": {
+        "count": 2,
+        "missing": 0,
+        "mean": 34,
+        "min": 34,
+        "max": 34,
+        "stdev": 0.0
+      }
+    }
+  },
+  "limitations": [
+    "Frozen local inputs do not make model responses or external services deterministic.",
+    "Only first attempts contribute to comparison; all retries are listed separately.",
+    "Missing quality, timing or token values remain unknown. No automatic winner or statistical ranking."
+  ]
+}
